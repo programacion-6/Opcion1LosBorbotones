@@ -8,13 +8,16 @@ public class Program
     {
         var repository = new BookRepositoryImplementation(new BookDatasourceImplementation());
         IEnumerable<Book> books = await repository.GetBooksByTitleAsync("To Kill a Mockingbird"); //CHANGUE THE TITLE
-        Console.WriteLine("Libros segun el titulo"); 
+        Console.WriteLine("Libros segun el titulo:"); 
         foreach (var item in books)
         {
             Console.WriteLine(item); 
         }
         
-        var book = await repository.ReadAsync(new Guid("edbfaefd-ebdf-432d-987f-b767b975e4da")); //CHANGE THE GUID 
-        Console.WriteLine("libro segun el index: " + book);
+        var book = await repository.ReadAsync(new Guid("83d70e67-dd89-4979-9888-ece2b91bc27c")); //CHANGE THE GUID 
+        Console.WriteLine("libro segun el id: " + book);
+        
+        book = await repository.GetBookByIsbnAsync(2409886367626); //CHANGE THE ISBN 
+        Console.WriteLine("libro segun el isbn: " + book);
     }
 }
