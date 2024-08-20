@@ -8,9 +8,4 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Presentation\" />
-  </ItemGroup>
-
 </Project>
