@@ -8,7 +8,8 @@ namespace Opcion1LosBorbotones.Infrastructure.Datasource;
 
 public class BookDatasourceImplementation : IBookDatasource
 {
-    private readonly string _connectionString = "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
+    private readonly string _connectionString = 
+        "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
 
     public async Task<Book> CreateAsync(Book entity)
     {

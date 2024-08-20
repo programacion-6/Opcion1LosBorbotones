@@ -23,7 +23,7 @@ public class MapperImplementation : IMapper<NpgsqlDataReader>
         return new Patron(
             (Guid)response["id"],
             (string)response["name"],
-            (long)response["membership"],
+            (long)response["membershipnumber"],
             (long)response["contactdetails"]
         );
     }
