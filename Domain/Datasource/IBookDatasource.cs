@@ -4,7 +4,7 @@ namespace Opcion1LosBorbotones.Domain.Datasource;
 
 public interface IBookDatasource : ICrudOperations<Book>
 {
-    Task<IEnumerable<Book>> GetBookByTitleAsync(string title);
+    Task<IEnumerable<Book>> GetBooksByTitleAsync(string title);
     Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author);
     Task<Book?> GetBookByIsbnAsync(string isbn);
     Task<IEnumerable<Book>> GetBooksByGenreAsync(BookGenre genre);

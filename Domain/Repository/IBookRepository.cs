@@ -3,7 +3,7 @@ namespace Opcion1LosBorbotones.Domain.Repository;
 
 public interface IBookRepository : ICrudOperations<Book>
 {
-    Task<IEnumerable<Book>> GetBookByTitleAsync(string title);
+    Task<IEnumerable<Book>> GetBooksByTitleAsync(string title);
     Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author);
     Task<Book?> GetBookByIsbnAsync(string isbn);
     Task<IEnumerable<Book>> GetBooksByGenreAsync(BookGenre genre);
