@@ -12,12 +12,12 @@ public class BookDatasourceImplementation : IBookDatasource
     public async Task<Book> CreateAsync(Book entity)
     {
         const string query = """
-                             INSERT INTO Book (
-                                 id, title, author, isbn, genre, publicationYear
-                             ) VALUES (
-                                 @Id, @Title, @Author, @Isbn, @Genre, @PublicationYear
-                             ) RETURNING *
-                             """;
+                                 INSERT INTO Book (
+                                     id, title, author, isbn, genre, publicationYear
+                                 ) VALUES (
+                                     @Id, @Title, @Author, @Isbn, @Genre, @PublicationYear
+                                 ) RETURNING *
+                                 """;
             
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -63,14 +63,14 @@ public class BookDatasourceImplementation : IBookDatasource
     public async Task<Book> UpdateAsync(Book entity)
     {
         const string query = """
-                                         UPDATE Book
-                                         SET title = @Title,
-                                             author = @Author,
-                                             isbn = @Isbn,
-                                             genre = @Genre,
-                                             publicationYear = @PublicationYear
-                                         WHERE id = @Id
-                                         RETURNING *
+                                 UPDATE Book
+                                 SET title = @Title,
+                                     author = @Author,
+                                     isbn = @Isbn,
+                                     genre = @Genre,
+                                     publicationYear = @PublicationYear
+                                 WHERE id = @Id
+                                 RETURNING *
                              """;
             
         await using var connection = new NpgsqlConnection(_connectionString);
