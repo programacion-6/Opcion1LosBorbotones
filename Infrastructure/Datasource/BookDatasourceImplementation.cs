@@ -155,7 +155,7 @@ public class BookDatasourceImplementation : IBookDatasource
         return books;
     }
 
-    public async Task<Book?> GetBookByIsbnAsync(string isbn)
+    public async Task<Book?> GetBookByIsbnAsync(long isbn)
     {
         const string query = @"
             SELECT * FROM Book

@@ -10,7 +10,7 @@ public class Mapper
             (Guid)reader["id"],
             (string)reader["title"],
             (string)reader["author"],
-            (string)reader["isbn"],
+            (long)reader["isbn"],
             (BookGenre)(int)reader["genre"],
             (DateTime)reader["publicationyear"]
         );

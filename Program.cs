@@ -7,14 +7,14 @@ public class Program
     public static async Task Main(string[] args)
     {
         var repository = new BookRepositoryImplementation(new BookDatasourceImplementation());
-        IEnumerable<Book> books = await repository.GetBooksByTitleAsync("To Kill a Mockingbird");
+        IEnumerable<Book> books = await repository.GetBooksByTitleAsync("To Kill a Mockingbird"); //CHANGUE THE TITLE
         Console.WriteLine("Libros segun el titulo"); 
         foreach (var item in books)
         {
             Console.WriteLine(item); 
         }
         
-        var book = await repository.ReadAsync(new Guid("edbfaefd-ebdf-432d-987f-b767b975e4da"));
+        var book = await repository.ReadAsync(new Guid("edbfaefd-ebdf-432d-987f-b767b975e4da")); //CHANGE THE GUID 
         Console.WriteLine("libro segun el index: " + book);
     }
 }

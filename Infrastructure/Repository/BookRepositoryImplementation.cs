@@ -43,7 +43,7 @@ public class BookRepositoryImplementation : IBookRepository
         return await dataSource.GetBooksByAuthorAsync(author);
     }
 
-    public async Task<Book?> GetBookByIsbnAsync(string isbn)
+    public async Task<Book?> GetBookByIsbnAsync(long isbn)
     {
         return await dataSource.GetBookByIsbnAsync(isbn);
     }
