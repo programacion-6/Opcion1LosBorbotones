@@ -1,6 +1,6 @@
 CREATE TABLE BookGenre (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+   id SERIAL PRIMARY KEY,
+   name VARCHAR(50) NOT NULL
 );
 
 INSERT INTO BookGenre (name) VALUES
@@ -22,7 +22,7 @@ CREATE TABLE Book (
   id UUID PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   author VARCHAR(100) NOT NULL,
-  ISBN CHAR(13) NOT NULL UNIQUE,
+  ISBN BIGINT NOT NULL UNIQUE,
   genre INT REFERENCES BookGenre(id),
   publicationYear DATE NOT NULL
 );
@@ -50,9 +50,8 @@ CREATE TABLE Borrow (
 INSERT INTO Book (id, title, author, ISBN, genre, publicationYear)
 SELECT
     gen_random_uuid(),
-    (
-     ARRAY[
-         'The Great Gatsby',
+    (ARRAY[
+     'The Great Gatsby',
      'To Kill a Mockingbird',
      '1984',
      'Pride and Prejudice',
@@ -72,32 +71,29 @@ SELECT
      'The Grapes of Wrath',
      'Wuthering Heights',
      'Catch-22'
-         ]
-        )[floor(random() * 20 + 1)],
-    (
-      ARRAY[
-        'George Orwell',
-        'Harper Lee',
-        'F. Scott Fitzgerald',
-        'Jane Austen',
-        'J.D. Salinger',
-        'Herman Melville',
-        'Leo Tolstoy',
-        'Homer',
-        'J.R.R. Tolkien',
-        'Charlotte Brontë',
-        'Oscar Wilde',
-        'Fyodor Dostoevsky',
-        'Aldous Huxley',
-        'Khaled Hosseini',
-        'Cormac McCarthy',
-        'Ray Bradbury',
-        'John Steinbeck',
-        'Emily Brontë',
-        'Joseph Heller'
-      ]
-    )[floor(random() * 19 + 1)],
-    LPAD(floor(random() * 1000000000000)::text, 13, '0'),
+    ])[floor(random() * 20 + 1)],
+    (ARRAY[
+     'George Orwell',
+     'Harper Lee',
+     'F. Scott Fitzgerald',
+     'Jane Austen',
+     'J.D. Salinger',
+     'Herman Melville',
+     'Leo Tolstoy',
+     'Homer',
+     'J.R.R. Tolkien',
+     'Charlotte Brontë',
+     'Oscar Wilde',
+     'Fyodor Dostoevsky',
+     'Aldous Huxley',
+     'Khaled Hosseini',
+     'Cormac McCarthy',
+     'Ray Bradbury',
+     'John Steinbeck',
+     'Emily Brontë',
+     'Joseph Heller'
+    ])[floor(random() * 19 + 1)],
+    floor(random() * 9000000000000 + 1000000000000)::bigint,
     floor(random() * 6 + 1)::int,
     timestamp '2020-01-01' + random() * (timestamp '2023-12-31' - timestamp '2020-01-01')
 FROM generate_series(1, 20);
@@ -105,9 +101,8 @@ FROM generate_series(1, 20);
 INSERT INTO Patron (id, name, membershipNumber, contactDetails)
 SELECT
     gen_random_uuid(),
-    (
-     ARRAY[
-         'John Smith',
+    (ARRAY[
+     'John Smith',
      'Jane Doe',
      'Emily Johnson',
      'Michael Brown',
@@ -127,8 +122,7 @@ SELECT
      'Benjamin Clark',
      'Isabella Lewis',
      'Lucas Walker'
-     ]
-    )[floor(random() * 20 + 1)],
+    ])[floor(random() * 20 + 1)],
     trunc(random() * 100000)::int,
     trunc(random() * 100000)::int
 FROM generate_series(1, 20);
