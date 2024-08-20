@@ -56,8 +56,42 @@ Donde vemos que mi repository hace uso del datasource en forma de puente, mientr
 
 El motivo de esta estructura se detallara al momento de hablar del datasource y repository pattern
 
-## Datasource and Repository Pattern
+## Command Pattern
+![SearcherAndReportInterface](./images/searcher_report_interface.png)
+![ReportImpl](./images/report_impl.png)
+![SearchImpl](./images/search_impl.png)
 
+Utilizamos el patrón Command para estructurar la lógica del buscador y la generacion de reportes. 
+A continuación, se describe cómo se implementa:
+
+1. Interfaz ICommand:
+
+Define el metodo Execute(), que es implementado por todos los comandos concretos.
+Provee una interfaz común para ejecutar diversas operaciones sin conocer sus detalles.
+
+2. Interfaz IReport:
+
+Implementa la interfaz ICommand.
+Agrega el método GenerateReport(), que debe ser implementado por cualquier clase que genere un reporte especifico.
+
+3. Interfaz ISearcher:
+
+También implementa la interfaz ICommand.
+Define el metodo Search(criteria), que debe ser implementado por cualquier clase que realice una operacion de busqueda
+basada en criterios específicos.
+
+4. Clases Concretas de Reporte:
+
+- ReportBooksBorrowed: Implementa IReport para generar un reporte de libros prestados.
+- ReportBooksOverdue: Implementa IReport para generar un reporte de libros vencidos.
+- ReportPatronBorrowed: Implementa IReport para generar un reporte de los libros prestados a un usuario específico.
+
+5. Clases Concretas de Búsqueda:
+
+- PatronSearcher: Implementa ISearcher para buscar usuarios segun criterios específicos.
+- BookSearcher: Implementa ISearcher para buscar libros basándose en criterios definidos.
+## Datasource and Repository Pattern
+!
 Este es un patron clave para nuestra arquitectura DDD ya que podremos abstraer la logica del negocio de la fuenta de datos. Esto nos sirve para tener un codigo mucho mas mantenible, ya que el momento en que queramos cambiar de fuente de datos, podremos hacerlo de una forma sencilla y facil, solo implementando la interfaz datasource, mientras que solo tendremos un repository que sera el intermediario entre nuestra UI y el Datsource.
 
 De esta forma al momento de cambiar de fuente de datos no tendremos que hacer grandes cambios al codigo, simplemente deberia pasarle el datasource a mi repository y ahi terminaria mi trabajo, no tendria que tocar nada de la UI. (A menos que cambie la logica del negocio a grandes rasgos)
