@@ -1,16 +1,28 @@
 using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Datasource;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Infrastructure.Datasource;
 
 namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
 public class BookRepositoryImplementation : IBookRepository
 {
     private readonly IBookDatasource _dataSource;
+    private static BookRepositoryImplementation? _instance;
 
     public BookRepositoryImplementation(IBookDatasource dataSource)
     {
         this._dataSource = dataSource;
+    }
+
+    public static BookRepositoryImplementation GetInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new BookRepositoryImplementation(new BookDatasourceImplementation());
+        }
+
+        return _instance;
     }
 
     public async Task<Book> CreateAsync(Book entity)

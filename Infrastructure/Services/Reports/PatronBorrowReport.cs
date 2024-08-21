@@ -5,15 +5,15 @@ using Opcion1LosBorbotones.Infrastructure.Repository;
 
 namespace Opcion1LosBorbotones.Infrastructure.Services.Reports;
 
-public class BorrowStatusReport : IReport<BorrowStatus>
+public class PatronBorrowReport : IReport<Guid>
 {
-    BorrowRepositoryImplementation repository = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
-    
-    public async Task<string> GenerateReport(BorrowStatus borrowStatus)
+    BorrowRepositoryImplementation repository = BorrowRepositoryImplementation.GetInstance();
+
+    public async Task<string> GenerateReport(Guid patronId)
     {
         StringBuilder report = new StringBuilder();
-        IEnumerable<Borrow> borrows = await repository.GetBorrowsByStatus(borrowStatus);
-        
+        IEnumerable<Borrow> borrows = await repository.GetBorrowsByPatron(patronId);
+
         foreach (var borrow in borrows)
         {
             report.AppendLine(borrow.ToString());

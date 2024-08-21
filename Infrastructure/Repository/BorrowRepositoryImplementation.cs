@@ -1,18 +1,29 @@
 using Opcion1LosBorbotones.Domain.Datasource;
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Infrastructure.Datasource;
 
 namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
 public class BorrowRepositoryImplementation : IBorrowRepository
 {
     private readonly IBorrowDatasource _dataSource;
+    private static BorrowRepositoryImplementation _instance;
 
     public BorrowRepositoryImplementation(IBorrowDatasource dataSource)
     {
         _dataSource = dataSource;
     }
-
+    
+    public static BorrowRepositoryImplementation GetInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
+        }
+        return _instance;
+    }
+    
     public async Task<Borrow> CreateAsync(Borrow entity)
     {
         return await _dataSource.CreateAsync(entity);

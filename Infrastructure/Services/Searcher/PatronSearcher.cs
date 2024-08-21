@@ -8,7 +8,7 @@ namespace Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 
 public class PatronSearcher : ISearcher
 {
-    private readonly PatronRepositoryImplementation _repository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
+    private readonly PatronRepositoryImplementation _repository = PatronRepositoryImplementation.GetInstance();
 
     public IEnumerable<Patron> SearchPatronByName(string searchString)
     {

@@ -8,8 +8,7 @@ namespace Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 
 public class BookSearcher : ISearcher
 {
-    private BookRepositoryImplementation repository =
-        new BookRepositoryImplementation(new BookDatasourceImplementation());
+    private BookRepositoryImplementation repository = BookRepositoryImplementation.GetInstance();
     
     public Task<IEnumerable<Book>> SearchBookByTile(string searchString)
     {
