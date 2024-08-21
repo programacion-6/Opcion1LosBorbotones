@@ -1,23 +1,44 @@
-﻿using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Infrastructure.Datasource;
-using Opcion1LosBorbotones.Infrastructure.Repository;
+﻿using Opcion1LosBorbotones.Domain;
+using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
-        var repository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
-        IEnumerable<Patron> patrons = await repository.GetPatronsByNameAsync("Ava Martinez"); //CHANGUE THE NAME
+        var PatronSearcher = new PatronSearcher();
+        IEnumerable<Patron> patrons = PatronSearcher.SearchPatronByName("Ethan Thomas"); //CHANGUE THE NAME
         Console.WriteLine("Patrons segun el nombre:"); 
-        foreach (var person in patrons)
+        foreach (var patron in patrons)
         {
-            Console.WriteLine(person); 
+            Console.WriteLine($"ID: {patron.Id}, Nombre: {patron.Name}, Membresía: {patron.MembershipNumber}");
+        }
+
+        Task<Patron?> patorn = PatronSearcher.SearchPatronByMembershipNumber(1759764659);
+        Console.WriteLine("Patron segun membershipNumber: ");
+        Console.WriteLine(patorn?.Result);
+        
+        var BookSearcher = new BookSearcher();
+        Task<IEnumerable<Book>> booksTaskTitle = BookSearcher.SearchBookByTile("The Grapes of Wrath");
+        IEnumerable<Book> booksByTitle = await booksTaskTitle;
+        
+        Console.WriteLine("Books segun el titulo:");
+        foreach (var book in booksByTitle)
+        {
+            Console.WriteLine(book.ToString());
         }
         
-        var patron = await repository.ReadAsync(new Guid("84d0e829-8010-4d20-8d6b-dbae2a49f25a")); //CHANGE THE GUID 
-        Console.WriteLine("patron segun el id: " + patron);
+        Task<IEnumerable<Book>> booksTaskAuthor = BookSearcher.SearchBookByAuthor("Harper Lee");
+        IEnumerable<Book> booksByAuthor = await booksTaskAuthor;
         
-        patron = await repository.GetPatronByMembershipAsync(1069058676); //CHANGE THE MEMBERSHIP
-        Console.WriteLine("libro segun el membership number: " + patron);
+        Console.WriteLine("Books segun el autor:");
+        foreach (var book in booksByAuthor)
+        {
+            Console.WriteLine(book.ToString());
+        }
+        
+        Task<Book?> bookByIsbn = BookSearcher.SearchBookByIsbn(3206890312313);
+        Console.WriteLine("Books segun el ISBN:");
+        Console.WriteLine(bookByIsbn?.Result);
     }
 }
