@@ -1,3 +1,4 @@
+using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -24,8 +25,8 @@ public class MainMenu
                         "1. Books",
                         "2. Patrons",
                         "3. Borrow",
-                        "6. Reports",
-                        "7. Exit"
+                        "4. Reports",
+                        "5. Exit"
                     })
             );
 
@@ -38,12 +39,11 @@ public class MainMenu
                     PatronOptions.PatronInitialOptions();
                     break;
                 case "3. Borrow":
+                    BorrowOptions.BorrowInitialOptions();
                     break;
-                case "4. Search":
+                case "4. Reports":
                     break;
-                case "5. Reports":
-                    break;
-                case "6. Exit":
+                case "5. Exit":
                     AnsiConsole.Clear();
                     exit = true;
                     break;
