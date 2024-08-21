@@ -2,12 +2,14 @@ using Npgsql;
 using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Datasource;
 using Opcion1LosBorbotones.Infrastructure.Services;
+using Opcion1LosBorbotones.Infrastructure.Services.Mapper;
 
 namespace Opcion1LosBorbotones.Infrastructure.Datasource;
 
 public class BookDatasourceImplementation : IBookDatasource
 {
-    private readonly string _connectionString = "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
+    private readonly string _connectionString = 
+        "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
 
     public async Task<Book> CreateAsync(Book entity)
     {
@@ -33,7 +35,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return Mapper.ReaderToBookEntity(reader);
+            return MapperImplementation.ToBookEntity(reader);
         }
 
         throw new Exception("Failed to create the book.");
@@ -54,7 +56,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return Mapper.ReaderToBookEntity(reader);
+            return MapperImplementation.ToBookEntity(reader);
         }
 
         return null;
@@ -87,7 +89,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return Mapper.ReaderToBookEntity(reader);
+            return MapperImplementation.ToBookEntity(reader);
         }
 
         throw new Exception("Failed to update the book.");
@@ -126,7 +128,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(Mapper.ReaderToBookEntity(reader));
+            books.Add(MapperImplementation.ToBookEntity(reader));
         }
 
         return books;
@@ -149,7 +151,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(Mapper.ReaderToBookEntity(reader));
+            books.Add(MapperImplementation.ToBookEntity(reader));
         }
 
         return books;
@@ -170,7 +172,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return Mapper.ReaderToBookEntity(reader);
+            return MapperImplementation.ToBookEntity(reader);
         }
 
         return null;
@@ -193,7 +195,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(Mapper.ReaderToBookEntity(reader));
+            books.Add(MapperImplementation.ToBookEntity(reader));
         }
 
         return books;
@@ -216,7 +218,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(Mapper.ReaderToBookEntity(reader));
+            books.Add(MapperImplementation.ToBookEntity(reader));
         }
 
         return books;

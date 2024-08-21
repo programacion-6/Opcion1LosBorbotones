@@ -14,8 +14,8 @@ INSERT INTO BookGenre (name) VALUES
 CREATE TABLE Patron (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    membershipNumber INT NOT NULL UNIQUE,
-    contactDetails INT NOT NULL
+    membershipNumber BIGINT NOT NULL UNIQUE,
+    contactDetails BIGINT NOT NULL
 );
 
 CREATE TABLE Book (
@@ -123,8 +123,8 @@ SELECT
      'Isabella Lewis',
      'Lucas Walker'
     ])[floor(random() * 20 + 1)],
-    trunc(random() * 100000)::int,
-    trunc(random() * 100000)::int
+    floor(random() * 900000000 + 1000000000)::bigint,
+    ('591' || floor(random() * 10000000 + 10000000)::text)::bigint
 FROM generate_series(1, 20);
 
 INSERT INTO Borrow (id, patron, book, borrowStatus, dueDate, borrowDate)
