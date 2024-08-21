@@ -211,7 +211,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("Genre", (int)genre);
+        command.Parameters.AddWithValue("Genre", (int)genre+1);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())

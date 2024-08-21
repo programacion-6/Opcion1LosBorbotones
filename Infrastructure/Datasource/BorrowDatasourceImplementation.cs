@@ -175,7 +175,7 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("Status", (int)status);
+        command.Parameters.AddWithValue("Status", (int)status+1);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
