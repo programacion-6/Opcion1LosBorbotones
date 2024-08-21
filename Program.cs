@@ -1,5 +1,7 @@
 using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Infrastructure.Datasource;
+using Opcion1LosBorbotones.Infrastructure.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 
 public class Program
