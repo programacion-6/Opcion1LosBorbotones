@@ -9,26 +9,33 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        ReportBooksBorrowed reportBooksBorrowed = new ReportBooksBorrowed();
+        ReportBooksStatus reportBooksStatus = new ReportBooksStatus();
+        ReportPatronBorrowed reportPatronBorrowed = new ReportPatronBorrowed();
         
         Console.WriteLine("Libros prestados");
-        string reportBorrowed = await reportBooksBorrowed.GenerateReport(BorrowStatus.Borrowed);
+        string reportBorrowed = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Borrowed);
         
         Console.WriteLine(reportBorrowed); 
         
         Console.WriteLine("Libros atrasados");
-        string reportOverdue = await reportBooksBorrowed.GenerateReport(BorrowStatus.Overdue);
+        string reportOverdue = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Overdue);
         
         Console.WriteLine(reportOverdue); 
         
         Console.WriteLine("Libros Retornados");
-        string reportrReturned = await reportBooksBorrowed.GenerateReport(BorrowStatus.Returned);
+        string reportrReturned = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Returned);
         
         Console.WriteLine(reportrReturned); 
         
         Console.WriteLine("Libros Reservados");
-        string reportrReservados = await reportBooksBorrowed.GenerateReport(BorrowStatus.Reserved);
+        string reportrReservados = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Reserved);
         
-        Console.WriteLine(reportrReservados); 
+        Console.WriteLine(reportrReservados);
+        
+        Guid patronId = new Guid("a151be6c-030a-4d47-9413-d1e7f7770383");
+        string reportPatronBorrowedList = await reportPatronBorrowed.GeneratePatronBorrowReport(patronId);
+        Console.WriteLine("Prestamos de un patron");
+        
+        Console.WriteLine(reportPatronBorrowedList);
     }
 }
