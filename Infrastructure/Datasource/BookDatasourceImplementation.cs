@@ -35,7 +35,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToBookEntity(reader);
+            return BookMapper.ToEntity(reader);
         }
 
         throw new Exception("Failed to create the book.");
@@ -56,7 +56,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToBookEntity(reader);
+            return BookMapper.ToEntity(reader);
         }
 
         return null;
@@ -89,7 +89,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToBookEntity(reader);
+            return BookMapper.ToEntity(reader);
         }
 
         throw new Exception("Failed to update the book.");
@@ -111,6 +111,27 @@ public class BookDatasourceImplementation : IBookDatasource
         return rowsAffected > 0;
     }
 
+    public async Task<IEnumerable<Book>> GetAllAsync()
+    {
+        const string query = @"
+        SELECT * FROM Book";
+        
+        var books = new List<Book>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(query, connection);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            books.Add(BookMapper.ToEntity(reader));
+        }
+
+        return books;
+    }
+
     public async Task<IEnumerable<Book>> GetBooksByTitleAsync(string title)
     {
         const string query = @"
@@ -128,7 +149,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(MapperImplementation.ToBookEntity(reader));
+            books.Add(BookMapper.ToEntity(reader));
         }
 
         return books;
@@ -151,7 +172,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(MapperImplementation.ToBookEntity(reader));
+            books.Add(BookMapper.ToEntity(reader));
         }
 
         return books;
@@ -172,7 +193,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToBookEntity(reader);
+            return BookMapper.ToEntity(reader);
         }
 
         return null;
@@ -195,7 +216,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(MapperImplementation.ToBookEntity(reader));
+            books.Add(BookMapper.ToEntity(reader));
         }
 
         return books;
@@ -218,7 +239,7 @@ public class BookDatasourceImplementation : IBookDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            books.Add(MapperImplementation.ToBookEntity(reader));
+            books.Add(BookMapper.ToEntity(reader));
         }
 
         return books;

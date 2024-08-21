@@ -31,7 +31,7 @@ public class PatronDatasourceImplementation : IPatronDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToPatronEntity(reader);
+            return PatronMapper.ToEntity(reader);
         }
 
         throw new Exception("Failed to create the patron.");
@@ -50,7 +50,7 @@ public class PatronDatasourceImplementation : IPatronDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToPatronEntity(reader);
+            return PatronMapper.ToEntity(reader);
         }
 
         return null;
@@ -79,7 +79,7 @@ public class PatronDatasourceImplementation : IPatronDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToPatronEntity(reader);
+            return PatronMapper.ToEntity(reader);
         }
 
         throw new Exception("Failed to update the patron.");
@@ -99,6 +99,27 @@ public class PatronDatasourceImplementation : IPatronDatasource
         return rowsAffected > 0;
     }
 
+    public async Task<IEnumerable<Patron>> GetAllAsync()
+    {
+        const string query = "SELECT * FROM Patron;";
+
+        var patrons = new List<Patron>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(query, connection);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            patrons.Add(PatronMapper.ToEntity(reader));
+        }
+
+        return patrons;
+    }
+
+
     public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name)
     {
         const string query = "SELECT * FROM Patron WHERE name = @Name;";
@@ -114,7 +135,7 @@ public class PatronDatasourceImplementation : IPatronDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            patrons.Add(MapperImplementation.ToPatronEntity(reader));
+            patrons.Add(PatronMapper.ToEntity(reader));
         }
 
         return patrons;
@@ -133,7 +154,7 @@ public class PatronDatasourceImplementation : IPatronDatasource
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
         {
-            return MapperImplementation.ToPatronEntity(reader);
+            return PatronMapper.ToEntity(reader);
         }
 
         return null;
@@ -154,7 +175,7 @@ public class PatronDatasourceImplementation : IPatronDatasource
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            patrons.Add(MapperImplementation.ToPatronEntity(reader));
+            patrons.Add(PatronMapper.ToEntity(reader));
         }
 
         return patrons;

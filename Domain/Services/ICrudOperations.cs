@@ -8,5 +8,6 @@ public interface ICrudOperations<T> where T : IEntity
     Task<T?> ReadAsync(Guid id);
     Task<T> UpdateAsync(T entity);
     Task<bool> DeleteAsync(Guid id);
+    Task<IEnumerable<T>> GetAllAsync();
 }
 

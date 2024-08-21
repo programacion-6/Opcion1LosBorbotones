@@ -127,12 +127,20 @@ SELECT
     ('591' || floor(random() * 10000000 + 10000000)::text)::bigint
 FROM generate_series(1, 20);
 
+WITH RandomPatrons AS (
+    SELECT id, ROW_NUMBER() OVER () as rn FROM Patron ORDER BY random()
+    ),
+     RandomBooks AS (
+         SELECT id, ROW_NUMBER() OVER () as rn FROM Book ORDER BY random()
+    )
 INSERT INTO Borrow (id, patron, book, borrowStatus, dueDate, borrowDate)
 SELECT
     gen_random_uuid(),
-    (SELECT id FROM Patron ORDER BY random() LIMIT 1),
-    (SELECT id FROM Book ORDER BY random() LIMIT 1),
-    floor(random() * 4 + 1)::int,
+    p.id,
+    b.id,
+    floor(random() * 4 + 1)::int, 
     timestamp '2023-01-01' + random() * (timestamp '2023-12-31' - timestamp '2023-01-01'),
     timestamp '2022-01-01' + random() * (timestamp '2023-01-01' - timestamp '2022-01-01')
-FROM generate_series(1, 10);
+FROM generate_series(1, 10) AS gs
+    JOIN RandomPatrons p ON p.rn = gs
+    JOIN RandomBooks b ON b.rn = gs;
