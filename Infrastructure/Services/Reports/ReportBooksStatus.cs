@@ -5,11 +5,11 @@ using Opcion1LosBorbotones.Infrastructure.Repository;
 
 namespace Opcion1LosBorbotones.Infrastructure.Services.Reports;
 
-public class ReportBooksStatus : IReport
+public class BorrowStatusReport : IReport<BorrowStatus>
 {
     BorrowRepositoryImplementation repository = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
     
-    public async Task<string> GenerateBorrowStatusReport(BorrowStatus borrowStatus)
+    public async Task<string> GenerateReport(BorrowStatus borrowStatus)
     {
         StringBuilder report = new StringBuilder();
         IEnumerable<Borrow> borrows = await repository.GetBorrowsByStatus(borrowStatus);
@@ -20,10 +20,5 @@ public class ReportBooksStatus : IReport
         }
 
         return report.ToString();
-    }
-
-    public Task<string> GeneratePatronBorrowReport(Guid patronId)
-    {
-        throw new NotSupportedException("GenerateBorrowStatusReport is not supported in GeneratePatronBorrowReport.");
     }
 }

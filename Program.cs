@@ -1,41 +1,33 @@
-using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Infrastructure.Datasource;
-using Opcion1LosBorbotones.Infrastructure.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Reports;
-using Opcion1LosBorbotones.Infrastructure.Services.Searcher;
+
 
 public class Program
 {
     public static async Task Main(string[] args)
     {
-        ReportBooksStatus reportBooksStatus = new ReportBooksStatus();
-        ReportPatronBorrowed reportPatronBorrowed = new ReportPatronBorrowed();
+        BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
+        PatronBorrowReport patronBorrowReport = new PatronBorrowReport();
         
         Console.WriteLine("Libros prestados");
-        string reportBorrowed = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Borrowed);
-        
+        string reportBorrowed = await borrowStatusReport.GenerateReport(BorrowStatus.Borrowed);
         Console.WriteLine(reportBorrowed); 
         
         Console.WriteLine("Libros atrasados");
-        string reportOverdue = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Overdue);
-        
+        string reportOverdue = await borrowStatusReport.GenerateReport(BorrowStatus.Overdue);
         Console.WriteLine(reportOverdue); 
         
         Console.WriteLine("Libros Retornados");
-        string reportrReturned = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Returned);
-        
-        Console.WriteLine(reportrReturned); 
+        string reportReturned = await borrowStatusReport.GenerateReport(BorrowStatus.Returned);
+        Console.WriteLine(reportReturned); 
         
         Console.WriteLine("Libros Reservados");
-        string reportrReservados = await reportBooksStatus.GenerateBorrowStatusReport(BorrowStatus.Reserved);
-        
-        Console.WriteLine(reportrReservados);
+        string reportReserved = await borrowStatusReport.GenerateReport(BorrowStatus.Reserved);
+        Console.WriteLine(reportReserved);
         
         Guid patronId = new Guid("a151be6c-030a-4d47-9413-d1e7f7770383");
-        string reportPatronBorrowedList = await reportPatronBorrowed.GeneratePatronBorrowReport(patronId);
+        string reportPatronBorrowedList = await patronBorrowReport.GenerateReport(patronId);
         Console.WriteLine("Prestamos de un patron");
-        
         Console.WriteLine(reportPatronBorrowedList);
     }
 }
