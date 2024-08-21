@@ -8,13 +8,13 @@ namespace Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 
 public class PatronSearcher : ISearcher
 {
-    private PatronRepositoryImplementation repository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
+    private readonly PatronRepositoryImplementation _repository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
 
     public IEnumerable<Patron> SearchPatronByName(string searchString)
     {
         try
         {
-            IEnumerable<Patron> patrons = repository.GetPatronsByNameAsync(searchString).Result;
+            IEnumerable<Patron> patrons = _repository.GetPatronsByNameAsync(searchString).Result;
 
             if (!patrons.Any())
             {
@@ -26,7 +26,7 @@ public class PatronSearcher : ISearcher
         catch (Exception ex)
         {
             Console.WriteLine($"An exception was made: {ex.Message}");
-            throw;
+            return new List<Patron>();
         }
         
     }
@@ -35,7 +35,7 @@ public class PatronSearcher : ISearcher
     {
         try
         {
-            var patron = repository.GetPatronByMembershipAsync(searchLong).Result;
+            var patron = _repository.GetPatronByMembershipAsync(searchLong).Result;
             if (patron == null)
             {
                 throw new InvalidOperationException("No pattern were found with the membership number provided.");
@@ -47,7 +47,7 @@ public class PatronSearcher : ISearcher
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            return null;
         }
     }
 
