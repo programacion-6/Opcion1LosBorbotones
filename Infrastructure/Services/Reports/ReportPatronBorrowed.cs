@@ -7,7 +7,7 @@ namespace Opcion1LosBorbotones.Infrastructure.Services.Reports;
 
 public class PatronBorrowReport : IReport<Guid>
 {
-    BorrowRepositoryImplementation repository = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
+    BorrowRepositoryImplementation repository = BorrowRepositoryImplementation.GetInstance();
 
     public async Task<string> GenerateReport(Guid patronId)
     {

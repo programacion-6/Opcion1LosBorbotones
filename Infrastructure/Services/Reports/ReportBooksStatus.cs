@@ -7,7 +7,7 @@ namespace Opcion1LosBorbotones.Infrastructure.Services.Reports;
 
 public class BorrowStatusReport : IReport<BorrowStatus>
 {
-    BorrowRepositoryImplementation repository = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
+    BorrowRepositoryImplementation repository = BorrowRepositoryImplementation.GetInstance();
     
     public async Task<string> GenerateReport(BorrowStatus borrowStatus)
     {
