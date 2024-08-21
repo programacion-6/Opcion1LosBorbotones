@@ -12,7 +12,6 @@ public class MainMenu
         while (exit == false)
         {
             AnsiConsole.Clear();
-           
             Header.AppHeader();
             
             AnsiConsole.MarkupLine("[bold yellow]Menu[/]");
@@ -33,7 +32,7 @@ public class MainMenu
             switch (option)
             {
                 case "1. Books":
-                    BookOptions.BookInitialOptions();
+                     BookOptions.BookInitialOptions();
                     break;
                 case "2. Patrons":
                     break;
@@ -55,6 +54,7 @@ public class MainMenu
         ShowProgressBar();
         InitialMainMenu();
     }
+    
     public static void ShowProgressBar()
     {
         AnsiConsole.Progress()

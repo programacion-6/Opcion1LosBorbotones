@@ -23,9 +23,9 @@ public class BookSearcher : ISearcher
         return books;
     }
 
-    public Task<Book?> SearchBookByIsbn(long searchString)
+    public Task<Book?> SearchBookByIsbn(long searchLong)
     {
-        var book = repository.GetBookByIsbnAsync(searchString);
+        var book = repository.GetBookByIsbnAsync(searchLong);
 
         return book;
     }
