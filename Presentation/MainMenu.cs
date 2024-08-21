@@ -1,4 +1,5 @@
 using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Presentation.Reports;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -42,6 +43,7 @@ public class MainMenu
                     BorrowOptions.BorrowInitialOptions();
                     break;
                 case "4. Reports":
+                    ReportsOptions.ReportInitialOptions();
                     break;
                 case "5. Exit":
                     AnsiConsole.Clear();
@@ -66,7 +68,7 @@ public class MainMenu
                 while (!ctx.IsFinished)
                 {
                     myTask.Increment(10);
-                    Thread.Sleep(50);
+                    Thread.Sleep(150);
                 }
             });
     }
