@@ -103,3 +103,13 @@ Un ejemplo de este patron puede ser el siguiente:
 Donde se detalla lo anteriormente mencionado, tendremos una base de datos X, tendre datasources que sabran como comunicarse con esa base de datos, puedo tener multiple datasources para cada base de datos, ese datasource se lo pasara al repository que sera UNICO y el repository comunicara a la APP con la informacion solicitada
 
 Esta parte no necesita una imagen de ejemplo porque se ve reflejado en gran parte de nuestro UML
+
+## Singleton Pattern
+
+Tambien hicimos uso del singleton pattern para nuestras implementaciones de repositorio, esto porque solo tendremos UN REPOSITORIO por cada entidad que manejemos y para evitarnos el estar instanciando la misma clase una y otra vez, decidimos usar el Singleton Pattern. Para que asi nuestro proyecto sea aun MENOS DEPENDIENTE.
+
+Antes cada instancia de la implementacion del repositorio tenia que crear consigo una instancia del datasource que usemos, pero esto rompia con nuestra logica del Repository Pattern, ya que el rato que queramos cambiar de datasource tendriamos que buscar todas las clases donde instanciamos el repositorio para cambiarle la fuente de datos, cosa que a la larga resultaria muy tedioso de mantener. Mientras que si usamos Singleton y todas las clases que necesiten de esta llamen a su instancia, al momento de querer camiar la fuente de datos, solo deberemos cambiar esta en la linea de codigo donde creamos la instancia y ya no en varios lugares del codigo.
+
+![ReportImpl](./images/singleton.png)
+
+Asi se ve ahora nuestras clases aplicando Singleton
