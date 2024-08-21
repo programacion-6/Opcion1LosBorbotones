@@ -57,7 +57,6 @@ public class BookOptions
     {
         AnsiConsole.Clear();
         Header.AppHeader();
-
         AnsiConsole.MarkupLine("[bold yellow]Register a new book[/]");
 
         Guid bookId = Guid.NewGuid();
@@ -72,7 +71,7 @@ public class BookOptions
                 .AddChoices(Enum.GetValues<BookGenre>())
         );
 
-        AnsiConsole.MarkupLine($"[bold green]Review the book details before confirming:[/]");
+        AnsiConsole.MarkupLine("[bold green]Review the book details before confirming:[/]");
         AnsiConsole.MarkupLine($"[bold]Title:[/] {bookTitle}");
         AnsiConsole.MarkupLine($"[bold]Author:[/] {bookAuthor}");
         AnsiConsole.MarkupLine($"[bold]ISBN:[/] {bookIsbn}");
@@ -83,7 +82,7 @@ public class BookOptions
         if (confirm)
         {
             Book newBook = new Book(bookId, bookTitle, bookAuthor, bookIsbn, bookGenre, bookPublicationYear);
-            repository.CreateAsync(newBook).GetAwaiter().GetResult(); // Espera síncrona
+            repository.CreateAsync(newBook).GetAwaiter().GetResult();
             AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {newBook}");
         }
         else
@@ -99,7 +98,6 @@ public class BookOptions
     {
         AnsiConsole.Clear();
         Header.AppHeader();
-
         AnsiConsole.MarkupLine("[bold red]Delete a book[/]");
 
         string bookId = AnsiConsole.Ask<string>("Enter the book ID: ");
@@ -144,7 +142,7 @@ public class BookOptions
         {
             case "1. Search Book By Title":
                 string bookTitle = AnsiConsole.Ask<string>("Book title: ");
-                var booksByTitle = bookSearcher.SearchBookByTile(bookTitle).GetAwaiter().GetResult(); // Espera síncrona
+                var booksByTitle = bookSearcher.SearchBookByTile(bookTitle).GetAwaiter().GetResult();
 
                 AnsiConsole.MarkupLine("[bold]Books:[/]");
                 foreach (var book in booksByTitle)

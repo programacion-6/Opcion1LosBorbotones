@@ -11,7 +11,7 @@ public class Header
                 .Centered()
                 .Color(Color.Aqua));
         
-        var panel = new Panel("[green]Samuel Escalera \n Diego Figuera[/]");
+        var panel = new Panel("[green]Samuel Escalera \n Diego Figuera \n Bianca Soliz[/]");
         panel.Header = new PanelHeader("BY");
         AnsiConsole.Write(panel);
     }

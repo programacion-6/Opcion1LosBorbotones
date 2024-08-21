@@ -35,14 +35,16 @@ public class MainMenu
                      BookOptions.BookInitialOptions();
                     break;
                 case "2. Patrons":
+                    PatronOptions.PatronInitialOptions();
                     break;
                 case "3. Borrow":
                     break;
-                case "5. Search":
+                case "4. Search":
                     break;
-                case "6. Reports":
+                case "5. Reports":
                     break;
-                case "7. Exit":
+                case "6. Exit":
+                    AnsiConsole.Clear();
                     exit = true;
                     break;
             }
