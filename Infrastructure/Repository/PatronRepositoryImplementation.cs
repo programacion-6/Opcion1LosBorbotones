@@ -1,16 +1,28 @@
 using Opcion1LosBorbotones.Domain.Datasource;
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Infrastructure.Datasource;
 
 namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
 public class PatronRepositoryImplementation : IPatronRepository
 {
     private readonly IPatronDatasource _dataSource;
+    private static PatronRepositoryImplementation _instance;
 
     public PatronRepositoryImplementation(IPatronDatasource dataSource)
     {
         _dataSource = dataSource;
+    }
+    
+    public static PatronRepositoryImplementation GetInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
+        }
+
+        return _instance;
     }
     
     public async Task<Patron> CreateAsync(Patron entity)
