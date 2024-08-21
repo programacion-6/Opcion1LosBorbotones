@@ -6,18 +6,25 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var repository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
-        IEnumerable<Patron> patrons = await repository.GetPatronsByNameAsync("Ava Martinez"); //CHANGUE THE NAME
-        Console.WriteLine("Patrons segun el nombre:"); 
-        foreach (var person in patrons)
+        var repository = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
+        var patronRepository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
+        var bookRepository = new BookRepositoryImplementation(new BookDatasourceImplementation());
+        IEnumerable<Borrow> borrows = await repository.GetBorrowsByStatus(BorrowStatus.Borrowed); //CHANGUE THE STATUS
+        Console.WriteLine("Borrows segun el status:"); 
+        foreach (var item in borrows)
         {
-            Console.WriteLine(person); 
+            Console.WriteLine(item); 
         }
+
         
-        var patron = await repository.ReadAsync(new Guid("84d0e829-8010-4d20-8d6b-dbae2a49f25a")); //CHANGE THE GUID 
-        Console.WriteLine("patron segun el id: " + patron);
-        
-        patron = await repository.GetPatronByMembershipAsync(1069058676); //CHANGE THE MEMBERSHIP
-        Console.WriteLine("libro segun el membership number: " + patron);
+
+        IEnumerable<Borrow> allBorrows = await repository.GetAllAsync();
+        foreach (var borrow in allBorrows)
+        {
+            var patron = await patronRepository.ReadAsync(borrow.PatronId);
+            var book = await bookRepository.ReadAsync(borrow.BookId);
+            Console.WriteLine("El patron: " + patron.Name + " hizo el prestamo del libro:  " + book.Title + " y el estado es: " + borrow.Status);
+        }
+
     }
 }

@@ -33,6 +33,12 @@ public class PatronRepositoryImplementation : IPatronRepository
         return await _dataSource.DeleteAsync(id);
     }
 
+    public async Task<IEnumerable<Patron>> GetAllAsync()
+    {
+        return await _dataSource.GetAllAsync();
+
+    }
+
     public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name)
     {
         return await _dataSource.GetPatronsByNameAsync(name);

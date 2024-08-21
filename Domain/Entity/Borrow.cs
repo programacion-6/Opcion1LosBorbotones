@@ -3,17 +3,17 @@ namespace Opcion1LosBorbotones.Domain.Entity;
 public class Borrow : IEntity
 {
     public Guid Id { get; }
-    public Patron Patron { get; }
-    public Book Book { get; }
+    public Guid PatronId { get; }
+    public Guid BookId { get; }
     public BorrowStatus Status { get; }
     public DateTime DueDate { get; }
     public DateTime BorrowDate { get; }
 
-    public Borrow(Guid id, Patron patron, Book book, BorrowStatus status, DateTime dueDate, DateTime borrowDate)
+    public Borrow(Guid id, Guid patronId, Guid bookId, BorrowStatus status, DateTime dueDate, DateTime borrowDate)
     {
         Id = id;
-        Patron = patron;
-        Book = book;
+        PatronId = patronId;
+        BookId = bookId;
         Status = status;
         DueDate = dueDate;
         BorrowDate = borrowDate;
@@ -21,6 +21,6 @@ public class Borrow : IEntity
     
     public override string ToString()
     {
-        return $"Patron: {Patron}, Book: {Book}, BorrowStatus: {Status}, DueDate: {DueDate:yyyy-MM-dd}, BorrowDate: {BorrowDate:yyyy-MM-dd}";
+        return $"Patron: {PatronId}, Book: {BookId}, BorrowStatus: {Status}, DueDate: {DueDate:yyyy-MM-dd}, BorrowDate: {BorrowDate:yyyy-MM-dd}";
     }
 }

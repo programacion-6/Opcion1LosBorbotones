@@ -5,8 +5,8 @@ namespace Opcion1LosBorbotones.Domain.Repository;
 
 public interface IBorrowRepository : ICrudOperations<Borrow>
 {
-    Task<IEnumerable<Borrow>> GetBorrowsByPatron(string patronId);
-    Task<IEnumerable<Borrow>> GetBorrowsByBook(string bookId);
+    Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId);
+    Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId);
     Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status);
     Task<IEnumerable<Borrow>> GetBorrowsByDueDate(DateTime dueDate);
     Task<IEnumerable<Borrow>> GetBorrowsByBorrowDate(DateTime borrowDate);
