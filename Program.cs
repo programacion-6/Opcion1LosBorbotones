@@ -1,6 +1,6 @@
-﻿using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Infrastructure.Datasource;
-using Opcion1LosBorbotones.Infrastructure.Repository;
+using Opcion1LosBorbotones.Domain;
+using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 
 public class Program
 {
@@ -25,6 +25,5 @@ public class Program
             var book = await bookRepository.ReadAsync(borrow.BookId);
             Console.WriteLine("El patron: " + patron.Name + " hizo el prestamo del libro:  " + book.Title + " y el estado es: " + borrow.Status);
         }
-
     }
 }
