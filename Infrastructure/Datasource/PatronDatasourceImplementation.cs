@@ -99,16 +99,20 @@ public class PatronDatasourceImplementation : IPatronDatasource
         return rowsAffected > 0;
     }
 
-    public async Task<IEnumerable<Patron>> GetAllAsync()
+    public async Task<IEnumerable<Patron>> GetAllAsync(int offset, int limit)
     {
-        const string query = "SELECT * FROM Patron;";
-
+        const string query = @"
+            SELECT * FROM Patron
+            LIMIT @Limit OFFSET @Offset";
+        
         var patrons = new List<Patron>();
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -118,12 +122,14 @@ public class PatronDatasourceImplementation : IPatronDatasource
 
         return patrons;
     }
-
-
-    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name)
+    
+    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name, int offset, int limit)
     {
-        const string query = "SELECT * FROM Patron WHERE name = @Name;";
-
+        const string query = @"
+            SELECT * FROM Patron
+            WHERE name = @Name
+            LIMIT @Limit OFFSET @Offset";
+        
         var patrons = new List<Patron>();
 
         await using var connection = new NpgsqlConnection(_connectionString);
@@ -131,6 +137,8 @@ public class PatronDatasourceImplementation : IPatronDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("Name", name);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -160,9 +168,12 @@ public class PatronDatasourceImplementation : IPatronDatasource
         return null;
     }
 
-    public async Task<IEnumerable<Patron>> GetPatronsByContactDetailsAsync(long contactDetails)
+    public async Task<IEnumerable<Patron>> GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit)
     {
-        const string query = "SELECT * FROM Patron WHERE contactDetails = @ContactDetails;";
+        const string query = @"
+            SELECT * FROM Patron
+            WHERE contactDetails = @ContactDetails
+            LIMIT @Limit OFFSET @Offset";
 
         var patrons = new List<Patron>();
 
@@ -171,6 +182,8 @@ public class PatronDatasourceImplementation : IPatronDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("ContactDetails", contactDetails);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
