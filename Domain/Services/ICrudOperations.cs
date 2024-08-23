@@ -10,4 +10,3 @@ public interface ICrudOperations<T> where T : IEntity
     Task<bool> DeleteAsync(Guid id);
     Task<IEnumerable<T>> GetAllAsync(int offset, int limit);
 }
-
