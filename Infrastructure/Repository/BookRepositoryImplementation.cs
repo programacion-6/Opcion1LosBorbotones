@@ -45,19 +45,19 @@ public class BookRepositoryImplementation : IBookRepository
         return await _dataSource.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync()
+    public async Task<IEnumerable<Book>> GetAllAsync(int offset, int limit)
     {
-        return await _dataSource.GetAllAsync();;
+        return await _dataSource.GetAllAsync(offset, limit);
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByTitleAsync(string title)
+    public async Task<IEnumerable<Book>> GetBooksByTitleAsync(string title, int offset, int limit)
     {
-        return await _dataSource.GetBooksByTitleAsync(title);
+        return await _dataSource.GetBooksByTitleAsync(title, offset, limit);
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author)
+    public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author, int offset, int limit)
     {
-        return await _dataSource.GetBooksByAuthorAsync(author);
+        return await _dataSource.GetBooksByAuthorAsync(author, offset, limit);
     }
 
     public async Task<Book?> GetBookByIsbnAsync(long isbn)
@@ -65,13 +65,13 @@ public class BookRepositoryImplementation : IBookRepository
         return await _dataSource.GetBookByIsbnAsync(isbn);
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByGenreAsync(BookGenre genre)
+    public async Task<IEnumerable<Book>> GetBooksByGenreAsync(BookGenre genre, int offset, int limit)
     {
-        return await _dataSource.GetBooksByGenreAsync(genre);
+        return await _dataSource.GetBooksByGenreAsync(genre, offset, limit);
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByPublicationYearAsync(DateTime publicationYear)
+    public async Task<IEnumerable<Book>> GetBooksByPublicationYearAsync(DateTime publicationYear, int offset, int limit)
     {
-        return await _dataSource.GetBooksByPublicationYearAsync(publicationYear);
+        return await _dataSource.GetBooksByPublicationYearAsync(publicationYear, offset, limit);
     }
 }
