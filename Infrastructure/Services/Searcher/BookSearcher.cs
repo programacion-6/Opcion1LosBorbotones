@@ -10,15 +10,15 @@ public class BookSearcher : ISearcher
 {
     private BookRepositoryImplementation repository = BookRepositoryImplementation.GetInstance();
     
-    public Task<IEnumerable<Book>> SearchBookByTile(string searchString)
+    public Task<IEnumerable<Book>> SearchBookByTile(string searchString, int offset, int limit)
     {
-        Task<IEnumerable<Book>> books = repository.GetBooksByTitleAsync(searchString);
+        Task<IEnumerable<Book>> books = repository.GetBooksByTitleAsync(searchString, offset, limit);
         return books;
     }
 
-    public Task<IEnumerable<Book>> SearchBookByAuthor(string searchString)
+    public Task<IEnumerable<Book>> SearchBookByAuthor(string searchString, int offset, int limit)
     {
-        Task<IEnumerable<Book>> books = repository.GetBooksByAuthorAsync(searchString);
+        Task<IEnumerable<Book>> books = repository.GetBooksByAuthorAsync(searchString, offset, limit);
 
         return books;
     }
@@ -30,7 +30,7 @@ public class BookSearcher : ISearcher
         return book;
     }
     
-    public IEnumerable<Patron> SearchPatronByName(string searchString)
+    public IEnumerable<Patron> SearchPatronByName(string searchString, int offset, int limit)
     {
         throw new NotSupportedException("SearchPatronByName is not supported in BookSearcher.");
     }

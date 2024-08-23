@@ -9,10 +9,10 @@ public class PatronBorrowReport : IReport<Guid>
 {
     BorrowRepositoryImplementation repository = BorrowRepositoryImplementation.GetInstance();
 
-    public async Task<string> GenerateReport(Guid patronId)
+    public async Task<string> GenerateReport(Guid patronId, int offset, int limit)
     {
         StringBuilder report = new StringBuilder();
-        IEnumerable<Borrow> borrows = await repository.GetBorrowsByPatron(patronId);
+        IEnumerable<Borrow> borrows = await repository.GetBorrowsByPatron(patronId, offset, limit);
 
         foreach (var borrow in borrows)
         {
