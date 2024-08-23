@@ -36,8 +36,9 @@ public class Program
             
         }
         
-        
+        Console.WriteLine("---------------------------------------");
         Console.WriteLine("TEST BORROWS");
+        Console.WriteLine("---------------------------------------");
         var borrowRepository = new BorrowRepositoryImplementation(new BorrowDatasourceImplementation());
         
         Console.WriteLine("PRIMEROS 3");
@@ -65,5 +66,40 @@ public class Program
             Console.WriteLine(book.ToString());
             
         }
+        
+        Console.WriteLine("---------------------------------------");
+        Console.WriteLine("TEST PATRONS");
+        Console.WriteLine("---------------------------------------");
+        var patronRepository = new PatronRepositoryImplementation(new PatronDatasourceImplementation());
+        
+        Console.WriteLine("PRIMEROS 3");
+        //primeros 3
+        IEnumerable<Patron> patrons = await patronRepository.GetAllAsync(0,3);
+        foreach (var patron in patrons)
+        {
+            Console.WriteLine(patron.ToString());
+            
+        }
+        
+        Console.WriteLine("SIGUIENTES 3");
+        //siguientes 3
+        patrons = await patronRepository.GetAllAsync(3,3);
+        foreach (var patron in patrons)
+        {
+            Console.WriteLine(patron.ToString());
+            
+        }
+        
+        Console.WriteLine("PRIMEROS 3 PATRONS, SEGUN EL NOMBRE");
+        patrons = await patronRepository.GetPatronsByNameAsync("James Wilson",0,3);
+        foreach (var patron in patrons)
+        {
+            Console.WriteLine(patron.ToString());
+            
+        }
+        
+        Console.WriteLine("SEGUN EL ID");
+        Patron searchPatron = await patronRepository.GetPatronByMembershipAsync(1064986412);
+        Console.WriteLine(searchPatron.ToString());
     }
 }
