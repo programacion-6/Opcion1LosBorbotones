@@ -111,10 +111,11 @@ public class BookDatasourceImplementation : IBookDatasource
         return rowsAffected > 0;
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync()
+    public async Task<IEnumerable<Book>> GetAllAsync(int offset, int limit)
     {
         const string query = @"
-        SELECT * FROM Book";
+            SELECT * FROM Book
+            LIMIT @Limit OFFSET @Offset";
         
         var books = new List<Book>();
 
@@ -122,52 +123,8 @@ public class BookDatasourceImplementation : IBookDatasource
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(query, connection);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            books.Add(BookMapper.ToEntity(reader));
-        }
-
-        return books;
-    }
-
-    public async Task<IEnumerable<Book>> GetBooksByTitleAsync(string title)
-    {
-        const string query = @"
-            SELECT * FROM Book
-            WHERE title = @Title";
-            
-        var books = new List<Book>();
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("Title", title);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            books.Add(BookMapper.ToEntity(reader));
-        }
-
-        return books;
-    }
-
-    public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author)
-    {
-        const string query = @"
-            SELECT * FROM Book
-            WHERE author = @Author";
-            
-        var books = new List<Book>();
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        await using var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("Author", author);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -199,11 +156,64 @@ public class BookDatasourceImplementation : IBookDatasource
         return null;
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByGenreAsync(BookGenre genre)
+    public async Task<IEnumerable<Book>> GetBooksByTitleAsync(string title, int offset, int limit)
     {
         const string query = @"
             SELECT * FROM Book
-            WHERE genre = @Genre";
+            WHERE title = @Title
+            LIMIT @Limit OFFSET @Offset";
+            
+        var books = new List<Book>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("Title", title);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            books.Add(BookMapper.ToEntity(reader));
+        }
+
+        return books;
+    }
+
+    public async Task<IEnumerable<Book>> GetBooksByAuthorAsync(string author, int offset, int limit)
+    {
+        const string query = @"
+            SELECT * FROM Book
+            WHERE author = @Author
+            LIMIT @Limit OFFSET @Offset";
+            
+        var books = new List<Book>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("Author", author);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            books.Add(BookMapper.ToEntity(reader));
+        }
+
+        return books;
+    }
+
+    public async Task<IEnumerable<Book>> GetBooksByGenreAsync(BookGenre genre, int offset, int limit)
+    {
+        const string query = @"
+            SELECT * FROM Book
+            WHERE genre = @Genre
+            LIMIT @Limit OFFSET @Offset";
             
         var books = new List<Book>();
 
@@ -212,6 +222,8 @@ public class BookDatasourceImplementation : IBookDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("Genre", (int)genre+1);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -222,11 +234,12 @@ public class BookDatasourceImplementation : IBookDatasource
         return books;
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByPublicationYearAsync(DateTime publicationYear)
+    public async Task<IEnumerable<Book>> GetBooksByPublicationYearAsync(DateTime publicationYear, int offset, int limit)
     {
         const string query = @"
             SELECT * FROM Book
-            WHERE publicationYear = @PublicationYear";
+            WHERE publicationYear = @PublicationYear
+            LIMIT @Limit OFFSET @Offset";
             
         var books = new List<Book>();
 
@@ -235,6 +248,8 @@ public class BookDatasourceImplementation : IBookDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("PublicationYear", publicationYear);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -244,4 +259,5 @@ public class BookDatasourceImplementation : IBookDatasource
 
         return books;
     }
+    
 }

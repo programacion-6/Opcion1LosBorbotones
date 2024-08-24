@@ -133,17 +133,7 @@ public class PatronOptions
         switch (option)
         {
             case "1. Search Patron By Name":
-                string patronName = AnsiConsole.Ask<string>("Enter the patron name: ");
-                var patronsByName = patronSearcher.SearchPatronByName(patronName);
-                
-                AnsiConsole.MarkupLine("[bold]Patrons:[/]");
-                foreach (var patron in patronsByName)
-                {
-                    AnsiConsole.MarkupLine(patron.ToString());
-                }
-
-                AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
-                Console.ReadLine();
+                PaginatedSearchByName(patronSearcher);
                 break;
             case "2. Search Patron By MembershipNumber":
                 long patronMembershipNumber = AnsiConsole.Ask<long>("Enter the membership number: ");
@@ -157,4 +147,49 @@ public class PatronOptions
                 break;
         }
     }
+
+    private static void PaginatedSearchByName(PatronSearcher patronSearcher)
+    {
+        string patronName = AnsiConsole.Ask<string>("Patron name: ");
+        int page = 0;
+        const int pageSize = 10;
+
+        while (true)
+        {
+            var patrons = patronSearcher.SearchPatronByName(patronName, page * pageSize, pageSize);
+            
+            AnsiConsole.MarkupLine("[bold]Patrons:[/]");
+            foreach (var patron in patrons)
+            {
+                AnsiConsole.MarkupLine(patron.ToString());
+            }
+            
+            var navigationOption = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("[bold green]Navigate:[/]")
+                    .AddChoices(new[] {
+                        "Next Page",
+                        "Previous Page",
+                        "Exit"
+                    })
+            );
+            
+            if (navigationOption == "Next Page")
+            {
+                page++;
+            }
+            else if (navigationOption == "Previous Page" && page > 0)
+            {
+                page--;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+        Console.ReadLine();
+            
+        }
 }

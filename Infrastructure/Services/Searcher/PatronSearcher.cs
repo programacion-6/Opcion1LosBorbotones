@@ -10,11 +10,11 @@ public class PatronSearcher : ISearcher
 {
     private readonly PatronRepositoryImplementation _repository = PatronRepositoryImplementation.GetInstance();
 
-    public IEnumerable<Patron> SearchPatronByName(string searchString)
+    public IEnumerable<Patron> SearchPatronByName(string searchString, int offset, int limit)
     {
         try
         {
-            IEnumerable<Patron> patrons = _repository.GetPatronsByNameAsync(searchString).Result;
+            IEnumerable<Patron> patrons = _repository.GetPatronsByNameAsync(searchString, offset, limit).Result;
 
             if (!patrons.Any())
             {
@@ -51,12 +51,12 @@ public class PatronSearcher : ISearcher
         }
     }
 
-    public Task<IEnumerable<Book>> SearchBookByTile(string searchString)
+    public Task<IEnumerable<Book>> SearchBookByTile(string searchString, int offset, int limit)
     {
         throw new NotSupportedException("SearchBookByTile is not supported in PatronSearcher.");
     }
 
-    public Task<IEnumerable<Book>> SearchBookByAuthor(string searchString)
+    public Task<IEnumerable<Book>> SearchBookByAuthor(string searchString, int offset, int limit)
     {
         throw new NotSupportedException("SearchBookByAuthor is not supported in PatronSearcher.");
     }

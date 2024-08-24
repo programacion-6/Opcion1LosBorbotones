@@ -103,29 +103,12 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         return rowsAffected > 0;
     }
 
-    public async Task<IEnumerable<Borrow>> GetAllAsync()
+    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int offset, int limit)
     {
-        const string query = "SELECT * FROM Borrow";
-        
-        var borrows = new List<Borrow>();
-
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        await using var command = new NpgsqlCommand(query, connection);
-
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            borrows.Add(BorrowMapper.ToEntity(reader));
-        }
-
-        return borrows;
-    }
-
-    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId)
-    {
-        const string query = "SELECT * FROM Borrow WHERE patron = @PatronId";
+        const string query = @"
+            SELECT * FROM Borrow 
+            WHERE patron = @PatronId 
+            LIMIT @Limit OFFSET @Offset";
         
         var borrows = new List<Borrow>();
 
@@ -134,6 +117,8 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("PatronId", patronId);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -144,9 +129,12 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         return borrows;
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId, int offset, int limit)
     {
-        const string query = "SELECT * FROM Borrow WHERE book = @BookId";
+        const string query = @"
+            SELECT * FROM Borrow 
+            WHERE book = @BookId 
+            LIMIT @Limit OFFSET @Offset";
         
         var borrows = new List<Borrow>();
 
@@ -155,6 +143,8 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("BookId", bookId);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -165,9 +155,12 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         return borrows;
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int offset, int limit)
     {
-        const string query = "SELECT * FROM Borrow WHERE borrowStatus = @Status";
+        const string query = @"
+            SELECT * FROM Borrow 
+            WHERE borrowStatus = @Status 
+            LIMIT @Limit OFFSET @Offset";
 
         var borrows = new List<Borrow>();
 
@@ -176,6 +169,8 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("Status", (int)status+1);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -186,9 +181,12 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         return borrows;
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByDueDate(DateTime dueDate)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByDueDate(DateTime dueDate, int offset, int limit)
     {
-        const string query = "SELECT * FROM Borrow WHERE dueDate = @DueDate";
+        const string query = @"
+            SELECT * FROM Borrow 
+            WHERE dueDate = @DueDate 
+            LIMIT @Limit OFFSET @Offset";
 
         var borrows = new List<Borrow>();
 
@@ -197,6 +195,8 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("DueDate", dueDate);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -207,9 +207,12 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         return borrows;
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByBorrowDate(DateTime borrowDate)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit)
     {
-        const string query = "SELECT * FROM Borrow WHERE borrowDate = @BorrowDate";
+        const string query = @"
+            SELECT * FROM Borrow 
+            WHERE borrowDate = @BorrowDate 
+            LIMIT @Limit OFFSET @Offset";
 
         var borrows = new List<Borrow>();
 
@@ -218,6 +221,32 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("BorrowDate", borrowDate);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            borrows.Add(BorrowMapper.ToEntity(reader));
+        }
+
+        return borrows;
+    }
+
+    public async Task<IEnumerable<Borrow>> GetAllAsync(int offset, int limit)
+    {
+        const string query = @"
+            SELECT * FROM Borrow 
+            LIMIT @Limit OFFSET @Offset";
+
+        var borrows = new List<Borrow>();
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())

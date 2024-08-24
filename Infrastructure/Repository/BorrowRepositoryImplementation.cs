@@ -44,33 +44,33 @@ public class BorrowRepositoryImplementation : IBorrowRepository
         return await _dataSource.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<Borrow>> GetAllAsync()
+    public async Task<IEnumerable<Borrow>> GetAllAsync(int offset, int limit)
     {
-        return await _dataSource.GetAllAsync();
+        return await _dataSource.GetAllAsync(offset, limit);
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId,int offset, int limit)
     {
-        return await _dataSource.GetBorrowsByPatron(patronId);
+        return await _dataSource.GetBorrowsByPatron(patronId, offset, limit);
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId, int offset, int limit)
     {
-        return await _dataSource.GetBorrowsByBook(bookId);
+        return await _dataSource.GetBorrowsByBook(bookId, offset, limit);
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int offset, int limit)
     {
-        return await _dataSource.GetBorrowsByStatus(status);
+        return await _dataSource.GetBorrowsByStatus(status, offset, limit);
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByDueDate(DateTime dueDate)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByDueDate(DateTime dueDate, int offset, int limit)
     {
-        return await _dataSource.GetBorrowsByDueDate(dueDate);
+        return await _dataSource.GetBorrowsByDueDate(dueDate, offset, limit);
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByBorrowDate(DateTime borrowDate)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit)
     {
-        return await _dataSource.GetBorrowsByBorrowDate(borrowDate);
+        return await _dataSource.GetBorrowsByBorrowDate(borrowDate, offset, limit);
     }
 }

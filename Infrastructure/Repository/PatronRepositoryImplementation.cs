@@ -45,15 +45,15 @@ public class PatronRepositoryImplementation : IPatronRepository
         return await _dataSource.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<Patron>> GetAllAsync()
+    public async Task<IEnumerable<Patron>> GetAllAsync(int offset, int limit)
     {
-        return await _dataSource.GetAllAsync();
+        return await _dataSource.GetAllAsync(offset, limit);
 
     }
 
-    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name)
+    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name, int offset, int limit)
     {
-        return await _dataSource.GetPatronsByNameAsync(name);
+        return await _dataSource.GetPatronsByNameAsync(name, offset, limit);
     }
 
     public async Task<Patron?> GetPatronByMembershipAsync(long membership)
@@ -61,8 +61,8 @@ public class PatronRepositoryImplementation : IPatronRepository
         return await _dataSource.GetPatronByMembershipAsync(membership);
     }
 
-    public async Task<IEnumerable<Patron>> GetPatronsByContactDetailsAsync(long contactDetails)
+    public async Task<IEnumerable<Patron>> GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit)
     {
-        return await _dataSource.GetPatronsByContactDetailsAsync(contactDetails);
+        return await _dataSource.GetPatronsByContactDetailsAsync(contactDetails, offset, limit);
     }
 }
