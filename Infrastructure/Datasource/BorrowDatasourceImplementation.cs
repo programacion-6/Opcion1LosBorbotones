@@ -27,7 +27,7 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         command.Parameters.AddWithValue("Id", entity.Id);
         command.Parameters.AddWithValue("Patron", entity.PatronId);
         command.Parameters.AddWithValue("Book", entity.BookId);
-        command.Parameters.AddWithValue("BorrowStatus", (int)entity.Status);
+        command.Parameters.AddWithValue("BorrowStatus", (int)entity.Status + 1);
         command.Parameters.AddWithValue("DueDate", entity.DueDate);
         command.Parameters.AddWithValue("BorrowDate", entity.BorrowDate);
 
@@ -76,7 +76,7 @@ public class BorrowDatasourceImplementation : IBorrowDatasource
         command.Parameters.AddWithValue("Id", entity.Id);
         command.Parameters.AddWithValue("Patron", entity.PatronId);
         command.Parameters.AddWithValue("Book", entity.BookId);
-        command.Parameters.AddWithValue("BorrowStatus", (int)entity.Status);
+        command.Parameters.AddWithValue("BorrowStatus", (int)entity.Status + 1);
         command.Parameters.AddWithValue("DueDate", entity.DueDate);
         command.Parameters.AddWithValue("BorrowDate", entity.BorrowDate);
 
