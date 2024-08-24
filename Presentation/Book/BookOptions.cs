@@ -141,30 +141,10 @@ public class BookOptions
         switch (option)
         {
             case "1. Search Book By Title":
-                string bookTitle = AnsiConsole.Ask<string>("Book title: ");
-                var booksByTitle = bookSearcher.SearchBookByTile(bookTitle).GetAwaiter().GetResult();
-
-                AnsiConsole.MarkupLine("[bold]Books:[/]");
-                foreach (var book in booksByTitle)
-                {
-                    AnsiConsole.MarkupLine(book.ToString());
-                }
-
-                AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-                Console.ReadLine();
+                PaginatedSearchByTitle(bookSearcher);
                 break;
             case "2. Search Book By Author":
-                string bookAuthor = AnsiConsole.Ask<string>("Book author: ");
-                var booksByAuthor = bookSearcher.SearchBookByAuthor(bookAuthor).GetAwaiter().GetResult();
-                
-                AnsiConsole.MarkupLine("[bold]Books:[/]");
-                foreach (var book in booksByAuthor)
-                {
-                    AnsiConsole.MarkupLine(book.ToString());
-                }
-                
-                AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-                Console.ReadLine();
+                PaginatedSearchByAuthor(bookSearcher);
                 break;
             case "3. Search Book By ISBN":
                 
@@ -179,4 +159,105 @@ public class BookOptions
                 break;
         }
     }
+    
+    private static void PaginatedSearchByTitle(BookSearcher bookSearcher)
+{
+    string bookTitle = AnsiConsole.Ask<string>("Book title: ");
+    int page = 0;
+    const int pageSize = 10;
+    
+    while (true)
+    {
+        var books = bookSearcher.SearchBookByTile(bookTitle, page * pageSize, pageSize).GetAwaiter().GetResult();
+
+        AnsiConsole.MarkupLine("[bold]Books:[/]");
+        foreach (var book in books)
+        {
+            AnsiConsole.MarkupLine(book.ToString());
+        }
+
+        var navigationOption = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("[bold green]Navigate:[/]")
+                .AddChoices(new[] {
+                    "Next Page",
+                    "Previous Page",
+                    "Exit"
+                })
+        );
+
+        if (navigationOption == "Next Page")
+        {
+            page++;
+        }
+        else if (navigationOption == "Previous Page" && page > 0)
+        {
+            page--;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+    Console.ReadLine();
+}
+
+private static void PaginatedSearchByAuthor(BookSearcher bookSearcher)
+{
+    string bookAuthor = AnsiConsole.Ask<string>("Book author: ");
+    int page = 0;
+    const int pageSize = 10;
+    
+    while (true)
+    {
+        var books = bookSearcher.SearchBookByAuthor(bookAuthor, page * pageSize, pageSize).GetAwaiter().GetResult();
+
+        AnsiConsole.MarkupLine("[bold]Books:[/]");
+        foreach (var book in books)
+        {
+            AnsiConsole.MarkupLine(book.ToString());
+        }
+
+        var navigationOption = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("[bold green]Navigate:[/]")
+                .AddChoices(new[] {
+                    "Next Page",
+                    "Previous Page",
+                    "Exit"
+                })
+        );
+
+        if (navigationOption == "Next Page")
+        {
+            page++;
+        }
+        else if (navigationOption == "Previous Page" && page > 0)
+        {
+            page--;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+    Console.ReadLine();
+}
+
+private static void SearchByIsbn(BookSearcher bookSearcher)
+{
+    long isbn = AnsiConsole.Ask<long>("Book ISBN: ");
+    var book = bookSearcher.SearchBookByIsbn(isbn).GetAwaiter().GetResult();
+    
+    AnsiConsole.MarkupLine("[bold]Book:[/]");
+    AnsiConsole.MarkupLine(book?.ToString() ?? "Book not found.");
+
+    AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+    Console.ReadLine();
+}
+
 }
