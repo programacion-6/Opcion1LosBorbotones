@@ -49,40 +49,131 @@ public class ReportsOptions
 
     private static void ReportBooksCurrentlyBorrowed()
     {
-        AnsiConsole.Clear();
-        Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold yellow]Report books currently borrowed[/]");
-        BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
-        string report = borrowStatusReport.GenerateReport(BorrowStatus.Borrowed).GetAwaiter().GetResult();
-        AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
-        Console.ReadLine();
+        int offset = 0;
+        const int limit = 10;
+        bool exit = false;
+
+        while (!exit)
+        {
+            AnsiConsole.Clear();
+            Header.AppHeader();
+            AnsiConsole.MarkupLine("[bold yellow]Report books currently borrowed[/]");
+            BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
+            string report = borrowStatusReport.GenerateReport(BorrowStatus.Borrowed, offset, limit).GetAwaiter().GetResult();
+            AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
+
+            var option = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("[bold green]Choose an option:[/]")
+                    .AddChoices(new[]
+                    {
+                        "Next Page",
+                        "Previous Page",
+                        "Go back to the Report Menu"
+                    })
+            );
+
+            switch (option)
+            {
+                case "Next Page":
+                    offset += limit;
+                    break;
+                case "Previous Page":
+                    if (offset > 0)
+                        offset -= limit;
+                    break;
+                case "Go back to the Report Menu":
+                    exit = true;
+                    break;
+            }
+        }
     }
+
     
     private static void ReportBooksOverdue()
     {
-        AnsiConsole.Clear();
-        Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold yellow]Report books overdue[/]");
-        BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
-        string report = borrowStatusReport.GenerateReport(BorrowStatus.Overdue).GetAwaiter().GetResult();
-        AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Report Menu.[/]");
-        Console.ReadLine();
+        int offset = 0;
+        const int limit = 10;
+        bool exit = false;
+
+        while (!exit)
+        {
+            AnsiConsole.Clear();
+            Header.AppHeader();
+            AnsiConsole.MarkupLine("[bold yellow]Report books overdue[/]");
+            BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
+            string report = borrowStatusReport.GenerateReport(BorrowStatus.Overdue, offset, limit).GetAwaiter().GetResult();
+            AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
+
+            var option = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("[bold green]Choose an option:[/]")
+                    .AddChoices(new[]
+                    {
+                        "Next Page",
+                        "Previous Page",
+                        "Go back to the Report Menu"
+                    })
+            );
+
+            switch (option)
+            {
+                case "Next Page":
+                    offset += limit;
+                    break;
+                case "Previous Page":
+                    if (offset > 0)
+                        offset -= limit;
+                    break;
+                case "Go back to the Report Menu":
+                    exit = true;
+                    break;
+            }
+        }
     }
 
     private static void ReportPatronBorrowed()
     {
-        AnsiConsole.Clear();
-        Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold yellow]Report parton borrowed[/]");
-        
-        string patronId = AnsiConsole.Ask<string>("Enter the Patron ID: ");
-        Guid patronUUID = new Guid(patronId);
-        PatronBorrowReport patronBorrowReport = new PatronBorrowReport();
-        string report = patronBorrowReport.GenerateReport(patronUUID).GetAwaiter().GetResult();
-        AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Report Menu.[/]");
-        Console.ReadLine();
+        int offset = 0;
+        const int limit = 10;
+        bool exit = false;
+
+        while (!exit)
+        {
+            AnsiConsole.Clear();
+            Header.AppHeader();
+            AnsiConsole.MarkupLine("[bold yellow]Report patron borrowed[/]");
+
+            string patronId = AnsiConsole.Ask<string>("Enter the Patron ID: ");
+            Guid patronUUID = new Guid(patronId);
+            PatronBorrowReport patronBorrowReport = new PatronBorrowReport();
+            string report = patronBorrowReport.GenerateReport(patronUUID, offset, limit).GetAwaiter().GetResult();
+            AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
+
+            var option = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("[bold green]Choose an option:[/]")
+                    .AddChoices(new[]
+                    {
+                        "Next Page",
+                        "Previous Page",
+                        "Go back to the Report Menu"
+                    })
+            );
+
+            switch (option)
+            {
+                case "Next Page":
+                    offset += limit;
+                    break;
+                case "Previous Page":
+                    if (offset > 0)
+                        offset -= limit;
+                    break;
+                case "Go back to the Report Menu":
+                    exit = true;
+                    break;
+            }
+        }
     }
 }
