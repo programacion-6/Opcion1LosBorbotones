@@ -45,9 +45,9 @@ public class FineRepositoryImplementation : IFineRepository
         return await _dataSource.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<Fine>> GetAllAsync()
+    public async Task<IEnumerable<Fine>> GetAllAsync(int offset, int limit)
     {
-        return await _dataSource.GetAllAsync();
+        return await _dataSource.GetAllAsync(offset, limit);
     }
 
     public async Task<IEnumerable<Fine>> GetFinesByBorrowIdAsync(Guid borrowId)

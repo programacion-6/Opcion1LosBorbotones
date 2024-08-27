@@ -22,10 +22,10 @@ public class FineDatasourceImplementation : IFineDatasource
 
         await using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("Id", entity.Id);
-        command.Parameters.AddWithValue("Borrow", entity.Borrow.Id); // Suponiendo que Borrow tiene una propiedad Id
+        command.Parameters.AddWithValue("Borrow", entity.Borrow.Id);
         command.Parameters.AddWithValue("Amount", entity.Amount);
         command.Parameters.AddWithValue("IsPaid", entity.IsPaid);
-        command.Parameters.AddWithValue("CalculationType", entity.Calculation.GetType().Name); // Guardar el tipo de cálculo
+        command.Parameters.AddWithValue("CalculationType", entity.Calculation.GetType().Name);
 
         await using var reader = await command.ExecuteReaderAsync();
         if (await reader.ReadAsync())
@@ -95,9 +95,9 @@ public class FineDatasourceImplementation : IFineDatasource
         return rowsAffected > 0;
     }
 
-    public async Task<IEnumerable<Fine>> GetAllAsync()
+    public async Task<IEnumerable<Fine>> GetAllAsync(int offset, int limit)
     {
-        const string query = "SELECT * FROM Fine";
+        const string query = "SELECT * FROM Fine LIMIT @Limit OFFSET @Offset";
 
         var fines = new List<Fine>();
 
@@ -105,6 +105,8 @@ public class FineDatasourceImplementation : IFineDatasource
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("Limit", limit);
+        command.Parameters.AddWithValue("Offset", offset);
 
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())

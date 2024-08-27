@@ -12,7 +12,11 @@ public class FineMapper : IMapper<Fine, NpgsqlDataReader>
     {
         var _borrowDatasource = BorrowRepositoryImplementation.GetInstance();
         var borrowId = (Guid)response["borrow"];
-        Borrow borrow = _borrowDatasource.ReadAsync(borrowId).Result;
+        Borrow? borrow = _borrowDatasource.ReadAsync(borrowId).Result;
+        if (borrow == null)
+        {
+            throw new Exception("Borrow record not found.");
+        }
         
         return new Fine(
             (Guid)response["id"],
