@@ -34,7 +34,7 @@ public class MainMenu
             switch (option)
             {
                 case "1. Books":
-                     BookOptions.BookInitialOptions();
+                    BookOptions.BookInitialOptions();
                     break;
                 case "2. Patrons":
                     PatronOptions.PatronInitialOptions();
