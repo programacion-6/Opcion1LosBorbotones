@@ -47,6 +47,14 @@ CREATE TABLE Borrow (
     borrowDate DATE NOT NULL
 );
 
+CREATE TABLE Fine (
+    id UUID PRIMARY KEY,
+    borrow UUID REFERENCES Borrow(id),
+    amount DOUBLE PRECISION NOT NULL,
+    isPaid BOOLEAN NOT NULL,
+    calculationType VARCHAR(50) NOT NULL
+);
+
 INSERT INTO Book (id, title, author, ISBN, genre, publicationYear)
 SELECT
     gen_random_uuid(),
