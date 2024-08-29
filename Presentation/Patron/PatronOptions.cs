@@ -1,20 +1,17 @@
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
-using Opcion1LosBorbotones.Infrastructure.Repository;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
 namespace Opcion1LosBorbotones.Presentation;
 
-// TODO: Refactor this class to avoid repeating code and separate responsibilities
 public class PatronOptions
 {
     private readonly IPatronRepository _patronRepository;
 
-    public PatronOptions()
+    public PatronOptions(IPatronRepository patronRepository)
     {
-        // TODO: Apply dependency injection instead of singleton
-        _patronRepository = PatronRepositoryImplementation.GetInstance();
+        _patronRepository = patronRepository;
     }
 
     public async Task PatronInitialOptions()
@@ -82,7 +79,7 @@ public class PatronOptions
         if (confirm)
         {
             Patron newPatron = new Patron(patronId, patronName, patronMembershipNumber, patronContactDetailNumber);
-            await _patronRepository.CreateAsync(newPatron);
+            await _patronRepository.Save(newPatron);
             AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {newPatron}");
         }
         else
@@ -106,7 +103,7 @@ public class PatronOptions
         if (confirm)
         {
             Guid patronUUID = new Guid(patronId);
-            await _patronRepository.DeleteAsync(patronUUID);
+            await _patronRepository.Delete(patronUUID);
             AnsiConsole.MarkupLine("[bold italic red]Patron deleted.[/]");
         }
         else

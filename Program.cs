@@ -8,8 +8,9 @@ public class Program
     public static async Task Main(string[] args)
     {
         IBookRepository bookRepository = new BookRepository();
+        IPatronRepository patronRepository = new PatronRepository();
 
-        var app = new MainMenu(bookRepository);
+        var app = new MainMenu(bookRepository, patronRepository);
         await app.InitializeApp();
     }
 }

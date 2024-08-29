@@ -10,10 +10,10 @@ public class MainMenu
     private BookOptions _bookOptions;
     private PatronOptions _patronOptions;
 
-    public MainMenu(IBookRepository bookRepository)
+    public MainMenu(IBookRepository bookRepository, IPatronRepository patronRepository)
     {
         _bookOptions = new BookOptions(bookRepository);
-        _patronOptions = new PatronOptions();
+        _patronOptions = new PatronOptions(patronRepository);
     }
 
     public async Task InitialMainMenu()

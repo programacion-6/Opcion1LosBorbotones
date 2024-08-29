@@ -5,7 +5,7 @@ using Opcion1LosBorbotones.Domain.Repository;
 
 namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
-public class PatronRepository : IPatronRepository_
+public class PatronRepository : IPatronRepository
 {
     private readonly string _connectionString = 
         "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
@@ -60,7 +60,7 @@ public class PatronRepository : IPatronRepository_
         });
     }
 
-    public async Task<IEnumerable<Patron?>> GetPatronsByNameAsync(string name, int offset, int limit)
+    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name, int offset, int limit)
     {
         const string query = @"
             SELECT * FROM Patron

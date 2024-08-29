@@ -1,12 +1,10 @@
 using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Repository;
-using Opcion1LosBorbotones.Infrastructure.Repository;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
 namespace Opcion1LosBorbotones.Presentation;
 
-// TODO: Refactor this class to avoid repeating code and separate responsibilities
 public class BookOptions
 {
     private readonly IBookRepository _bookRepository;
