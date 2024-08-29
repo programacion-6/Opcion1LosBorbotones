@@ -11,10 +11,9 @@ public class BookOptions
 {
     private readonly IBookRepository _bookRepository;
 
-    public BookOptions()
+    public BookOptions(IBookRepository bookRepository)
     {
-        // TODO: Apply dependency injection instead of singleton
-        _bookRepository = BookRepositoryImplementation.GetInstance();
+        _bookRepository = bookRepository;
     }
 
     public async Task BookInitialOptions()
@@ -71,12 +70,7 @@ public class BookOptions
         string bookAuthor = AnsiConsole.Ask<string>("Enter the book author: ");
         long bookIsbn = AnsiConsole.Ask<long>("Enter the book ISBN: ");
         DateTime bookPublicationYear = AnsiConsole.Ask<DateTime>("Enter the published year (yyyy/MM/dd): ");
-
-        BookGenre bookGenre = AnsiConsole.Prompt(
-            new SelectionPrompt<BookGenre>()
-                .Title("Select the book genre:")
-                .AddChoices(Enum.GetValues<BookGenre>())
-        );
+        string bookGenre = AnsiConsole.Ask<string>("Enter the book genre: ");
 
         AnsiConsole.MarkupLine("[bold green]Review the book details before confirming:[/]");
         AnsiConsole.MarkupLine($"[bold]Title:[/] {bookTitle}");

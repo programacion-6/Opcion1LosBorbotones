@@ -1,3 +1,4 @@
+using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Presentation.Reports;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
@@ -9,9 +10,9 @@ public class MainMenu
     private BookOptions _bookOptions;
     private PatronOptions _patronOptions;
 
-    public MainMenu()
+    public MainMenu(IBookRepository bookRepository)
     {
-        _bookOptions = new BookOptions();
+        _bookOptions = new BookOptions(bookRepository);
         _patronOptions = new PatronOptions();
     }
 
