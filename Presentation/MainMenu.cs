@@ -9,11 +9,15 @@ public class MainMenu
 {
     private BookOptions _bookOptions;
     private PatronOptions _patronOptions;
+    private BorrowOptions _borrowOptions;
+    private ReportsOptions _reportsOptions;
 
-    public MainMenu(IBookRepository bookRepository, IPatronRepository patronRepository)
+    public MainMenu(IBookRepository bookRepository, IPatronRepository patronRepository, IBorrowRepository borrowRepository)
     {
         _bookOptions = new BookOptions(bookRepository);
         _patronOptions = new PatronOptions(patronRepository);
+        _borrowOptions = new BorrowOptions(borrowRepository);
+        _reportsOptions = new ReportsOptions(borrowRepository);
     }
 
     public async Task InitialMainMenu()
@@ -49,10 +53,10 @@ public class MainMenu
                     await _patronOptions.PatronInitialOptions();
                     break;
                 case "3. Borrow":
-                    BorrowOptions.BorrowInitialOptions();
+                    await _borrowOptions.BorrowInitialOptions();
                     break;
                 case "4. Reports":
-                    ReportsOptions.ReportInitialOptions();
+                    await _reportsOptions.ReportInitialOptions();
                     break;
                 case "5. Exit":
                     AnsiConsole.Clear();

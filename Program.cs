@@ -9,8 +9,9 @@ public class Program
     {
         IBookRepository bookRepository = new BookRepository();
         IPatronRepository patronRepository = new PatronRepository();
+        IBorrowRepository borrowRepository = new BorrowRepository();
 
-        var app = new MainMenu(bookRepository, patronRepository);
+        var app = new MainMenu(bookRepository, patronRepository, borrowRepository);
         await app.InitializeApp();
     }
 }

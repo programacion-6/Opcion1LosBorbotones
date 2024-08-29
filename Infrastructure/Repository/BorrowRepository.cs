@@ -5,7 +5,7 @@ using Opcion1LosBorbotones.Domain.Repository;
 
 namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
-public class BorrowRepository : IBorrowRepository_
+public class BorrowRepository : IBorrowRepository
 {
     private readonly string _connectionString =
         "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";

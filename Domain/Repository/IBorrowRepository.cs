@@ -2,7 +2,7 @@ using Opcion1LosBorbotones.Domain.Entity;
 
 namespace Opcion1LosBorbotones.Domain.Repository;
 
-public interface IBorrowRepository_ : IRepository<Borrow>
+public interface IBorrowRepository : IRepository<Borrow>
 {
     Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int offset, int limit);
     Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId, int offset, int limit);
