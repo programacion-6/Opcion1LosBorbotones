@@ -1,4 +1,3 @@
-using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Presentation.Reports;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
@@ -7,17 +6,26 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public class MainMenu
 {
-    public static void InitialMainMenu()
+    private BookOptions _bookOptions;
+    private PatronOptions _patronOptions;
+
+    public MainMenu()
+    {
+        _bookOptions = new BookOptions();
+        _patronOptions = new PatronOptions();
+    }
+
+    public async Task InitialMainMenu()
     {
         bool exit = false;
-        
+
         while (exit == false)
         {
             AnsiConsole.Clear();
             Header.AppHeader();
-            
+
             AnsiConsole.MarkupLine("[bold yellow]Menu[/]");
-            
+
             var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[bold green]Chose a option:[/]")
@@ -34,10 +42,10 @@ public class MainMenu
             switch (option)
             {
                 case "1. Books":
-                     BookOptions.BookInitialOptions();
+                    await _bookOptions.BookInitialOptions();
                     break;
                 case "2. Patrons":
-                    PatronOptions.PatronInitialOptions();
+                    await _patronOptions.PatronInitialOptions();
                     break;
                 case "3. Borrow":
                     BorrowOptions.BorrowInitialOptions();
@@ -53,12 +61,12 @@ public class MainMenu
         }
     }
 
-    public static void InitializeApp()
+    public async Task InitializeApp()
     {
         ShowProgressBar();
-        InitialMainMenu();
+        await InitialMainMenu();
     }
-    
+
     public static void ShowProgressBar()
     {
         AnsiConsole.Progress()
