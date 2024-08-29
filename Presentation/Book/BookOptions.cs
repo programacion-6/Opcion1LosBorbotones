@@ -45,7 +45,7 @@ public class BookOptions
                     await DeleteBook();
                     break;
                 case "3. Edit a book":
-                    //TODO
+                    await EditBook();
                     break;
                 case "4. Search books":
                     await SearchBook();
@@ -106,6 +106,51 @@ public class BookOptions
             Guid bookUUID = new Guid(bookId);
             await _bookRepository.Delete(bookUUID);
             AnsiConsole.MarkupLine("[bold italic red]Book deleted.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+        }
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+        Console.ReadLine();
+    }
+
+    private async Task EditBook()
+    {
+        AnsiConsole.Clear();
+        Header.AppHeader();
+        AnsiConsole.MarkupLine("[bold yellow]Edit a book[/]");
+
+        string bookId = AnsiConsole.Ask<string>("Enter the book ID: ");
+        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this book?");
+        if (confirm)
+        {
+            Guid bookUUID = new Guid(bookId);
+            string bookTitle = AnsiConsole.Ask<string>("Enter the book title: ");
+            string bookAuthor = AnsiConsole.Ask<string>("Enter the book author: ");
+            long bookIsbn = AnsiConsole.Ask<long>("Enter the book ISBN: ");
+            DateTime bookPublicationYear = AnsiConsole.Ask<DateTime>("Enter the published year (yyyy/MM/dd): ");
+            string bookGenre = AnsiConsole.Ask<string>("Enter the book genre: ");
+
+            AnsiConsole.MarkupLine("[bold green]Review the book details before confirming:[/]");
+            AnsiConsole.MarkupLine($"[bold]Title:[/] {bookTitle}");
+            AnsiConsole.MarkupLine($"[bold]Author:[/] {bookAuthor}");
+            AnsiConsole.MarkupLine($"[bold]ISBN:[/] {bookIsbn}");
+            AnsiConsole.MarkupLine($"[bold]Published Year:[/] {bookPublicationYear:yyyy/MM/dd}");
+            AnsiConsole.MarkupLine($"[bold]Genre:[/] {bookGenre}");
+
+            var confirmUpdated = AnsiConsole.Confirm("Do you want to save the update?");
+            if (confirmUpdated)
+            {
+                Book newBook = new Book(bookUUID, bookTitle, bookAuthor, bookIsbn, bookGenre, bookPublicationYear);
+                await _bookRepository.Update(newBook);
+                AnsiConsole.MarkupLine($"[bold italic green]Updated:[/] {newBook}");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[bold italic red]Book update cancelled.[/]");
+            }
         }
         else
         {
