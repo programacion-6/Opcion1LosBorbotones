@@ -64,7 +64,7 @@ public class BorrowOptions
         if (confirm)
         {
             Borrow newBorrow = new Borrow(borrowUUID, patronUUID, bookUUID, borrowStatus, dueDate, borrowDate);
-            repository.CreateAsync(newBorrow);
+            repository.CreateAsync(newBorrow).GetAwaiter().GetResult();
             AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {newBorrow}");
         }
         else
