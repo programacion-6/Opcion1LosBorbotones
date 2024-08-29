@@ -1,5 +1,5 @@
 using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Infrastructure.Repository;
+using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -7,7 +7,14 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public class BorrowOptions
 {
-    public static void BorrowInitialOptions()
+    private readonly IBorrowRepository _borrowRepository;
+
+    public BorrowOptions(IBorrowRepository borrowRepository)
+    {
+        _borrowRepository = borrowRepository;
+    }
+
+    public async Task BorrowInitialOptions()
     {
         bool goBack = false;
         while (!goBack)
@@ -26,12 +33,11 @@ public class BorrowOptions
                         "2. Go back"
                     })
             );
-            var repository = BorrowRepositoryImplementation.GetInstance();
 
             switch (option)
             {
                 case "1. Request a borrow":
-                    RegisterNewBorrow(repository);
+                    await RegisterNewBorrow();
                     break;
                 case "2. Go back":
                     goBack = true;
@@ -40,7 +46,7 @@ public class BorrowOptions
         }
     }
 
-    private static void RegisterNewBorrow(BorrowRepositoryImplementation repository)
+    private async Task RegisterNewBorrow()
     {
         AnsiConsole.Clear();
         Header.AppHeader();
@@ -64,7 +70,7 @@ public class BorrowOptions
         if (confirm)
         {
             Borrow newBorrow = new Borrow(borrowUUID, patronUUID, bookUUID, borrowStatus, dueDate, borrowDate);
-            repository.CreateAsync(newBorrow).GetAwaiter().GetResult();
+            await _borrowRepository.Save(newBorrow);
             AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {newBorrow}");
         }
         else

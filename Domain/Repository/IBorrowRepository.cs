@@ -1,9 +1,8 @@
 using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Domain.Services;
 
 namespace Opcion1LosBorbotones.Domain.Repository;
 
-public interface IBorrowRepository : ICrudOperations<Borrow>
+public interface IBorrowRepository : IRepository<Borrow>
 {
     Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int offset, int limit);
     Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId, int offset, int limit);

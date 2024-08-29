@@ -1,16 +1,3 @@
-CREATE TABLE BookGenre (
-   id SERIAL PRIMARY KEY,
-   name VARCHAR(50) NOT NULL
-);
-
-INSERT INTO BookGenre (name) VALUES
- ('Fantasy'),
- ('Thriller'),
- ('Mistery'),
- ('Horror'),
- ('Young Adult'),
- ('Romance');
-
 CREATE TABLE Patron (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -23,7 +10,7 @@ CREATE TABLE Book (
   title VARCHAR(255) NOT NULL,
   author VARCHAR(100) NOT NULL,
   ISBN BIGINT NOT NULL UNIQUE,
-  genre INT REFERENCES BookGenre(id),
+  genre VARCHAR(60) NOT NULL,
   publicationYear DATE NOT NULL
 );
 
@@ -94,9 +81,17 @@ SELECT
      'Joseph Heller'
     ])[floor(random() * 19 + 1)],
     floor(random() * 9000000000000 + 1000000000000)::bigint,
-    floor(random() * 6 + 1)::int,
+    (ARRAY[
+     'Romance',
+     'Fiction',
+     'Science Fiction',
+     'Fantasy',
+     'Mystery',
+     'Thriller'
+    ])[floor(random() * 6 + 1)],
     timestamp '2020-01-01' + random() * (timestamp '2023-12-31' - timestamp '2020-01-01')
 FROM generate_series(1, 20);
+
 
 INSERT INTO Patron (id, name, membershipNumber, contactDetails)
 SELECT

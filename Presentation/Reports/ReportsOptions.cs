@@ -1,4 +1,5 @@
 using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Reports;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
@@ -7,7 +8,16 @@ namespace Opcion1LosBorbotones.Presentation.Reports;
 
 public class ReportsOptions
 {
-    public static void ReportInitialOptions()
+    private readonly BorrowStatusReport _borrowStatusReport;
+    private readonly PatronBorrowReport _patronBorrowReport;
+
+    public ReportsOptions(IBorrowRepository borrowRepository)
+    {
+        _borrowStatusReport = new BorrowStatusReport(borrowRepository);
+        _patronBorrowReport = new PatronBorrowReport(borrowRepository);
+    }
+
+    public async Task ReportInitialOptions()
     {
         bool goBack = false;
         while (!goBack)
@@ -32,13 +42,13 @@ public class ReportsOptions
             switch (option)
             {
                 case "1. Report books currently borrowed":
-                    ReportBooksCurrentlyBorrowed();
+                    await ReportBooksCurrentlyBorrowed();
                     break;
                 case "2. Report overdue books":
-                    ReportBooksOverdue();
+                    await ReportBooksOverdue();
                     break;
                 case "3. Borrowing history for a patron":
-                    ReportPatronBorrowed();
+                    await ReportPatronBorrowed();
                     break;
                 case "4. Go back":
                     goBack = true;
@@ -47,7 +57,7 @@ public class ReportsOptions
         }
     }
 
-    private static void ReportBooksCurrentlyBorrowed()
+    private async Task ReportBooksCurrentlyBorrowed()
     {
         int offset = 0;
         const int limit = 10;
@@ -58,8 +68,7 @@ public class ReportsOptions
             AnsiConsole.Clear();
             Header.AppHeader();
             AnsiConsole.MarkupLine("[bold yellow]Report books currently borrowed[/]");
-            BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
-            string report = borrowStatusReport.GenerateReport(BorrowStatus.Borrowed, offset, limit).GetAwaiter().GetResult();
+            string report = await _borrowStatusReport.GenerateReport(BorrowStatus.Borrowed, offset, limit);
             AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
 
             var option = AnsiConsole.Prompt(
@@ -90,7 +99,7 @@ public class ReportsOptions
     }
 
     
-    private static void ReportBooksOverdue()
+    private async Task ReportBooksOverdue()
     {
         int offset = 0;
         const int limit = 10;
@@ -101,8 +110,7 @@ public class ReportsOptions
             AnsiConsole.Clear();
             Header.AppHeader();
             AnsiConsole.MarkupLine("[bold yellow]Report books overdue[/]");
-            BorrowStatusReport borrowStatusReport = new BorrowStatusReport();
-            string report = borrowStatusReport.GenerateReport(BorrowStatus.Overdue, offset, limit).GetAwaiter().GetResult();
+            string report = await _borrowStatusReport.GenerateReport(BorrowStatus.Overdue, offset, limit);
             AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
 
             var option = AnsiConsole.Prompt(
@@ -132,7 +140,7 @@ public class ReportsOptions
         }
     }
 
-    private static void ReportPatronBorrowed()
+    private async Task ReportPatronBorrowed()
     {
         int offset = 0;
         const int limit = 10;
@@ -146,8 +154,7 @@ public class ReportsOptions
 
             string patronId = AnsiConsole.Ask<string>("Enter the Patron ID: ");
             Guid patronUUID = new Guid(patronId);
-            PatronBorrowReport patronBorrowReport = new PatronBorrowReport();
-            string report = patronBorrowReport.GenerateReport(patronUUID, offset, limit).GetAwaiter().GetResult();
+            string report = await _patronBorrowReport.GenerateReport(patronUUID, offset, limit);
             AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
 
             var option = AnsiConsole.Prompt(
