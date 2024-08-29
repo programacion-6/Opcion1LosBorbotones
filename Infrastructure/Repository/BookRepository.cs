@@ -54,7 +54,7 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByGenre(BookGenre genre, int offset, int limit)
+    public async Task<IEnumerable<Book>> GetBooksByGenre(string genre, int offset, int limit)
     {
          const string sql = @"
             SELECT * FROM Book
@@ -63,7 +63,7 @@ public class BookRepository : IBookRepository
 
         using (var connection = new NpgsqlConnection(_connectionString))
         {
-            return await connection.QueryAsync<Book>(sql, new { Genre = (int)genre, Limit = limit, Offset = offset });
+            return await connection.QueryAsync<Book>(sql, new { Genre = genre, Limit = limit, Offset = offset });
         }
     }
 
