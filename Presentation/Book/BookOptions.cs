@@ -1,23 +1,14 @@
 using Opcion1LosBorbotones.Domain;
-using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Repository;
+using Opcion1LosBorbotones.Infrastructure.Services.Searcher;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
 namespace Opcion1LosBorbotones.Presentation;
 
-// TODO: Refactor this class to avoid repeating code and separate responsibilities
 public class BookOptions
 {
-    private readonly IBookRepository _bookRepository;
-
-    public BookOptions()
-    {
-        // TODO: Apply dependency injection instead of singleton
-        _bookRepository = BookRepositoryImplementation.GetInstance();
-    }
-
-    public async Task BookInitialOptions()
+    public static void BookInitialOptions()
     {
         bool goBack = false;
         while (!goBack)
@@ -39,28 +30,30 @@ public class BookOptions
                     })
             );
 
+            var repository = BookRepositoryImplementation.GetInstance();
+
             switch (option)
             {
                 case "1. Register a new book":
-                    await RegisterNewBook();
+                    RegisterNewBook(repository);
                     break;
                 case "2. Delete a book":
-                    await DeleteBook();
+                    DeleteBook(repository);
                     break;
                 case "3. Edit a book":
                     //TODO
                     break;
                 case "4. Search books":
-                    await SearchBook();
+                    SearchBook();
                     break;
                 case "5. Go back":
                     goBack = true;
-                    break;
+                    break; 
             }
         }
     }
 
-    private async Task RegisterNewBook()
+    private static void RegisterNewBook(BookRepositoryImplementation repository)
     {
         AnsiConsole.Clear();
         Header.AppHeader();
@@ -89,19 +82,19 @@ public class BookOptions
         if (confirm)
         {
             Book newBook = new Book(bookId, bookTitle, bookAuthor, bookIsbn, bookGenre, bookPublicationYear);
-            await _bookRepository.CreateAsync(newBook);
+            repository.CreateAsync(newBook).GetAwaiter().GetResult();
             AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {newBook}");
         }
         else
         {
             AnsiConsole.MarkupLine("[bold italic red]Book registration canceled.[/]");
         }
-
+        
         AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
         Console.ReadLine();
     }
 
-    private async Task DeleteBook()
+    private static void DeleteBook(BookRepositoryImplementation repository)
     {
         AnsiConsole.Clear();
         Header.AppHeader();
@@ -112,22 +105,23 @@ public class BookOptions
         if (confirm)
         {
             Guid bookUUID = new Guid(bookId);
-            await _bookRepository.DeleteAsync(bookUUID);
+            repository.DeleteAsync(bookUUID).GetAwaiter().GetResult();
             AnsiConsole.MarkupLine("[bold italic red]Book deleted.[/]");
         }
         else
         {
             AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
         }
-
+        
         AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
         Console.ReadLine();
     }
 
-    private async Task SearchBook()
+    private static void SearchBook()
     {
         AnsiConsole.Clear();
         Header.AppHeader();
+        BookSearcher bookSearcher = new BookSearcher();
 
         AnsiConsole.MarkupLine("[bold yellow]Book Searcher[/]");
 
@@ -147,115 +141,123 @@ public class BookOptions
         switch (option)
         {
             case "1. Search Book By Title":
-                await PaginatedSearchByTitle();
+                PaginatedSearchByTitle(bookSearcher);
                 break;
             case "2. Search Book By Author":
-                await PaginatedSearchByAuthor();
+                PaginatedSearchByAuthor(bookSearcher);
                 break;
             case "3. Search Book By ISBN":
-                await SearchByIsbn();
+                
+                long Isbn = AnsiConsole.Ask<long>("Book ISBN: ");
+                var bookByIsbn = bookSearcher.SearchBookByIsbn(Isbn).GetAwaiter().GetResult();
+                
+                AnsiConsole.MarkupLine("[bold]Book:[/]");
+                AnsiConsole.MarkupLine(bookByIsbn.ToString());
+                
+                AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+                Console.ReadLine();
                 break;
         }
     }
-
-    private async Task PaginatedSearchByTitle()
+    
+    private static void PaginatedSearchByTitle(BookSearcher bookSearcher)
+{
+    string bookTitle = AnsiConsole.Ask<string>("Book title: ");
+    int page = 0;
+    const int pageSize = 10;
+    
+    while (true)
     {
-        string bookTitle = AnsiConsole.Ask<string>("Book title: ");
-        int page = 0;
-        const int pageSize = 10;
+        var books = bookSearcher.SearchBookByTile(bookTitle, page * pageSize, pageSize).GetAwaiter().GetResult();
 
-        while (true)
+        AnsiConsole.MarkupLine("[bold]Books:[/]");
+        foreach (var book in books)
         {
-            var books = await _bookRepository.GetBooksByTitleAsync(bookTitle, page * pageSize, pageSize);
+            AnsiConsole.MarkupLine(book.ToString());
+        }
 
-            AnsiConsole.MarkupLine("[bold]Books:[/]");
-            foreach (var book in books)
-            {
-                AnsiConsole.MarkupLine(book.ToString());
-            }
-
-            var navigationOption = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("[bold green]Navigate:[/]")
-                    .AddChoices(new[] {
+        var navigationOption = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("[bold green]Navigate:[/]")
+                .AddChoices(new[] {
                     "Next Page",
                     "Previous Page",
                     "Exit"
-                    })
-            );
+                })
+        );
 
-            if (navigationOption == "Next Page")
-            {
-                page++;
-            }
-            else if (navigationOption == "Previous Page" && page > 0)
-            {
-                page--;
-            }
-            else
-            {
-                break;
-            }
+        if (navigationOption == "Next Page")
+        {
+            page++;
         }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
+        else if (navigationOption == "Previous Page" && page > 0)
+        {
+            page--;
+        }
+        else
+        {
+            break;
+        }
     }
 
-    private async Task PaginatedSearchByAuthor()
+    AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+    Console.ReadLine();
+}
+
+private static void PaginatedSearchByAuthor(BookSearcher bookSearcher)
+{
+    string bookAuthor = AnsiConsole.Ask<string>("Book author: ");
+    int page = 0;
+    const int pageSize = 10;
+    
+    while (true)
     {
-        string bookAuthor = AnsiConsole.Ask<string>("Book author: ");
-        int page = 0;
-        const int pageSize = 10;
+        var books = bookSearcher.SearchBookByAuthor(bookAuthor, page * pageSize, pageSize).GetAwaiter().GetResult();
 
-        while (true)
+        AnsiConsole.MarkupLine("[bold]Books:[/]");
+        foreach (var book in books)
         {
-            var books = await _bookRepository.GetBooksByAuthorAsync(bookAuthor, page * pageSize, pageSize);
+            AnsiConsole.MarkupLine(book.ToString());
+        }
 
-            AnsiConsole.MarkupLine("[bold]Books:[/]");
-            foreach (var book in books)
-            {
-                AnsiConsole.MarkupLine(book.ToString());
-            }
-
-            var navigationOption = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("[bold green]Navigate:[/]")
-                    .AddChoices(new[] {
+        var navigationOption = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("[bold green]Navigate:[/]")
+                .AddChoices(new[] {
                     "Next Page",
                     "Previous Page",
                     "Exit"
-                    })
-            );
+                })
+        );
 
-            if (navigationOption == "Next Page")
-            {
-                page++;
-            }
-            else if (navigationOption == "Previous Page" && page > 0)
-            {
-                page--;
-            }
-            else
-            {
-                break;
-            }
+        if (navigationOption == "Next Page")
+        {
+            page++;
         }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
+        else if (navigationOption == "Previous Page" && page > 0)
+        {
+            page--;
+        }
+        else
+        {
+            break;
+        }
     }
 
-    private async Task SearchByIsbn()
-    {
-        long isbn = AnsiConsole.Ask<long>("Book ISBN: ");
-        var book = await _bookRepository.GetBookByIsbnAsync(isbn);
+    AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+    Console.ReadLine();
+}
 
-        AnsiConsole.MarkupLine("[bold]Book:[/]");
-        AnsiConsole.MarkupLine(book?.ToString() ?? "Book not found.");
+private static void SearchByIsbn(BookSearcher bookSearcher)
+{
+    long isbn = AnsiConsole.Ask<long>("Book ISBN: ");
+    var book = bookSearcher.SearchBookByIsbn(isbn).GetAwaiter().GetResult();
+    
+    AnsiConsole.MarkupLine("[bold]Book:[/]");
+    AnsiConsole.MarkupLine(book?.ToString() ?? "Book not found.");
 
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
-    }
+    AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+    Console.ReadLine();
+}
 
 }
