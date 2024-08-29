@@ -46,7 +46,7 @@ public class PatronOptions
                     await DeletePatron();
                     break;
                 case "3. Edit a patron":
-                    // TODO
+                    await EditPatron();
                     break;
                 case "4. Search patron":
                     await SearchPatron();
@@ -105,6 +105,49 @@ public class PatronOptions
             Guid patronUUID = new Guid(patronId);
             await _patronRepository.Delete(patronUUID);
             AnsiConsole.MarkupLine("[bold italic red]Patron deleted.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+        }
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
+        Console.ReadLine();
+    }
+
+    private async Task EditPatron()
+    {
+        AnsiConsole.Clear();
+        Header.AppHeader();
+        AnsiConsole.MarkupLine("[bold yellow]Edit patron[/]");
+
+        string patronId = AnsiConsole.Ask<string>("Enter the patron id: ");
+        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
+
+        if (confirm)
+        {
+            Guid patronUUID = new Guid(patronId);
+            string patronName = AnsiConsole.Ask<string>("Enter the patron name: ");
+            long patronMembershipNumber = AnsiConsole.Ask<long>("Enter the membership number: ");
+            long patronContactDetailNumber = AnsiConsole.Ask<long>("Enter the contact detail number: ");
+
+            AnsiConsole.MarkupLine("[bold green]Review the PATRON details before confirming:[/]");
+            AnsiConsole.MarkupLine($"[bold] Name [/]: {patronName}");
+            AnsiConsole.MarkupLine($"[bold] Membership number [/]: {patronMembershipNumber}");
+            AnsiConsole.MarkupLine($"[bold] Contact details [/]: {patronContactDetailNumber}");
+
+            var editingConfirmation = AnsiConsole.Confirm("[bold] Do you want to save the update? [/]");
+
+            if (editingConfirmation)
+            {
+                Patron newPatron = new Patron(patronUUID, patronName, patronMembershipNumber, patronContactDetailNumber);
+                await _patronRepository.Update(newPatron);
+                AnsiConsole.MarkupLine($"[bold italic green]Updated:[/] {newPatron}");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[bold italic red]Patron edition cancelled.[/]");
+            }
         }
         else
         {

@@ -120,10 +120,10 @@ public class BookOptions
     {
         AnsiConsole.Clear();
         Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold yellow]Edit a book[/]");
+        AnsiConsole.MarkupLine("[bold yellow]Edit book[/]");
 
         string bookId = AnsiConsole.Ask<string>("Enter the book ID: ");
-        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this book?");
+        var confirm = AnsiConsole.Confirm("Are you sure you want to edit this book?");
         if (confirm)
         {
             Guid bookUUID = new Guid(bookId);
@@ -140,7 +140,7 @@ public class BookOptions
             AnsiConsole.MarkupLine($"[bold]Published Year:[/] {bookPublicationYear:yyyy/MM/dd}");
             AnsiConsole.MarkupLine($"[bold]Genre:[/] {bookGenre}");
 
-            var confirmUpdated = AnsiConsole.Confirm("Do you want to save the update?");
+            var confirmUpdated = AnsiConsole.Confirm("[bold] Do you want to save the update? [/]");
             if (confirmUpdated)
             {
                 Book newBook = new Book(bookUUID, bookTitle, bookAuthor, bookIsbn, bookGenre, bookPublicationYear);
@@ -149,7 +149,7 @@ public class BookOptions
             }
             else
             {
-                AnsiConsole.MarkupLine("[bold italic red]Book update cancelled.[/]");
+                AnsiConsole.MarkupLine("[bold italic red]Book edition cancelled.[/]");
             }
         }
         else
