@@ -2,5 +2,5 @@ namespace Opcion1LosBorbotones.Domain.Entity;
 
 public enum BorrowStatus
 {
-    Borrowed, Overdue, Returned, Reserved
+    Borrowed = 2, Overdue, Returned, Reserved
 }
