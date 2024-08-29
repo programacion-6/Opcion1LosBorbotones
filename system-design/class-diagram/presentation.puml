@@ -1,0 +1,49 @@
+@startuml
+package presentation {
+    class MainMenu {
+        - bookOptions: BookOptions
+        - patronOptions: PatronOptions
+        + Task InitialMainMenu()
+        + Task InitializeApp()
+        + {static} ShowProgressBar(): void
+    }
+
+    class ReportsOptions {
+        + {static} ReportInitialOptions(): void
+        - {static} ReportBooksCurrentlyBorrowed(): void
+        - {static} ReportBooksOverdue(): void
+        - {static} ReportPatronBorrowed(): void
+    }
+
+    class Header {
+        + {static} AppHeader(): void
+    }
+
+    class PatronOptions {
+        - patronRepository: IPatronRepository
+        + PatronInitialOptions(): Task
+        - RegisterNewPatron(): Task
+        - DeletePatron(): Task
+        - SearchPatron(): Task
+        - SearchPatronsByMembershipNumber(): Task
+        - PaginatedSearchByName(): Task
+    }
+
+    class BorrowOptions {
+        + {static} BorrowInitialOptions(): void
+        - {static} RegisterNewBorrow(BorrowRepositoryImplementation repository): void
+
+    }
+
+    class BookOptions {
+        - bookRepository: IBookRepository
+        + BookInitialOptions(): Task
+        - RegisterNewBook(): Task
+        - DeleteBook(): Task
+        - SearchBook(): Task
+        - PaginatedSearchByTitle(): Task
+        - PaginatedSearchByAuthor(): Task
+        - SearchByIsbn(): Task
+    }
+}
+@enduml
