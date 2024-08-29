@@ -1,16 +1,3 @@
-CREATE TABLE BookGenre (
-   id SERIAL PRIMARY KEY,
-   name VARCHAR(50) NOT NULL
-);
-
-INSERT INTO BookGenre (name) VALUES
- ('Fantasy'),
- ('Thriller'),
- ('Mistery'),
- ('Horror'),
- ('Young Adult'),
- ('Romance');
-
 CREATE TABLE Patron (
     id UUID PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -23,7 +10,7 @@ CREATE TABLE Book (
   title VARCHAR(255) NOT NULL,
   author VARCHAR(100) NOT NULL,
   ISBN BIGINT NOT NULL UNIQUE,
-  genre INT REFERENCES BookGenre(id),
+  genre VARCHAR(60) NOT NULL,
   publicationYear DATE NOT NULL
 );
 

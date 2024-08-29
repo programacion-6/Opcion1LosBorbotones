@@ -12,7 +12,7 @@ public class BookMapper : IMapper<Book, NpgsqlDataReader>
             (string)response["title"],
             (string)response["author"],
             (long)response["isbn"],
-            (BookGenre)(int)response["genre"]-1,
+            (string)response["genre"],
             (DateTime)response["publicationyear"]
         );
     }
