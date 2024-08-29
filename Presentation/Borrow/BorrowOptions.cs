@@ -1,5 +1,4 @@
-using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -7,11 +6,13 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public class BorrowOptions
 {
-    private readonly IBorrowRepository _borrowRepository;
+    private readonly IBorrowService _borrowService;
+    private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
 
-    public BorrowOptions(IBorrowRepository borrowRepository)
+    public BorrowOptions(IBorrowService borrowService)
     {
-        _borrowRepository = borrowRepository;
+        _borrowService = borrowService;
+        _borrowConsoleRenderer = new BorrowConsoleRenderer();
     }
 
     public async Task BorrowInitialOptions()
@@ -48,37 +49,35 @@ public class BorrowOptions
 
     private async Task RegisterNewBorrow()
     {
-        AnsiConsole.Clear();
-        Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold yellow]Register a new borrow[/]");
-        
-        Guid borrowUUID = Guid.NewGuid();
-        string patronId = AnsiConsole.Ask<string>("What patron id do you want to register?: ");
-        Guid patronUUID = new Guid(patronId);
-        string bookId = AnsiConsole.Ask<string>("What book id do you want to borrow?: ");
-        Guid bookUUID = new Guid(bookId);
-        BorrowStatus borrowStatus = BorrowStatus.Borrowed;
-        DateTime borrowDate = DateTime.Today;
-        DateTime dueDate = DateTime.Today.AddDays(15);
-        
-        AnsiConsole.MarkupLine("[bold green]Review the BORROW details before confirming:[/]");
-        AnsiConsole.MarkupLine($"[bold] Borrow date [/]: {borrowDate}");
-        AnsiConsole.MarkupLine($"[bold] Due date [/]: {dueDate}");
-        
-        var confirm = AnsiConsole.Confirm("[bold] Do you want to register this borrow? [/]");
+        try
+        {
+            AnsiConsole.Clear();
+            Header.AppHeader();
+            AnsiConsole.MarkupLine("[bold yellow]Register a new borrow[/]");
+            var patronUUID = _borrowConsoleRenderer.GetPatronId();
+            var bookUUID = _borrowConsoleRenderer.GetBookId();
 
-        if (confirm)
-        {
-            Borrow newBorrow = new Borrow(borrowUUID, patronUUID, bookUUID, borrowStatus, dueDate, borrowDate);
-            await _borrowRepository.Save(newBorrow);
-            AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {newBorrow}");
+            var borrow = await _borrowService.RegisterNewBorrow(patronUUID, bookUUID);
+
+            _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
+
+            if (_borrowConsoleRenderer.ConfirmBorrow())
+            {
+                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {borrow}");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[bold green]No borrow registered[/]");
+            }
+
+            AnsiConsole.Markup("[blue] Press Enter to go back to the Patron Menu.[/]");
+            Console.ReadLine();
         }
-        else
+        catch (Exception ex)
         {
-            AnsiConsole.MarkupLine("[bold green]No borrow registered");
+            AnsiConsole.Markup($"[red] The data entered is not correct, please enter correct data.[/]\n");
+            AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
+            Console.ReadLine();
         }
-        
-        AnsiConsole.Markup("[blue] Press Enter to go back to the Patron Menu.[/]");
-        Console.ReadLine();
     }
 }
