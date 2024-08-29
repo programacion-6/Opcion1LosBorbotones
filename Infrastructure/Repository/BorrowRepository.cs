@@ -31,12 +31,19 @@ public class BorrowRepository : IBorrowRepository
     public async Task<IEnumerable<Borrow>> GetBorrowsByBook(Guid bookId, int offset, int limit)
     {
         const string query = @"
-            SELECT * FROM Borrow 
+            SELECT 
+                id AS Id, 
+                patron AS PatronId, 
+                book AS BookId, 
+                borrowStatus AS Status, 
+                dueDate AS DueDate, 
+                borrowDate AS BorrowDate 
+            FROM Borrow  
             WHERE book = @BookId 
             LIMIT @Limit OFFSET @Offset";
 
         using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(query, new 
+        return await connection.QueryAsync<Borrow>(query, new
         {
             BookId = bookId,
             Limit = limit,
@@ -47,12 +54,19 @@ public class BorrowRepository : IBorrowRepository
     public async Task<IEnumerable<Borrow>> GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit)
     {
         const string query = @"
-            SELECT * FROM Borrow 
+            SELECT 
+                id AS Id, 
+                patron AS PatronId, 
+                book AS BookId, 
+                borrowStatus AS Status, 
+                dueDate AS DueDate, 
+                borrowDate AS BorrowDate 
+            FROM Borrow  
             WHERE borrowDate = @BorrowDate 
             LIMIT @Limit OFFSET @Offset";
 
         using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(query, new 
+        return await connection.QueryAsync<Borrow>(query, new
         {
             BorrowDate = borrowDate,
             Limit = limit,
@@ -63,12 +77,19 @@ public class BorrowRepository : IBorrowRepository
     public async Task<IEnumerable<Borrow>> GetBorrowsByDueDate(DateTime dueDate, int offset, int limit)
     {
         const string query = @"
-            SELECT * FROM Borrow 
+            SELECT 
+                id AS Id, 
+                patron AS PatronId, 
+                book AS BookId, 
+                borrowStatus AS Status, 
+                dueDate AS DueDate, 
+                borrowDate AS BorrowDate 
+            FROM Borrow 
             WHERE dueDate = @DueDate 
             LIMIT @Limit OFFSET @Offset";
 
         using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(query, new 
+        return await connection.QueryAsync<Borrow>(query, new
         {
             DueDate = dueDate,
             Limit = limit,
@@ -79,7 +100,14 @@ public class BorrowRepository : IBorrowRepository
     public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int offset, int limit)
     {
         const string query = @"
-            SELECT * FROM Borrow 
+            SELECT 
+                id AS Id, 
+                patron AS PatronId, 
+                book AS BookId, 
+                borrowStatus AS Status, 
+                dueDate AS DueDate, 
+                borrowDate AS BorrowDate 
+            FROM Borrow 
             WHERE patron = @PatronId 
             LIMIT @Limit OFFSET @Offset";
 
@@ -92,20 +120,26 @@ public class BorrowRepository : IBorrowRepository
         });
     }
 
+
     public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int offset, int limit)
     {
         const string query = @"
-            SELECT * FROM Borrow 
+            SELECT id AS Id, 
+                patron AS PatronId, 
+                book AS BookId, 
+                borrowStatus AS Status, 
+                dueDate AS DueDate, 
+                borrowDate AS BorrowDate 
+            FROM Borrow 
             WHERE borrowStatus = @Status 
             LIMIT @Limit OFFSET @Offset";
 
         using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(query, new 
-        {
-            Status = (int)status,
-            Limit = limit,
-            Offset = offset
-        });
+        return await connection.QueryAsync<Borrow>(
+            query,
+            new { Status = (int)status, Limit = limit, Offset = offset }
+        );
+
     }
 
     public async Task<Borrow?> GetById(Guid id)
