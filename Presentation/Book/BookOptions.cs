@@ -89,7 +89,7 @@ public class BookOptions
         if (confirm)
         {
             Book newBook = new Book(bookId, bookTitle, bookAuthor, bookIsbn, bookGenre, bookPublicationYear);
-            await _bookRepository.CreateAsync(newBook);
+            await _bookRepository.Save(newBook);
             AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {newBook}");
         }
         else
@@ -112,7 +112,7 @@ public class BookOptions
         if (confirm)
         {
             Guid bookUUID = new Guid(bookId);
-            await _bookRepository.DeleteAsync(bookUUID);
+            await _bookRepository.Delete(bookUUID);
             AnsiConsole.MarkupLine("[bold italic red]Book deleted.[/]");
         }
         else
@@ -166,7 +166,7 @@ public class BookOptions
 
         while (true)
         {
-            var books = await _bookRepository.GetBooksByTitleAsync(bookTitle, page * pageSize, pageSize);
+            var books = await _bookRepository.GetBooksByTitle(bookTitle, page * pageSize, pageSize);
 
             AnsiConsole.MarkupLine("[bold]Books:[/]");
             foreach (var book in books)
@@ -210,7 +210,7 @@ public class BookOptions
 
         while (true)
         {
-            var books = await _bookRepository.GetBooksByAuthorAsync(bookAuthor, page * pageSize, pageSize);
+            var books = await _bookRepository.GetBooksByAuthor(bookAuthor, page * pageSize, pageSize);
 
             AnsiConsole.MarkupLine("[bold]Books:[/]");
             foreach (var book in books)
@@ -249,7 +249,7 @@ public class BookOptions
     private async Task SearchByIsbn()
     {
         long isbn = AnsiConsole.Ask<long>("Book ISBN: ");
-        var book = await _bookRepository.GetBookByIsbnAsync(isbn);
+        var book = await _bookRepository.GetBookByISBN(isbn);
 
         AnsiConsole.MarkupLine("[bold]Book:[/]");
         AnsiConsole.MarkupLine(book?.ToString() ?? "Book not found.");

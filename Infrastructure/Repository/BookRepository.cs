@@ -5,7 +5,7 @@ using Opcion1LosBorbotones.Domain.Repository;
 
 namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
-public class BookRepository : IBookRepository_
+public class BookRepository : IBookRepository
 {
     private readonly string _connectionString = 
         "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
@@ -41,7 +41,7 @@ public class BookRepository : IBookRepository_
         }
     }
 
-    public async Task<IEnumerable<Book?>> GetBooksByAuthor(string author, int offset, int limit)
+    public async Task<IEnumerable<Book>> GetBooksByAuthor(string author, int offset, int limit)
     {
         const string sql = @"
             SELECT * FROM Book
@@ -54,7 +54,7 @@ public class BookRepository : IBookRepository_
         }
     }
 
-    public async Task<IEnumerable<Book?>> GetBooksByGenre(BookGenre genre, int offset, int limit)
+    public async Task<IEnumerable<Book>> GetBooksByGenre(BookGenre genre, int offset, int limit)
     {
          const string sql = @"
             SELECT * FROM Book
@@ -67,7 +67,7 @@ public class BookRepository : IBookRepository_
         }
     }
 
-    public async Task<IEnumerable<Book?>> GetBooksByTitle(string title, int offset, int limit)
+    public async Task<IEnumerable<Book>> GetBooksByTitle(string title, int offset, int limit)
     {
         const string sql = @"
             SELECT * FROM Book
