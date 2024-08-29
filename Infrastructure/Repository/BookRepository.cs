@@ -21,34 +21,73 @@ public class BookRepository : IBookRepository_
         }
     }
 
-    public Task<IEnumerable<Book>> GetAll()
+    public async Task<IEnumerable<Book>> GetAll()
     {
-        throw new NotImplementedException();
+        const string sql = "SELECT * FROM Book";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Book>(sql);
+        }
     }
 
-    public Task<Book?> GetBookByISBN(long isbn)
+    public async Task<Book?> GetBookByISBN(long isbn)
     {
-        throw new NotImplementedException();
+        const string sql = "SELECT * FROM Book WHERE isbn = @Isbn";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryFirstOrDefaultAsync<Book>(sql, new { isbn });
+        }
     }
 
-    public Task<IEnumerable<Book?>> GetBooksByAuthor(string author)
+    public async Task<IEnumerable<Book?>> GetBooksByAuthor(string author, int offset, int limit)
     {
-        throw new NotImplementedException();
+        const string sql = @"
+            SELECT * FROM Book
+            WHERE author = @Author
+            LIMIT @Limit OFFSET @Offset";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Book>(sql, new { Author = author, Limit = limit, Offset = offset });
+        }
     }
 
-    public Task<IEnumerable<Book?>> GetBooksByGenre(BookGenre genre)
+    public async Task<IEnumerable<Book?>> GetBooksByGenre(BookGenre genre, int offset, int limit)
     {
-        throw new NotImplementedException();
+         const string sql = @"
+            SELECT * FROM Book
+            WHERE genre = @Genre
+            LIMIT @Limit OFFSET @Offset";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Book>(sql, new { Genre = (int)genre, Limit = limit, Offset = offset });
+        }
     }
 
-    public Task<IEnumerable<Book?>> GetBooksByTitle(string title)
+    public async Task<IEnumerable<Book?>> GetBooksByTitle(string title, int offset, int limit)
     {
-        throw new NotImplementedException();
+        const string sql = @"
+            SELECT * FROM Book
+            WHERE title = @Title
+            LIMIT @Limit OFFSET @Offset";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Book>(sql, new { Title = title, Limit = limit, Offset = offset });
+        }
     }
 
-    public Task<Book?> GetById(Guid id)
+    public async Task<Book?> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        const string sql = "SELECT * FROM Book WHERE id = @Id";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryFirstOrDefaultAsync<Book>(sql, new { Id = id });
+        }
     }
 
     public async Task<bool> Save(Book entity)
