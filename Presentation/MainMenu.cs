@@ -1,4 +1,5 @@
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
 using Opcion1LosBorbotones.Presentation.Reports;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
@@ -16,7 +17,8 @@ public class MainMenu
     {
         _bookOptions = new BookOptions(bookRepository);
         _patronOptions = new PatronOptions(patronRepository);
-        _borrowOptions = new BorrowOptions(borrowRepository);
+        var borrowService = new BorrowService(borrowRepository);
+        _borrowOptions = new BorrowOptions(borrowService);
         _reportsOptions = new ReportsOptions(borrowRepository);
     }
 
