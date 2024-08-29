@@ -7,8 +7,12 @@ namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
 public class BorrowRepository : IBorrowRepository
 {
-    private readonly string _connectionString =
-        "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
+    private readonly string _connectionString;
+
+    public BorrowRepository(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
 
     public async Task<bool> Delete(Guid id)
     {

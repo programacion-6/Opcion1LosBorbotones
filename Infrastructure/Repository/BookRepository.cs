@@ -7,8 +7,12 @@ namespace Opcion1LosBorbotones.Infrastructure.Repository;
 
 public class BookRepository : IBookRepository
 {
-    private readonly string _connectionString = 
-        "Host=localhost;Port=5432;Database=borbotones;Username=user;Password=password";
+    private readonly string _connectionString;
+
+    public BookRepository(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
 
     public async Task<bool> Delete(Guid id)
     {
