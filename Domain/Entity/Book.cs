@@ -8,11 +8,11 @@ public class Book : IEntity
     public string Title { get; }
     public string Author { get; }
     public long Isbn { get; }
-    public BookGenre Genre { get; }
+    public string Genre { get; }
     public DateTime PublicationYear { get; }
     
     
-    public Book(Guid id, string title, string author, long isbn, BookGenre genre, DateTime publicationYear)
+    public Book(Guid id, string title, string author, long isbn, string genre, DateTime publicationYear)
     {
         Id = id;
         Title = title;
