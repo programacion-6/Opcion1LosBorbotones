@@ -166,7 +166,8 @@ public class PatronOptions
                 .AddChoices(new[]
                 {
                     "1. Search Patron By Name",
-                    "2. Search Patron By Membership Number",
+                    "2. Search Patron By Contact Details",
+                    "3. Search Patron By Membership Number",
                     "4. Go back"
                 })
         );
@@ -176,10 +177,79 @@ public class PatronOptions
             case "1. Search Patron By Name":
                 await PaginatedSearchByName();
                 break;
-            case "2. Search Patron By Membership Number":
+            case "2. Search Patron By Contact Details":
+                await PaginatedSearchByContactDetails();
+                break;
+            case "3. Search Patron By Membership Number":
                 await SearchPatronsByMembershipNumber();
                 break;
         }
+    }
+
+    private async Task PaginatedSearchByName()
+    {
+        string patronName = AnsiConsole.Ask<string>("Patron name: ");
+        List<Patron> _results = [];
+        var pageSize = 1;
+        var currentPage = 1;
+        var exit = false;
+
+        while (!exit)
+        {
+            var patrons = await _patronRepository.GetPatronsByNameAsync(patronName, pageSize, currentPage * pageSize);
+
+            if (!patrons.Any() || patrons.Count() == _results.Count())
+            {
+                exit = true;
+                break;
+            }
+
+            AnsiConsole.Clear();
+            foreach (var result in patrons)
+            {
+                if (!_results.Any(r => r.Id == result.Id))
+                {
+                    _results.Add(result);
+                }
+            }
+
+            AnsiConsole.MarkupLine("[bold]Patrons:[/]");
+            foreach (var patron in patrons)
+            {
+                AnsiConsole.MarkupLine(patron.ToString());
+            }
+
+            var choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .AddChoices(["Next", "Stop"])
+            );
+
+            switch (choice)
+            {
+                case "Next":
+                    currentPage++;
+                    break;
+
+                case "Stop":
+                    exit = true;
+                    break;
+            }
+        }
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
+        Console.ReadLine();
+    }
+
+    private async Task PaginatedSearchByContactDetails()
+    {
+        long patronContact = AnsiConsole.Ask<long>("Enter the contact details [bold green]BO[/]: ");
+        var patronFound = await _patronRepository.GetPatronByContactDetailsAsync(patronContact);
+
+        AnsiConsole.MarkupLine("[bold]Patron:[/]");
+        AnsiConsole.MarkupLine($"{patronFound}");
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
+        Console.ReadLine();
     }
 
     private async Task SearchPatronsByMembershipNumber()
@@ -191,50 +261,6 @@ public class PatronOptions
         AnsiConsole.MarkupLine($"{patronByMembershipNumber}");
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
-        Console.ReadLine();
-    }
-
-    private async Task PaginatedSearchByName()
-    {
-        string patronName = AnsiConsole.Ask<string>("Patron name: ");
-        int page = 0;
-        const int pageSize = 10;
-
-        while (true)
-        {
-            var patrons = await _patronRepository.GetPatronsByNameAsync(patronName, page * pageSize, pageSize);
-
-            AnsiConsole.MarkupLine("[bold]Patrons:[/]");
-            foreach (var patron in patrons)
-            {
-                AnsiConsole.MarkupLine(patron.ToString());
-            }
-
-            var navigationOption = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("[bold green]Navigate:[/]")
-                    .AddChoices(new[] {
-                        "Next Page",
-                        "Previous Page",
-                        "Exit"
-                    })
-            );
-
-            if (navigationOption == "Next Page")
-            {
-                page++;
-            }
-            else if (navigationOption == "Previous Page" && page > 0)
-            {
-                page--;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
         Console.ReadLine();
     }
 }
