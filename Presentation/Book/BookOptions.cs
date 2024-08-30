@@ -8,10 +8,12 @@ namespace Opcion1LosBorbotones.Presentation;
 public class BookOptions
 {
     private readonly IBookRepository _bookRepository;
+    private readonly IEntityRequester<Book> _bookRequester;
 
-    public BookOptions(IBookRepository bookRepository)
+    public BookOptions(IBookRepository bookRepository, IEntityRequester<Book> bookRequester)
     {
         _bookRepository = bookRepository;
+        _bookRequester = bookRequester;
     }
 
     public async Task BookInitialOptions()
@@ -45,7 +47,7 @@ public class BookOptions
                     await DeleteBook();
                     break;
                 case "3. Edit a book":
-                    //TODO
+                    await EditBook();
                     break;
                 case "4. Search books":
                     await SearchBook();
@@ -63,30 +65,15 @@ public class BookOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Register a new book[/]");
 
-        Guid bookId = Guid.NewGuid();
-        string bookTitle = AnsiConsole.Ask<string>("Enter the book title: ");
-        string bookAuthor = AnsiConsole.Ask<string>("Enter the book author: ");
-        long bookIsbn = AnsiConsole.Ask<long>("Enter the book ISBN: ");
-        DateTime bookPublicationYear = AnsiConsole.Ask<DateTime>("Enter the published year (yyyy/MM/dd): ");
-        string bookGenre = AnsiConsole.Ask<string>("Enter the book genre: ");
-
-        AnsiConsole.MarkupLine("[bold green]Review the book details before confirming:[/]");
-        AnsiConsole.MarkupLine($"[bold]Title:[/] {bookTitle}");
-        AnsiConsole.MarkupLine($"[bold]Author:[/] {bookAuthor}");
-        AnsiConsole.MarkupLine($"[bold]ISBN:[/] {bookIsbn}");
-        AnsiConsole.MarkupLine($"[bold]Published Year:[/] {bookPublicationYear:yyyy/MM/dd}");
-        AnsiConsole.MarkupLine($"[bold]Genre:[/] {bookGenre}");
-
-        var confirm = AnsiConsole.Confirm("Do you want to save this book?");
-        if (confirm)
+        try
         {
-            Book newBook = new Book(bookId, bookTitle, bookAuthor, bookIsbn, bookGenre, bookPublicationYear);
+            var newBook = _bookRequester.AskForEntity();
             await _bookRepository.Save(newBook);
             AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {newBook}");
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic red]Book registration canceled.[/]");
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
         }
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
@@ -99,13 +86,44 @@ public class BookOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold red]Delete a book[/]");
 
-        string bookId = AnsiConsole.Ask<string>("Enter the book ID: ");
-        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this book?");
-        if (confirm)
+        var bookId = AnsiConsole.Ask<Guid>("Enter the book ID: ");
+        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to delete this book?");
+        if (wasConfirmed)
         {
-            Guid bookUUID = new Guid(bookId);
-            await _bookRepository.Delete(bookUUID);
+            await _bookRepository.Delete(bookId);
             AnsiConsole.MarkupLine("[bold italic red]Book deleted.[/]");
+        }
+        else
+        {
+            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+        }
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+        Console.ReadLine();
+    }
+
+    private async Task EditBook()
+    {
+        AnsiConsole.Clear();
+        Header.AppHeader();
+        AnsiConsole.MarkupLine("[bold yellow]Edit book[/]");
+
+        var bookId = AnsiConsole.Ask<Guid>("Enter the book ID: ");
+        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to edit this book?");
+
+        if (wasConfirmed)
+        {
+            try
+            {
+                var editedBook = _bookRequester.AskForEntity();
+                editedBook.Id = bookId;
+                await _bookRepository.Update(editedBook);
+                AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {editedBook}");
+            }
+            catch (Exception e)
+            {
+                AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
+            }
         }
         else
         {
