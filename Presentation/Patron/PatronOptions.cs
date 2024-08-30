@@ -8,10 +8,12 @@ namespace Opcion1LosBorbotones.Presentation;
 public class PatronOptions
 {
     private readonly IPatronRepository _patronRepository;
+    private readonly IEntityRequester<Patron> _patronRequester;
 
-    public PatronOptions(IPatronRepository patronRepository)
+    public PatronOptions(IPatronRepository patronRepository, IEntityRequester<Patron> patronRequester)
     {
         _patronRepository = patronRepository;
+        _patronRequester = patronRequester;
     }
 
     public async Task PatronInitialOptions()
@@ -64,27 +66,15 @@ public class PatronOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Register a new patron[/]");
 
-        Guid patronId = Guid.NewGuid();
-        string patronName = AnsiConsole.Ask<string>("Enter the patron name: ");
-        long patronMembershipNumber = AnsiConsole.Ask<long>("Enter the membership number: ");
-        long patronContactDetailNumber = AnsiConsole.Ask<long>("Enter the contact detail number: ");
-
-        AnsiConsole.MarkupLine("[bold green]Review the PATRON details before confirming:[/]");
-        AnsiConsole.MarkupLine($"[bold] Name [/]: {patronName}");
-        AnsiConsole.MarkupLine($"[bold] Membership number [/]: {patronMembershipNumber}");
-        AnsiConsole.MarkupLine($"[bold] Contact details [/]: {patronContactDetailNumber}");
-
-        var confirm = AnsiConsole.Confirm("[bold] Do you want to register this patron? [/]");
-
-        if (confirm)
+        try
         {
-            Patron newPatron = new Patron(patronId, patronName, patronMembershipNumber, patronContactDetailNumber);
+            var newPatron = _patronRequester.AskForEntity();
             await _patronRepository.Save(newPatron);
             AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {newPatron}");
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic red]Patron registration canceled.[/]");
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
         }
 
         AnsiConsole.Markup("[blue] Press Enter to go back to the Patron Menu.[/]");
@@ -97,13 +87,12 @@ public class PatronOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Deleted a patron[/]");
 
-        string patronId = AnsiConsole.Ask<string>("Enter the patron id: ");
-        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
+        var patronId = AnsiConsole.Ask<Guid>("Enter the patron id: ");
+        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
 
-        if (confirm)
+        if (wasConfirmed)
         {
-            Guid patronUUID = new Guid(patronId);
-            await _patronRepository.Delete(patronUUID);
+            await _patronRepository.Delete(patronId);
             AnsiConsole.MarkupLine("[bold italic red]Patron deleted.[/]");
         }
         else
@@ -121,32 +110,21 @@ public class PatronOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Edit patron[/]");
 
-        string patronId = AnsiConsole.Ask<string>("Enter the patron id: ");
-        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
+        var patronId = AnsiConsole.Ask<Guid>("Enter the patron id: ");
+        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to edit this patron?");
 
-        if (confirm)
+        if (wasConfirmed)
         {
-            Guid patronUUID = new Guid(patronId);
-            string patronName = AnsiConsole.Ask<string>("Enter the patron name: ");
-            long patronMembershipNumber = AnsiConsole.Ask<long>("Enter the membership number: ");
-            long patronContactDetailNumber = AnsiConsole.Ask<long>("Enter the contact detail number: ");
-
-            AnsiConsole.MarkupLine("[bold green]Review the PATRON details before confirming:[/]");
-            AnsiConsole.MarkupLine($"[bold] Name [/]: {patronName}");
-            AnsiConsole.MarkupLine($"[bold] Membership number [/]: {patronMembershipNumber}");
-            AnsiConsole.MarkupLine($"[bold] Contact details [/]: {patronContactDetailNumber}");
-
-            var editingConfirmation = AnsiConsole.Confirm("[bold] Do you want to save the update? [/]");
-
-            if (editingConfirmation)
+            try
             {
-                Patron newPatron = new Patron(patronUUID, patronName, patronMembershipNumber, patronContactDetailNumber);
-                await _patronRepository.Update(newPatron);
-                AnsiConsole.MarkupLine($"[bold italic green]Updated:[/] {newPatron}");
+                var editedPatron = _patronRequester.AskForEntity();
+                editedPatron.Id = patronId;
+                await _patronRepository.Update(editedPatron);
+                AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
             }
-            else
+            catch (Exception e)
             {
-                AnsiConsole.MarkupLine("[bold italic red]Patron edition cancelled.[/]");
+                AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
             }
         }
         else
