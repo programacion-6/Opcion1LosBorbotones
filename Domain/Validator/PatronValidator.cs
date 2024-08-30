@@ -84,14 +84,22 @@ public class PatronValidator
                 "Please provide valid contact details for the patron.");
         }
 
-        if (contactDetails.ToString().Length > 10)
+        if (contactDetails.ToString().Length != 8)
         {
             throw new PatronException(
-                "Contact details exceeds maximum length",
+                "Contact details must be 8 digits long in Bolivian format",
                 SeverityLevel.Medium,
-                "The contact details of the patron should not exceed 10 digits. " +
-                "Please provide valid contact details for the patron.");
+                "The contact details of the patron should be 8 digits long. " +
+                "Please provide a valid 8-digit contact number for the patron in Bolivian format.");
+        }
+
+        if (contactDetails < 60000000 || contactDetails > 79999999)
+        {
+            throw new PatronException(
+                "Contact details must be in the range of Bolivian phone numbers",
+                SeverityLevel.Medium,
+                "The contact details of the patron should fall within the valid range for Bolivian phone numbers.");
         }
     }
-    
+
 }
