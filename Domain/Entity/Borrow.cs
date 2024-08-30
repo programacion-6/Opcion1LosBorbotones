@@ -2,7 +2,7 @@ namespace Opcion1LosBorbotones.Domain.Entity;
 
 public class Borrow : IEntity
 {
-    public Guid Id { get; }
+    public Guid Id { get; set; }
     public Guid PatronId { get; }
     public Guid BookId { get; }
     public BorrowStatus Status { get; }
