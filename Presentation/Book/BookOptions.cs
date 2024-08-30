@@ -93,27 +93,47 @@ public class BookOptions
         Console.ReadLine();
     }
 
-    private async Task DeleteBook()
+    public async Task DeleteBook()
     {
-        AnsiConsole.Clear();
-        Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold red]Delete a book[/]");
-
-        string bookId = AnsiConsole.Ask<string>("Enter the book ID: ");
-        var confirm = AnsiConsole.Confirm("Are you sure you want to delete this book?");
-        if (confirm)
+        try
         {
-            Guid bookUUID = new Guid(bookId);
-            await _bookRepository.Delete(bookUUID);
-            AnsiConsole.MarkupLine("[bold italic red]Book deleted.[/]");
+            var books = (await _bookRepository.GetAll()).ToArray();
+
+            if (books == null || books.Length == 0)
+            {
+                AnsiConsole.MarkupLine("[red]There are no books available for deletion.[/]");
+                return;
+            }
+
+            var bookToDelete = AnsiConsole.Prompt(
+                new SelectionPrompt<Book>()
+                    .Title("Select the book you want to delete:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(books)
+                    .UseConverter(book => $"{book.Title} | {book.Author}")
+            );
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this book? [yellow]{bookToDelete.Title}[/]?");
+            if (wasConfirmed)
+            {
+                await _bookRepository.Delete(bookToDelete.Isbn);
+                AnsiConsole.MarkupLine("[green]The book has been successfully deleted.[/]");
+                AnsiConsole.Markup("[blue] Press Enter to go back to the Book Menu.[/]");
+                Console.ReadLine();
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+            }
         }
-        else
+        catch (System.Exception)
         {
-            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.Markup($"[red] The book cannot be deleted, try another book.[/]\n");
+            AnsiConsole.Markup("[blue] Press Enter to go back to the Book Menu.[/]");
+            Console.ReadLine();
         }
 
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
     }
 
     private async Task SearchBook()
