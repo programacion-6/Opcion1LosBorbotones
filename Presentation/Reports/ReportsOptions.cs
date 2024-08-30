@@ -98,7 +98,6 @@ public class ReportsOptions
         }
     }
 
-    
     private async Task ReportBooksOverdue()
     {
         int offset = 0;
@@ -146,14 +145,17 @@ public class ReportsOptions
         const int limit = 10;
         bool exit = false;
 
+        AnsiConsole.Clear();
+        Header.AppHeader();
+        AnsiConsole.MarkupLine("[bold yellow]Report patron borrowed[/]");
+        long patronMembershipNumber = AnsiConsole.Ask<long>("Enter the Patron MembershipNumber: ");
+
         while (!exit)
         {
             AnsiConsole.Clear();
             Header.AppHeader();
             AnsiConsole.MarkupLine("[bold yellow]Report patron borrowed[/]");
 
-            long membershipNumber = AnsiConsole.Ask<long>("Enter the Patron MembershipNumber: ");
-            long patronMembershipNumber = membershipNumber;
             string report = await _patronBorrowReport.GenerateReport(patronMembershipNumber, offset, limit);
             AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
 
@@ -162,9 +164,9 @@ public class ReportsOptions
                     .Title("[bold green]Choose an option:[/]")
                     .AddChoices(new[]
                     {
-                        "Next Page",
-                        "Previous Page",
-                        "Go back to the Report Menu"
+                    "Next Page",
+                    "Previous Page",
+                    "Go back to the Report Menu"
                     })
             );
 
