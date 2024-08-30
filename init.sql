@@ -119,7 +119,7 @@ SELECT
      'Lucas Walker'
     ])[floor(random() * 20 + 1)],
     floor(random() * 900000000 + 1000000000)::bigint,
-    ('591' || floor(random() * 10000000 + 10000000)::text)::bigint
+    ('591' || floor(random() * 20000000 + 60000000)::text)::bigint
 FROM generate_series(1, 20);
 
 WITH RandomPatrons AS (
