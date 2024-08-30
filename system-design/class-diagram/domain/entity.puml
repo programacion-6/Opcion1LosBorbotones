@@ -1,0 +1,57 @@
+@startuml
+package entity {
+
+    class Book {
+        + Id: Guid
+        + Title: string
+        + Author: string
+        + Isbn: long
+        + BookGenre: Genre
+        + PublicationYear: DateTime
+        + ToString(): string
+    }
+
+    class Patron {
+        + Id: Guid
+        + Name: string
+        + MembershipNumber: long
+        + ContactDetails: long
+        + ToString(): string
+    }
+
+    class Borrow {
+        + Id: Guid
+        + PatronId: Guid
+        + BookId: Guid
+        + BorrowStatus: Status
+        + DueDate: DateTime
+        + BorrowDate: DateTime
+        + ToString(): string
+    }
+
+    interface IEntity {
+        + Id: Guid
+    }
+    IEntity <.. Borrow
+    IEntity <.. Book
+    IEntity <.. Patron
+
+    enum BookGenre {
+        Thriller
+        Fantasy
+        Mystery
+        Horror
+        YoungAdult
+        Romance
+        Other
+    }
+
+    enum BorrowStatus {
+        Borrowed
+        Overdue
+        Returned
+        Reserved
+    }
+
+}
+@enduml

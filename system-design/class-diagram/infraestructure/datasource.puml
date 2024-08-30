@@ -1,0 +1,48 @@
+@startuml
+package datasource {
+    class BorrowDatasourceImplementation {
+        - connectionString: string
+        + CreateAsync(Borrow entity): Task<Borrow>
+        + ReadAsync(Guid id): Task<Borrow?>
+        + UpdateAsync(Borrow entity): Task<Borrow>
+        + DeleteAsync(Guid id): Task<bool>
+        + GetBorrowsByPatron(Guid patronId, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByBook(Guid bookId, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByStatus(BorrowStatus status, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByDueDate(DateTime dueDate, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetAllAsync(int offset, int limit): Task<IEnumerable<Borrow>>
+    }
+
+    class BookDatasourceImplementation {
+        - connectionString: string
+        + CreateAsync(Book entity): Task<Book>
+        + ReadAsync(Guid id): Task<Book?>
+        + UpdateAsync(Book entity): Task<Book>
+        + DeleteAsync(Guid id): Task<bool>
+        + GetAllAsync(int offset, int limit): Task<IEnumerable<Book>>
+        + GetBookByIsbnAsync(long isbn): Task<Book?>
+        + GetBooksByTitleAsync(string title, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByAuthorAsync(string author, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByGenreAsync(BookGenre genre, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByPublicationYearAsync(DateTime publicationYear, int offset, int limit): Task<IEnumerable<Book>>
+    }
+
+    class PatronDatasourceImplementation {
+        - connectionString: string
+        + CreateAsync(Patron entity): Task<Patron>
+        + ReadAsync(Guid id): Task<Patron?>
+        + UpdateAsync(Patron entity): Task<Patron>
+        + DeleteAsync(Guid id): Task<bool>
+        + GetAllAsync(int offset, int limit): Task<IEnumerable<Patron>>
+        + GetPatronsByNameAsync(string name, int offset, int limit): Task<IEnumerable<Patron>>
+        + GetPatronByMembershipAsync(long membershipNumber): Task<Patron?>
+        + GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit): Task<IEnumerable<Patron>>
+    }
+
+    IBorrowDatasource <.. BorrowDatasourceImplementation
+    IBorrowDatasource <.. BookDatasourceImplementation
+    IBorrowDatasource <.. PatronDatasourceImplementation
+
+}
+@enduml

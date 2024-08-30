@@ -3,8 +3,8 @@ package presentation {
     class MainMenu {
         - bookOptions: BookOptions
         - patronOptions: PatronOptions
-        + Task InitialMainMenu()
-        + Task InitializeApp()
+        + InitialMainMenu(): Task
+        + InitializeApp(): Task
         + {static} ShowProgressBar(): void
     }
 

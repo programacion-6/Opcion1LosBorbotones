@@ -1,0 +1,19 @@
+@startuml
+skinparam wrapWidth 200
+
+title Library System - Class diagram
+' domain
+!include domain/datasource.puml
+!include domain/entity.puml
+!include domain/repository.puml
+!include domain/services.puml
+
+' infraestructure/:
+!include infraestructure/datasource.puml
+!include infraestructure/repository.puml
+!include infraestructure/services.puml
+
+' presentation
+!include presentation.puml
+@enduml
+
