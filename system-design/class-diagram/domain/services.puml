@@ -1,13 +1,5 @@
 @startuml
 package services {
-    interface ISearcher {
-        + SearchPatronByName(string searchString, int offset, int limit): IEnumerable<Patron>
-        + SearchPatronByMembershipNumber(long searchLong): Task<Patron?>
-        + SearchBookByTile(string searchString, int offset, int limit): Task<IEnumerable<Book>>
-        + SearchBookByAuthor(string searchString, int offset, int limit): Task<IEnumerable<Book>>
-        + SearchBookByIsbn(long searchString): Task<Book?>
-    }
-
     interface IReport<T> {
         + GenerateReport(T entity, int offset, int limit): Task<string>
     }

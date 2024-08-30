@@ -1,5 +1,30 @@
 @startuml
 package presentation {
+
+    package handlers {
+        class BookRequesterByConsole {
+            - unrequestedBook: Book?
+            + AskForEntity(): Book
+            - ReceiveBookByConsole(): Book
+            - ConfirmBookReceived(Book bookReceived): Book?
+            - RenderBookReceived(Book bookReceived): void
+        }
+
+        class PatronRequesterByConsole {
+            - unrequestedPatron: Patron?
+            + AskForEntity(): Patron
+            - ReceivePatronByConsole(): Patron
+            - ConfirmPatronReceived(Patron patronReceived): Patron?
+            - RenderPatronReceived(Patron patronReceived): void
+        }
+
+        interface IEntityRequester<T: IEntity> {
+            + AskForEntity(): T
+        }
+        IEntityRequester <.. BookRequesterByConsole
+        IEntityRequester <.. PatronRequesterByConsole
+    }
+
     class ReportsOptions {
         - borrowStatusReport: BorrowStatusReport
         - patronBorrowReport: PatronBorrowReport
@@ -15,13 +40,16 @@ package presentation {
 
     class PatronOptions {
         - patronRepository: IPatronRepository
+        - patronRequester: IEntityRequester
         + PatronInitialOptions(): Task
         - RegisterNewPatron(): Task
         - DeletePatron(): Task
+        - EditPatron(): Task
         - SearchPatron(): Task
         - SearchPatronsByMembershipNumber(): Task
         - PaginatedSearchByName(): Task
     }
+    PatronOptions o-- IEntityRequester
 
     class BorrowOptions {
         + {static} BorrowInitialOptions(): void
@@ -30,14 +58,17 @@ package presentation {
 
     class BookOptions {
         - bookRepository: IBookRepository
+        - bookRequester: IEntityRequester
         + BookInitialOptions(): Task
         - RegisterNewBook(): Task
         - DeleteBook(): Task
+        - EditBook(): Task
         - SearchBook(): Task
         - PaginatedSearchByTitle(): Task
         - PaginatedSearchByAuthor(): Task
         - SearchByIsbn(): Task
     }
+    BookOptions o-- IEntityRequester
 
     class BorrowConsoleRenderer {
         + GetPatronId(): Guid
