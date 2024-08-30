@@ -1,5 +1,7 @@
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Domain.Validator;
+using Opcion1LosBorbotones.Domain.Validator.Exceptions.ConcreteException;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -9,11 +11,13 @@ public class PatronOptions
 {
     private readonly IPatronRepository _patronRepository;
     private readonly IEntityRequester<Patron> _patronRequester;
+    private readonly PatronValidator _patronValidator;
 
     public PatronOptions(IPatronRepository patronRepository, IEntityRequester<Patron> patronRequester)
     {
         _patronRepository = patronRepository;
         _patronRequester = patronRequester;
+        _patronValidator = new PatronValidator();
     }
 
     public async Task PatronInitialOptions()
@@ -69,8 +73,14 @@ public class PatronOptions
         try
         {
             var newPatron = _patronRequester.AskForEntity();
+            _patronValidator.ValidatePatron(newPatron);
             await _patronRepository.Save(newPatron);
             AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {newPatron}");
+        }
+        catch (PatronException patronException)
+        {
+            var errorMessage = $"[red bold]:warning: {patronException.Message} \n...{patronException.ResolutionSuggestion} [/]";
+            AnsiConsole.MarkupLine(errorMessage);
         }
         catch (Exception e)
         {
@@ -119,8 +129,14 @@ public class PatronOptions
             {
                 var editedPatron = _patronRequester.AskForEntity();
                 editedPatron.Id = patronId;
+                _patronValidator.ValidatePatron(editedPatron);
                 await _patronRepository.Update(editedPatron);
                 AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
+            }
+            catch (PatronException patronException)
+            {
+                var errorMessage = $"[red bold]:warning: {patronException.Message} \n...{patronException.ResolutionSuggestion} [/]";
+                AnsiConsole.MarkupLine(errorMessage);
             }
             catch (Exception e)
             {
