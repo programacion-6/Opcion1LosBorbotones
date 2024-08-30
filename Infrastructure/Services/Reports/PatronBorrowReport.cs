@@ -4,7 +4,7 @@ using Opcion1LosBorbotones.Domain.Repository;
 
 namespace Opcion1LosBorbotones.Infrastructure.Services.Reports;
 
-public class PatronBorrowReport : IReport<Guid>
+public class PatronBorrowReport : IReport<long>
 {
     private readonly IBorrowRepository _repository;
 
@@ -13,7 +13,7 @@ public class PatronBorrowReport : IReport<Guid>
         _repository = repository;
     }
 
-    public async Task<string> GenerateReport(Guid patronId, int offset, int limit)
+    public async Task<string> GenerateReport(long patronId, int offset, int limit)
     {
         StringBuilder report = new StringBuilder();
         IEnumerable<Borrow> borrows = await _repository.GetBorrowsByPatron(patronId, offset, limit);

@@ -152,9 +152,9 @@ public class ReportsOptions
             Header.AppHeader();
             AnsiConsole.MarkupLine("[bold yellow]Report patron borrowed[/]");
 
-            string patronId = AnsiConsole.Ask<string>("Enter the Patron ID: ");
-            Guid patronUUID = new Guid(patronId);
-            string report = await _patronBorrowReport.GenerateReport(patronUUID, offset, limit);
+            long membershipNumber = AnsiConsole.Ask<long>("Enter the Patron MembershipNumber: ");
+            long patronMembershipNumber = membershipNumber;
+            string report = await _patronBorrowReport.GenerateReport(patronMembershipNumber, offset, limit);
             AnsiConsole.MarkupLine($"[italic]{Markup.Escape(report)}[/]");
 
             var option = AnsiConsole.Prompt(
