@@ -129,26 +129,49 @@ public class BookOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Edit book[/]");
 
-        var bookId = AnsiConsole.Ask<Guid>("Enter the book ID: ");
-        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to edit this book?");
-
-        if (wasConfirmed)
+        try
         {
-            try
+            var books = (await _bookRepository.GetAll()).ToArray();
+
+            if (books == null || books.Length == 0)
             {
-                var editedBook = _bookRequester.AskForEntity();
-                editedBook.Id = bookId;
-                await _bookRepository.Update(editedBook);
-                AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {editedBook}");
+                AnsiConsole.MarkupLine("[red]There are no books available for editing.[/]");
+                return;
             }
-            catch (Exception e)
+
+            var bookToEdit = AnsiConsole.Prompt(
+                new SelectionPrompt<Book>()
+                    .Title("Select the book you want to edit:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(books)
+                    .UseConverter(book => $"{book.Title} | {book.Author}")
+            );
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this book? [yellow]{bookToEdit.Title}[/]?");
+
+            if (wasConfirmed)
             {
-                AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
+                try
+                {
+                    var editedBook = _bookRequester.AskForEntity();
+                    editedBook.Id = bookToEdit.Id;
+                    await _bookRepository.Update(editedBook);
+                    AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {editedBook}");
+                }
+                catch (Exception e)
+                {
+                    AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
+                }
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
         }
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
