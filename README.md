@@ -48,7 +48,7 @@ __Docs__
 
 ### Axel Ayala
 - [Eliminate interface redundancy for book management](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/46?milestone=403375) | __Status__ "DONE"
-- [Improve entities validations and exceptions](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/60?milestone=403375) | __Status__ "IN PROGRESS"
+- [Improve entities validations and exceptions](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/60?milestone=403375) | __Status__ "READY FOR TEST"
 
 ### Salet Gutierrez
 - [Borrow made by a user are not saved in the database](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/37?milestone=403375) | __Status__ "DONE"
