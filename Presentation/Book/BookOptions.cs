@@ -165,7 +165,8 @@ public class BookOptions
                 {
                     "1. Search Book By Title",
                     "2. Search Book By Author",
-                    "3. Search Book By ISBN",
+                    "3. Search Book By Genre",
+                    "4. Search Book By ISBN",
                     "4. Go back"
                 })
         );
@@ -178,21 +179,41 @@ public class BookOptions
             case "2. Search Book By Author":
                 await PaginatedSearchByAuthor();
                 break;
-            case "3. Search Book By ISBN":
+            case "3. Search Book By Genre":
+                await PaginatedSearchByGenre();
+                break;
+            case "4. Search Book By ISBN":
                 await SearchByIsbn();
                 break;
         }
     }
 
-    private async Task PaginatedSearchByTitle()
+    private async Task PaginatedSearchByGenre()
     {
-        string bookTitle = AnsiConsole.Ask<string>("Book title: ");
-        int page = 0;
-        const int pageSize = 10;
+        var bookGenre = AnsiConsole.Ask<string>("Book genre: ");
+        List<Book> _results = [];
+        var pageSize = 1;
+        var currentPage = 1;
+        var exit = false;
 
-        while (true)
+        while (!exit)
         {
-            var books = await _bookRepository.GetBooksByTitle(bookTitle, page * pageSize, pageSize);
+            var books = await _bookRepository.GetBooksByGenre(bookGenre, pageSize, currentPage * pageSize);
+
+            if (!books.Any() || books.Count() == _results.Count())
+            {
+                exit = true;
+                break;
+            }
+
+            AnsiConsole.Clear();
+            foreach (var result in books)
+            {
+                if (!_results.Any(r => r.Id == result.Id))
+                {
+                    _results.Add(result);
+                }
+            }
 
             AnsiConsole.MarkupLine("[bold]Books:[/]");
             foreach (var book in books)
@@ -200,27 +221,74 @@ public class BookOptions
                 AnsiConsole.MarkupLine(book.ToString());
             }
 
-            var navigationOption = AnsiConsole.Prompt(
+            var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold green]Navigate:[/]")
-                    .AddChoices(new[] {
-                    "Next Page",
-                    "Previous Page",
-                    "Exit"
-                    })
+                    .AddChoices(["Next", "Stop"])
             );
 
-            if (navigationOption == "Next Page")
+            switch (choice)
             {
-                page++;
+                case "Next":
+                    currentPage++;
+                    break;
+
+                case "Stop":
+                    exit = true;
+                    break;
             }
-            else if (navigationOption == "Previous Page" && page > 0)
+        }
+
+        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
+        Console.ReadLine();
+    }
+
+    private async Task PaginatedSearchByTitle()
+    {
+        var bookTitle = AnsiConsole.Ask<string>("Book title: ");
+        List<Book> _results = [];
+        var pageSize = 1;
+        var currentPage = 1;
+        var exit = false;
+
+        while (!exit)
+        {
+            var books = await _bookRepository.GetBooksByTitle(bookTitle, pageSize, currentPage * pageSize);
+
+            if (!books.Any() || books.Count() == _results.Count())
             {
-                page--;
-            }
-            else
-            {
+                exit = true;
                 break;
+            }
+
+            AnsiConsole.Clear();
+            foreach (var result in books)
+            {
+                if (!_results.Any(r => r.Id == result.Id))
+                {
+                    _results.Add(result);
+                }
+            }
+
+            AnsiConsole.MarkupLine("[bold]Books:[/]");
+            foreach (var book in books)
+            {
+                AnsiConsole.MarkupLine(book.ToString());
+            }
+
+            var choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .AddChoices(["Next", "Stop"])
+            );
+
+            switch (choice)
+            {
+                case "Next":
+                    currentPage++;
+                    break;
+
+                case "Stop":
+                    exit = true;
+                    break;
             }
         }
 
@@ -231,12 +299,29 @@ public class BookOptions
     private async Task PaginatedSearchByAuthor()
     {
         string bookAuthor = AnsiConsole.Ask<string>("Book author: ");
-        int page = 0;
-        const int pageSize = 10;
+        List<Book> _results = [];
+        var pageSize = 1;
+        var currentPage = 1;
+        var exit = false;
 
-        while (true)
+        while (!exit)
         {
-            var books = await _bookRepository.GetBooksByAuthor(bookAuthor, page * pageSize, pageSize);
+            var books = await _bookRepository.GetBooksByAuthor(bookAuthor, pageSize, currentPage * pageSize);
+
+            if (!books.Any() || books.Count() == _results.Count())
+            {
+                exit = true;
+                break;
+            }
+
+            AnsiConsole.Clear();
+            foreach (var result in books)
+            {
+                if (!_results.Any(r => r.Id == result.Id))
+                {
+                    _results.Add(result);
+                }
+            }
 
             AnsiConsole.MarkupLine("[bold]Books:[/]");
             foreach (var book in books)
@@ -244,27 +329,20 @@ public class BookOptions
                 AnsiConsole.MarkupLine(book.ToString());
             }
 
-            var navigationOption = AnsiConsole.Prompt(
+            var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("[bold green]Navigate:[/]")
-                    .AddChoices(new[] {
-                    "Next Page",
-                    "Previous Page",
-                    "Exit"
-                    })
+                    .AddChoices(["Next", "Stop"])
             );
 
-            if (navigationOption == "Next Page")
+            switch (choice)
             {
-                page++;
-            }
-            else if (navigationOption == "Previous Page" && page > 0)
-            {
-                page--;
-            }
-            else
-            {
-                break;
+                case "Next":
+                    currentPage++;
+                    break;
+
+                case "Stop":
+                    exit = true;
+                    break;
             }
         }
 
