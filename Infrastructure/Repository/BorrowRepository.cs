@@ -14,7 +14,7 @@ public class BorrowRepository : IBorrowRepository
         _connectionString = connectionString;
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(long id)
     {
         const string query = "DELETE FROM Borrow WHERE id = @Id";
 
