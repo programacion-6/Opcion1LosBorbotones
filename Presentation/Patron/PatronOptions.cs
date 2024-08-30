@@ -111,26 +111,49 @@ public class PatronOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Edit patron[/]");
 
-        var patronId = AnsiConsole.Ask<Guid>("Enter the patron id: ");
-        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to edit this patron?");
-
-        if (wasConfirmed)
+        try
         {
-            try
+            var patrons = (await _patronRepository.GetAll()).ToArray();
+
+            if (patrons == null || patrons.Length == 0)
             {
-                var editedPatron = _patronRequester.AskForEntity();
-                editedPatron.Id = patronId;
-                await _patronRepository.Update(editedPatron);
-                AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
+                AnsiConsole.MarkupLine("[red]No patrons available for editing.[/]");
+                return;
             }
-            catch (Exception e)
+
+            var patronToEdit = AnsiConsole.Prompt(
+                new SelectionPrompt<Patron>()
+                    .Title("Select the patron you want to edit:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(patrons)
+                    .UseConverter(patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}")
+            );
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this patron? [yellow]{patronToEdit.Name}[/]");
+
+            if (wasConfirmed)
             {
-                AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
+                try
+                {
+                    var editedPatron = _patronRequester.AskForEntity();
+                    editedPatron.Id = patronToEdit.Id;
+                    await _patronRepository.Update(editedPatron);
+                    AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
+                }
+                catch (Exception e)
+                {
+                    AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
+                }
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
         }
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
