@@ -104,26 +104,26 @@ public class BorrowRepository : IBorrowRepository
     public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(long patronMembershipNumber, int offset, int limit)
     {
         const string query = @"
-            SELECT 
-                id AS Id, 
-                patron AS PatronId, 
-                book AS BookId, 
-                borrowStatus AS Status, 
-                dueDate AS DueDate, 
-                borrowDate AS BorrowDate 
-            FROM Borrow 
-            WHERE patron = @PatronId 
-            LIMIT @Limit OFFSET @Offset";
+        SELECT 
+            b.id AS Id, 
+            b.patron AS PatronId, 
+            b.book AS BookId, 
+            b.borrowStatus AS Status, 
+            b.dueDate AS DueDate, 
+            b.borrowDate AS BorrowDate 
+        FROM Borrow b
+        JOIN Patron p ON b.patron = p.id
+        WHERE p.MembershipNumber = @MembershipNumber
+        LIMIT @Limit OFFSET @Offset";
 
         using var connection = new NpgsqlConnection(_connectionString);
         return await connection.QueryAsync<Borrow>(query, new
         {
-            //PatronId = patronId,
+            MembershipNumber = patronMembershipNumber,
             Limit = limit,
             Offset = offset
         });
     }
-
 
     public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int offset, int limit)
     {
