@@ -97,12 +97,12 @@ public class PatronOptions
         Header.AppHeader();
         AnsiConsole.MarkupLine("[bold yellow]Deleted a patron[/]");
 
-        string patronId = AnsiConsole.Ask<string>("Enter the patron id: ");
+        long patronId = AnsiConsole.Ask<long>("Enter the patron member number: ");
         var confirm = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
 
         if (confirm)
         {
-            Guid patronUUID = new Guid(patronId);
+            long patronUUID = patronId;
             await _patronRepository.Delete(patronUUID);
             AnsiConsole.MarkupLine("[bold italic red]Patron deleted.[/]");
         }
