@@ -3,8 +3,8 @@ package services {
     interface IReport<T> {
         + GenerateReport(T entity, int offset, int limit): Task<string>
     }
-    IReport <.. BorrowStatusReport
-    IReport <.. PatronBorrowReport
+    IReport <|.. BorrowStatusReport
+    IReport <|.. PatronBorrowReport
 }
 @enduml
 

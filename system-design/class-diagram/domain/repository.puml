@@ -34,9 +34,9 @@ package repository {
          GetById(Guid id): Task<T?>
          GetAll(): Task<IEnumerable<T>>
     }
-    IRepository <.. IBookRepository
-    IRepository <.. IPatronRepository
-    IRepository <.. IBorrowRepository
+    IRepository <|.. IBookRepository
+    IRepository <|.. IPatronRepository
+    IRepository <|.. IBorrowRepository
 }
 @enduml
 

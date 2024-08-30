@@ -1,0 +1,40 @@
+@startuml
+package validator {
+    package exceptions {
+        enum SeverityLevel {
+            Low,
+            Medium,
+            High,
+            Critical
+        }
+
+        class CustomException {
+            + Severity: SeverityLevel
+            + ResolutionSuggestion: string
+        }
+        CustomException <|-- PatronException
+        CustomException <|-- BookException
+        CustomException --( Exception
+        CustomException *-- SeverityLevel
+    }
+
+    class BookValidator {
+        + ValidateBook(Book book): void
+        - ValidateTitle(string title): void
+        - ValidateAuthor(string author): void
+        - ValidateISBN(long isbn): void
+        - ValidateGenreBook(string genre): void
+        - ValidatePublicationYear(DateTime +ationYear): void
+        - ValidateLengthString(string value, int maxLength, string fieldName): void
+        - ValidateNullOrWhiteSpace(string value, string fieldName): void
+    }
+
+    class PatronValidator {
+        + ValidatePatron(Patron patron): void
+        - ValidateName(string name): void
+        - ValidateMembershipNumber(long membershipNumber): void
+        - ValidateContactDetails(long contactDetails): void
+    }
+}
+@enduml
+

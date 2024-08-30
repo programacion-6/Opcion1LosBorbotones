@@ -23,7 +23,7 @@ package services {
         interface IBorrowService {
             RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
         }
-        IBorrowService <.. BorrowService
+        IBorrowService <|.. BorrowService
     }
 }
 @enduml

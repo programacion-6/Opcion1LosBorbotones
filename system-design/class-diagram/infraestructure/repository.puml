@@ -40,8 +40,8 @@ package repository {
         + Update(Patron entity): Task<bool>
     }
 
-    IBookRepository <.. BookRepository
-    IBorrowRepository <.. BorrowRepository
-    IPatronRepository <.. PatronRepository
+    IBookRepository <|.. BookRepository
+    IBorrowRepository <|.. BorrowRepository
+    IPatronRepository <|.. PatronRepository
 }
 @enduml

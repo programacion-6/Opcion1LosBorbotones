@@ -1,8 +1,10 @@
 @startuml
 'skinparam wrapWidth 200
 skinparam linetype polyline
-
 title Library System - Class diagram
+
+!include domain/validator.puml
+
 ' presentation
 !include presentation.puml
 

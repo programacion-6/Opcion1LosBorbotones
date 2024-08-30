@@ -32,9 +32,9 @@ package entity {
     interface IEntity {
         + Id: Guid
     }
-    IEntity <.. Borrow
-    IEntity <.. Book
-    IEntity <.. Patron
+    IEntity <|.. Borrow
+    IEntity <|.. Book
+    IEntity <|.. Patron
 
     enum BorrowStatus {
         Borrowed
