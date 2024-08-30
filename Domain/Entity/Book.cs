@@ -4,7 +4,7 @@ namespace Opcion1LosBorbotones.Domain;
 
 public class Book : IEntity
 {
-    public Guid Id { get; }
+    public Guid Id { get; set; }
     public string Title { get; }
     public string Author { get; }
     public long Isbn { get; }
