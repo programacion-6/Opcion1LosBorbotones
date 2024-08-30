@@ -1,5 +1,7 @@
 using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Domain.Validator;
+using Opcion1LosBorbotones.Domain.Validator.Exceptions.ConcreteException;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -9,11 +11,13 @@ public class BookOptions
 {
     private readonly IBookRepository _bookRepository;
     private readonly IEntityRequester<Book> _bookRequester;
+    private readonly BookValidator _bookValidator;
 
     public BookOptions(IBookRepository bookRepository, IEntityRequester<Book> bookRequester)
     {
         _bookRepository = bookRepository;
         _bookRequester = bookRequester;
+        _bookValidator = new BookValidator();
     }
 
     public async Task BookInitialOptions()
@@ -68,8 +72,14 @@ public class BookOptions
         try
         {
             var newBook = _bookRequester.AskForEntity();
+            _bookValidator.ValidateBook(newBook);
             await _bookRepository.Save(newBook);
             AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {newBook}");
+        }
+        catch (BookException bookException)
+        {
+            var errorMessage = $"[red bold]:warning: {bookException.Message} \n...{bookException.ResolutionSuggestion} [/]";
+            AnsiConsole.MarkupLine(errorMessage);
         }
         catch (Exception e)
         {
@@ -156,8 +166,14 @@ public class BookOptions
                 {
                     var editedBook = _bookRequester.AskForEntity();
                     editedBook.Id = bookToEdit.Id;
+                    _bookValidator.ValidateBook(editedBook);
                     await _bookRepository.Update(editedBook);
                     AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {editedBook}");
+                }
+                catch (BookException bookException)
+                {
+                    var errorMessage = $"[red bold]:warning: {bookException.Message} \n...{bookException.ResolutionSuggestion} [/]";
+                    AnsiConsole.MarkupLine(errorMessage);
                 }
                 catch (Exception e)
                 {

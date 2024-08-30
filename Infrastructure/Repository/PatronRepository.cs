@@ -90,6 +90,8 @@ public class PatronRepository : IPatronRepository
                 membershipNumber = @MembershipNumber,
                 contactDetails = @ContactDetails;";
 
+        entity.ContactDetails = long.Parse($"591{entity.ContactDetails:D8}");
+
         await using var connection = new NpgsqlConnection(_connectionString);
         var result = await connection.ExecuteAsync(query, new
         {
@@ -110,6 +112,8 @@ public class PatronRepository : IPatronRepository
                 membershipNumber = @MembershipNumber,
                 contactDetails = @ContactDetails
             WHERE id = @Id;";
+
+        entity.ContactDetails = long.Parse($"591{entity.ContactDetails:D8}");
 
         await using var connection = new NpgsqlConnection(_connectionString);
         var result = await connection.ExecuteAsync(query, new
