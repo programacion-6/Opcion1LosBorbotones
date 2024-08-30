@@ -1,54 +1,47 @@
 @startuml
-package datasource {
+package repository {
 
-    class BookRepositoryImplementation {
-        - dataSource: IBookDatasourc
-        - {static} instance: BookRepositoryImplementation
-        + {static} GetInstance(): BookRepositoryImplementation
-        + CreateAsync(Book entity): Task<Book>
-        + ReadAsync(Guid id): Task<Book?>
-        + UpdateAsync(Book entity): Task<Book>
-        + DeleteAsync(Guid id): Task<bool>
-        + GetAllAsync(int offset, int limit): Task<IEnumerable<Book>>
-        + GetBooksByTitleAsync(string title, int offset, int limit): Task<IEnumerable<Book>>
-        + GetBooksByAuthorAsync(string author, int offset, int limit): Task<IEnumerable<Book>>
-        + GetBookByIsbnAsync(long isbn): Task<Book?>
-        + GetBooksByGenreAsync(BookGenre genre, int offset, int limit): Task<IEnumerable<Book>>
-        + GetBooksByPublicationYearAsync(DateTime publicationYear, int offset, int limit): Task<IEnumerable<Book>>
+    class BookRepository {
+        - connectionString: string
+        + Delete(Guid id): Task<bool>
+        + GetAll(): Task<IEnumerable<Book>>
+        + GetBookByISBN(long isbn): Task<Book?>
+        + GetBooksByAuthor(string author, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByGenre(string genre, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByTitle(string title, int offset, int limit): Task<IEnumerable<Book>>
+        + GetById(Guid id): Task<Book?>
+        + Save(Book entity): Task<bool>
+        + Update(Book entity): Task<bool>
     }
 
-    class BorrowRepositoryImplementation {
-        - dataSource: IBorrowDatasource
-        - {static} instance: BorrowRepositoryImplementation
-        + {static} GetInstance(): BorrowRepositoryImplementation
-        + CreateAsync(Borrow entity): Task<Borrow>
-        + ReadAsync(Guid id): Task<Borrow?>
-        + UpdateAsync(Borrow entity): Task<Borrow>
-        + DeleteAsync(Guid id): Task<bool>
-        + GetAllAsync(int offset, int limit): Task<IEnumerable<Borrow>>
-        + GetBorrowsByPatron(Guid patronId,int offset, int limit): Task<IEnumerable<Borrow>>
+    class BorrowRepository {
+        - connectionString: string
+        + Delete(Guid id): Task<bool>
+        + GetAll(): Task<IEnumerable<Borrow>>
         + GetBorrowsByBook(Guid bookId, int offset, int limit): Task<IEnumerable<Borrow>>
-        + GetBorrowsByStatus(BorrowStatus status, int offset, int limit): Task<IEnumerable<Borrow>>
-        + GetBorrowsByDueDate(DateTime dueDate, int offset, int limit): Task<IEnumerable<Borrow>>
         + GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByDueDate(DateTime dueDate, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByPatron(Guid patronId, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByStatus(BorrowStatus status, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetById(Guid id): Task<Borrow?>
+        + Save(Borrow entity): Task<bool>
+        + Update(Borrow entity): Task<bool>
     }
 
-    class PatronRepositoryImplementation {
-        - dataSource: IPatronDatasource
-        - {static} instance: PatronRepositoryImplementation
-        + {static} GetInstance(): PatronRepositoryImplementation 
-        + CreateAsync(Patron entity): Task<Patron>
-        + ReadAsync(Guid id): Task<Patron?>
-        + UpdateAsync(Patron entity): Task<Patron>
-        + DeleteAsync(Guid id): Task<bool>
-        + GetAllAsync(int offset, int limit): Task<IEnumerable<Patron>>
+    class PatronRepository {
+        - connectionString: string
+        + Delete(Guid id): Task<bool>
+        + GetAll(): Task<IEnumerable<Patron>>
+        + GetById(Guid id): Task<Patron?>
+        + GetPatronByMembershipAsync(long membershipNumber): Task<Patron?>
+        + GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit): Task<IEnumerable<Patron?>>
         + GetPatronsByNameAsync(string name, int offset, int limit): Task<IEnumerable<Patron>>
-        + GetPatronByMembershipAsync(long membership): Task<Patron?>
-        + GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit): Task<IEnumerable<Patron>>
+        + Save(Patron entity): Task<bool>
+        + Update(Patron entity): Task<bool>
     }
 
-    IBookRepository <.. BookRepositoryImplementation
-    IBookRepository <.. BorrowRepositoryImplementation
-    IBookRepository <.. PatronRepositoryImplementation
+    IBookRepository <.. BookRepository
+    IBorrowRepository <.. BorrowRepository
+    IPatronRepository <.. PatronRepository
 }
 @enduml

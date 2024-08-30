@@ -6,7 +6,7 @@ package entity {
         + Title: string
         + Author: string
         + Isbn: long
-        + BookGenre: Genre
+        + Genre: string
         + PublicationYear: DateTime
         + ToString(): string
     }
@@ -23,7 +23,7 @@ package entity {
         + Id: Guid
         + PatronId: Guid
         + BookId: Guid
-        + BorrowStatus: Status
+        + Status: BorrowStatus
         + DueDate: DateTime
         + BorrowDate: DateTime
         + ToString(): string
@@ -36,22 +36,13 @@ package entity {
     IEntity <.. Book
     IEntity <.. Patron
 
-    enum BookGenre {
-        Thriller
-        Fantasy
-        Mystery
-        Horror
-        YoungAdult
-        Romance
-        Other
-    }
-
     enum BorrowStatus {
         Borrowed
         Overdue
         Returned
         Reserved
     }
-
+    BorrowStatus *-- Borrow
 }
 @enduml
+

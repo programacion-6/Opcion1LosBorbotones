@@ -1,18 +1,12 @@
 @startuml
 package presentation {
-    class MainMenu {
-        - bookOptions: BookOptions
-        - patronOptions: PatronOptions
-        + InitialMainMenu(): Task
-        + InitializeApp(): Task
-        + {static} ShowProgressBar(): void
-    }
-
     class ReportsOptions {
-        + {static} ReportInitialOptions(): void
-        - {static} ReportBooksCurrentlyBorrowed(): void
-        - {static} ReportBooksOverdue(): void
-        - {static} ReportPatronBorrowed(): void
+        - borrowStatusReport: BorrowStatusReport
+        - patronBorrowReport: PatronBorrowReport
+        + ReportInitialOptions(): Task
+        - ReportBooksCurrentlyBorrowed(): Task
+        - ReportBooksOverdue(): Task
+        - ReportPatronBorrowed(): Task
     }
 
     class Header {
@@ -32,7 +26,6 @@ package presentation {
     class BorrowOptions {
         + {static} BorrowInitialOptions(): void
         - {static} RegisterNewBorrow(BorrowRepositoryImplementation repository): void
-
     }
 
     class BookOptions {
@@ -45,5 +38,34 @@ package presentation {
         - PaginatedSearchByAuthor(): Task
         - SearchByIsbn(): Task
     }
+
+    class BorrowConsoleRenderer {
+        + GetPatronId(): Guid
+        + GetBookId(): Guid
+        + DisplayBorrowDetails(Borrow borrow): void
+        + ConfirmBorrow(): bool
+    }
+
+    interface IBorrowConsoleRenderer {
+        + GetPatronId(): Guid
+        + GetBookId(): Guid
+        + DisplayBorrowDetails(Borrow borrow): void
+        + ConfirmBorrow(): bool
+    }
+    IBorrowConsoleRenderer <.. BorrowConsoleRenderer
+
+    class MainMenu {
+        - bookOptions: BookOptions
+        - patronOptions: PatronOptions
+        - borrowOptions: BorrowOptions
+        - reportsOptions: ReportsOptions
+        + InitialMainMenu(): Task
+        + InitializeApp(): Task
+        + {static} void ShowProgressBar()
+    }
+    MainMenu o-- BorrowOptions
+    MainMenu o-- BookOptions
+    MainMenu o-- PatronOptions
+    MainMenu o-- ReportsOptions
 }
 @enduml

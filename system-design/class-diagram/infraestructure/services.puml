@@ -1,36 +1,30 @@
 @startuml
 package services {
-
-    package mapper {
-        class BookMapper {
-            + {static} ToEntity(NpgsqlDataReader response): Book
-        }
-
-        class BorrowMapper {
-            + {static} ToEntity(NpgsqlDataReader response): Borrow
-        }
-
-        class PatronMapper {
-            + {static} ToEntity(NpgsqlDataReader response): Patron
-        }
-
-        IMapper <.. BookMapper
-        IMapper <.. BorrowMapper
-        IMapper <.. PatronMapper
-    }
-
     package reports {
         class BorrowStatusReport {
+            - repository: IBorrowRepository
             + GenerateReport(BorrowStatus borrowStatus, int offset, int limit): Task<string>
         }
+        BorrowStatusReport *-- ReportsOptions
 
         class PatronBorrowReport {
+            - repository: IBorrowRepository
             + GenerateReport(Guid patronId, int offset, int limit): Task<string>
         }
-
-        IReport <.. BorrowStatusReport
-        IReport <.. PatronBorrowReport
+        PatronBorrowReport *-- ReportsOptions
     }
 
+    package borrows {
+        class BorrowService {
+            - borrowRepository: IBorrowRepository
+            + RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+        }
+
+        interface IBorrowService {
+            RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+        }
+        IBorrowService <.. BorrowService
+    }
 }
 @enduml
+

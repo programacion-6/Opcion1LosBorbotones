@@ -1,0 +1,42 @@
+@startuml
+package repository {
+    interface IBookRepository {
+        + GetBookByIsbn(long isbn): Task<Book?>
+        + GetBooksByTitle(string title, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByAuthor(string author, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByGenre(BookGenre genre, int offset, int limit): Task<IEnumerable<Book>>
+        + GetBooksByPublicationYear(DateTime publicationYear, int offset, int limit): Task<IEnumerable<Book>>
+    }
+    IBorrowRepository *-- BookOptions
+
+    interface IPatronRepository {
+        + GetPatronsByNameAsync(string name, int offset, int limit): Task<IEnumerable<Patron>>
+        + GetPatronByMembershipAsync(long membership): Task<Patron?>
+        + GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit): Task<IEnumerable<Patron>>
+    }
+    IPatronRepository *-- PatronOptions
+
+    interface IBorrowRepository {
+        + GetBorrowsByPatron(Guid patronId, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByBook(Guid bookId, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByStatus(BorrowStatus status, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByDueDate(DateTime dueDate, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit): Task<IEnumerable<Borrow>>
+    }
+    IBorrowRepository o-- BorrowStatusReport
+    IBorrowRepository o-- PatronBorrowReport
+    IBorrowRepository o-- BorrowService
+
+    interface IRepository<T: IEntity> {
+         Save(T entity): Task<bool>
+         Update(T entity): Task<bool>
+         Delete(Guid id): Task<bool>
+         GetById(Guid id): Task<T?>
+         GetAll(): Task<IEnumerable<T>>
+    }
+    IRepository <.. IBookRepository
+    IRepository <.. IPatronRepository
+    IRepository <.. IBorrowRepository
+}
+@enduml
+
