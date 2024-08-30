@@ -13,10 +13,11 @@ public class PatronBorrowReport : IReport<long>
         _repository = repository;
     }
 
-    public async Task<string> GenerateReport(long patronId, int offset, int limit)
+    public async Task<string> GenerateReport(long patronMembershipNumber, int offset, int limit)
     {
         StringBuilder report = new StringBuilder();
-        IEnumerable<Borrow> borrows = await _repository.GetBorrowsByPatron(patronId, offset, limit);
+        IEnumerable<Borrow> borrows = 
+                    await _repository.GetBorrowsByPatron(patronMembershipNumber, offset, limit);
 
         foreach (var borrow in borrows)
         {
