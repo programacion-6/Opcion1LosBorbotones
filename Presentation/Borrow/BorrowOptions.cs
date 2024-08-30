@@ -54,10 +54,22 @@ public class BorrowOptions
             AnsiConsole.Clear();
             Header.AppHeader();
             AnsiConsole.MarkupLine("[bold yellow]Register a new borrow[/]");
-            var patronUUID = _borrowConsoleRenderer.GetPatronId();
-            var bookUUID = _borrowConsoleRenderer.GetBookId();
 
-            var borrow = await _borrowService.RegisterNewBorrow(patronUUID, bookUUID);
+            var isbn = _borrowConsoleRenderer.GetISBN();
+            var membershipNumber = _borrowConsoleRenderer.GetMembershipNumber();
+
+            var bookId = await _borrowService.GetBookIdByISBN(isbn);
+            var patronId = await _borrowService.GetPatronIdByMembershipNumber(membershipNumber);
+
+            if (bookId == Guid.Empty || patronId == Guid.Empty)
+            {
+                AnsiConsole.MarkupLine("[bold red]Invalid ISBN or Membership Number[/]");
+                AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
+                Console.ReadLine();
+                return;
+            }
+
+            var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
 
             _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
 

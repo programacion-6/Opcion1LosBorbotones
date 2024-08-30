@@ -5,16 +5,16 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public class BorrowConsoleRenderer : IBorrowConsoleRenderer
 {
-    public Guid GetPatronId()
+    public long GetMembershipNumber()
     {
-        string patronId = AnsiConsole.Ask<string>("What patron id do you want to register?: ");
-        return new Guid(patronId);
+        long patronId = AnsiConsole.Ask<long>("What patron Membership Number do you want to register?: ");
+        return patronId;
     }
 
-    public Guid GetBookId()
+    public long GetISBN()
     {
-        string bookId = AnsiConsole.Ask<string>("What book id do you want to borrow?: ");
-        return new Guid(bookId);
+        long bookId = AnsiConsole.Ask<long>("What book ISBN do you want to borrow?: ");
+        return bookId;
     }
 
     public void DisplayBorrowDetails(Borrow borrow)

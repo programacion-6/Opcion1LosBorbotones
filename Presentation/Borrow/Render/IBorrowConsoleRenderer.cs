@@ -4,8 +4,8 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public interface IBorrowConsoleRenderer
 {
-    Guid GetPatronId();
-    Guid GetBookId();
+    long GetMembershipNumber();
+    long GetISBN();
     void DisplayBorrowDetails(Borrow borrow);
     bool ConfirmBorrow();
 }

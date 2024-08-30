@@ -26,7 +26,7 @@ public class Program
         IEntityRequester<Book> bookRequester = new BookRequesterByConsole();
         IEntityRequester<Patron> patronRequester = new PatronRequesterByConsole();
 
-        var borrowService = new BorrowService(borrowRepository);
+        var borrowService = new BorrowService(borrowRepository, bookRepository, patronRepository);
 
         var bookOptions = new BookOptions(bookRepository, bookRequester);
         var patronOptions = new PatronOptions(patronRepository, patronRequester);

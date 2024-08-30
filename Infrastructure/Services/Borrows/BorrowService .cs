@@ -6,10 +6,26 @@ namespace Opcion1LosBorbotones.Infrastructure.Services.Borrows;
 public class BorrowService : IBorrowService
 {
     private readonly IBorrowRepository _borrowRepository;
+    private readonly IBookRepository _bookRepository;
+    private readonly IPatronRepository _patronRepository;
 
-    public BorrowService(IBorrowRepository borrowRepository)
+    public BorrowService(IBorrowRepository borrowRepository, IBookRepository bookRepository, IPatronRepository patronRepository)
     {
         _borrowRepository = borrowRepository;
+        _bookRepository = bookRepository;
+        _patronRepository = patronRepository;
+    }
+
+    public async Task<Guid> GetBookIdByISBN(long isbn)
+    {
+        var book = await _bookRepository.GetBookByISBN(isbn);
+        return book?.Id ?? Guid.Empty;
+    }
+
+    public async Task<Guid> GetPatronIdByMembershipNumber(long membershipNumber)
+    {
+        var patron = await _patronRepository.GetPatronByMembershipAsync(membershipNumber);
+        return patron?.Id ?? Guid.Empty;
     }
 
     public async Task<Borrow> RegisterNewBorrow(Guid patronUUID, Guid bookUUID)
