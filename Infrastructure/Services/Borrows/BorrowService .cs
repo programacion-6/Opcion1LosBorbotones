@@ -30,14 +30,39 @@ public class BorrowService : IBorrowService
 
     public async Task<Borrow> RegisterNewBorrow(Guid patronUUID, Guid bookUUID)
     {
+        await EnsureBookIsAvailable(bookUUID);
+
+        Borrow newBorrow = CreateBorrow(patronUUID, bookUUID);
+
+        await SaveBorrow(newBorrow);
+
+        return newBorrow;
+    }
+
+    private async Task EnsureBookIsAvailable(Guid bookUUID)
+    {
+        var borrowsByBook = await _borrowRepository.GetBorrowsByBook(bookUUID, 0, int.MaxValue);
+        var activeBorrowForBook = borrowsByBook
+            .FirstOrDefault(borrow => borrow.Status == BorrowStatus.Borrowed || borrow.Status == BorrowStatus.Overdue);
+
+        if (activeBorrowForBook != null)
+        {
+            throw new InvalidOperationException("The book is already borrowed or overdue.");
+        }
+    }
+
+    private Borrow CreateBorrow(Guid patronUUID, Guid bookUUID)
+    {
         Guid borrowUUID = Guid.NewGuid();
         BorrowStatus borrowStatus = BorrowStatus.Borrowed;
         DateTime borrowDate = DateTime.Today;
-        DateTime dueDate = DateTime.Today.AddDays(15);
+        DateTime dueDate = borrowDate.AddDays(15);
 
-        Borrow newBorrow = new Borrow(borrowUUID, patronUUID, bookUUID, borrowStatus, dueDate, borrowDate);
-        await _borrowRepository.Save(newBorrow);
+        return new Borrow(borrowUUID, patronUUID, bookUUID, borrowStatus, dueDate, borrowDate);
+    }
 
-        return newBorrow;
+    private async Task SaveBorrow(Borrow borrow)
+    {
+        await _borrowRepository.Save(borrow);
     }
 }
