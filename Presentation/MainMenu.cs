@@ -12,12 +12,12 @@ public class MainMenu
     private BorrowOptions _borrowOptions;
     private ReportsOptions _reportsOptions;
 
-    public MainMenu(IBookRepository bookRepository, IPatronRepository patronRepository, IBorrowRepository borrowRepository)
+    public MainMenu(BookOptions bookOptions, PatronOptions patronOptions, BorrowOptions borrowOptions, ReportsOptions reportsOptions)
     {
-        _bookOptions = new BookOptions(bookRepository);
-        _patronOptions = new PatronOptions(patronRepository);
-        _borrowOptions = new BorrowOptions(borrowRepository);
-        _reportsOptions = new ReportsOptions(borrowRepository);
+        _bookOptions = bookOptions;
+        _patronOptions = patronOptions;
+        _borrowOptions = borrowOptions;
+        _reportsOptions = reportsOptions;
     }
 
     public async Task InitialMainMenu()

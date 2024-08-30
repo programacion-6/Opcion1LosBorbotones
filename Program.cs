@@ -1,7 +1,12 @@
+using LibrarySystem;
+using Opcion1LosBorbotones;
+using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Data;
+using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Repository;
 using Opcion1LosBorbotones.Presentation;
+using Opcion1LosBorbotones.Presentation.Reports;
 
 
 public class Program
@@ -17,7 +22,15 @@ public class Program
         IPatronRepository patronRepository = new PatronRepository(databaseConfig.ConnectionString);
         IBorrowRepository borrowRepository = new BorrowRepository(databaseConfig.ConnectionString);
 
-        var app = new MainMenu(bookRepository, patronRepository, borrowRepository);
+        IEntityRequester<Book> bookRequester = new BookRequesterByConsole();
+        IEntityRequester<Patron> patronRequester = new PatronRequesterByConsole();
+
+        var bookOptions = new BookOptions(bookRepository, bookRequester);
+        var patronOptions = new PatronOptions(patronRepository, patronRequester);
+        var borrowOptions = new BorrowOptions(borrowRepository);
+        var reportOptions = new ReportsOptions(borrowRepository);
+
+        var app = new MainMenu(bookOptions, patronOptions, borrowOptions, reportOptions);
         await app.InitializeApp();
     }
 }
