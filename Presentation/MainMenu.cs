@@ -1,4 +1,3 @@
-using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Presentation.Reports;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;

@@ -24,7 +24,7 @@ docker compose up -d
 This will not only create a docker container with postgres as the database, but it will also create the tables and fill them
 
 ---
-# FakeOrgasm - Report
+# New Team - FakeOrgasm | Report
 __Team members__:
 
 - Axel Javier Ayala Siles
@@ -44,7 +44,11 @@ __Docs__
 ### Luiggy Mamani
 
 - [Improving cohesion and delegation of responsibilities for Searches](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/56?milestone=403375) | __Status__ "DONE"
-
+- [Editing Implementation for Books and Patrons](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/43?milestone=403375) | __Status__ "IN PROGRESS"
 
 ### Axel Ayala
-- [Eliminate interface redundancy for book management](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/46?milestone=403375) | __Status__ "READY FOR TEST"
+- [Eliminate interface redundancy for book management](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/46?milestone=403375) | __Status__ "DONE"
+- [Improve entities validations and exceptions](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/60?milestone=403375) | __Status__ "IN PROGRESS"
+
+### Salet Gutierrez
+- [Borrow made by a user are not saved in the database](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/37?milestone=403375) | __Status__ "DONE"
