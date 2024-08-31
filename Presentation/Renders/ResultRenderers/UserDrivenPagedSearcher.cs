@@ -35,8 +35,7 @@ public class UserDrivenPagedSearcher<T, I>
             }
         }
 
-        AnsiConsole.Markup("[blue]Press Enter to continue.[/]");
-        Console.ReadLine();
+        AppPartialsRenderer.RenderConfirmationToContinue();
     }
 
     private async Task<List<T>> PerformSearchAsync(I criteria, int pageSize, int currentPage)

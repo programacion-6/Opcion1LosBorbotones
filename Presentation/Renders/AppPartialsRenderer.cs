@@ -16,4 +16,10 @@ public static class AppPartialsRenderer
         panel.Header = new PanelHeader("BY");
         AnsiConsole.Write(panel);
     }
+
+    public static void RenderConfirmationToContinue()
+    {
+        AnsiConsole.Markup("[blue]Press Enter to continue.[/]");
+        Console.ReadLine();
+    }
 }
