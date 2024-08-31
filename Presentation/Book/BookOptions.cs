@@ -2,6 +2,7 @@ using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Domain.Validator;
 using Opcion1LosBorbotones.Domain.Validator.Exceptions.ConcreteException;
+using Opcion1LosBorbotones.Infrastructure.Searchers;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -190,164 +191,23 @@ public class BookOptions
 
     private async Task PaginatedSearchByGenre()
     {
-        var bookGenre = AnsiConsole.Ask<string>("Book genre: ");
-        List<Book> _results = [];
-        var pageSize = 1;
-        var currentPage = 1;
-        var exit = false;
-
-        while (!exit)
-        {
-            var books = await _bookRepository.GetBooksByGenre(bookGenre, pageSize, currentPage * pageSize);
-
-            if (!books.Any() || books.Count() == _results.Count())
-            {
-                exit = true;
-                break;
-            }
-
-            AnsiConsole.Clear();
-            foreach (var result in books)
-            {
-                if (!_results.Any(r => r.Id == result.Id))
-                {
-                    _results.Add(result);
-                }
-            }
-
-            AnsiConsole.MarkupLine("[bold]Books:[/]");
-            foreach (var book in books)
-            {
-                AnsiConsole.MarkupLine(book.ToString());
-            }
-
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .AddChoices(["Next", "Stop"])
-            );
-
-            switch (choice)
-            {
-                case "Next":
-                    currentPage++;
-                    break;
-
-                case "Stop":
-                    exit = true;
-                    break;
-            }
-        }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
+        var searchStrategy = new SearcherByGenre(_bookRepository);
+        var searchService = new UserDrivenPagedSearcher<Book, string>(searchStrategy);
+        await searchService.ExecuteSearchAsync();
     }
 
     private async Task PaginatedSearchByTitle()
     {
-        var bookTitle = AnsiConsole.Ask<string>("Book title: ");
-        List<Book> _results = [];
-        var pageSize = 1;
-        var currentPage = 1;
-        var exit = false;
-
-        while (!exit)
-        {
-            var books = await _bookRepository.GetBooksByTitle(bookTitle, pageSize, currentPage * pageSize);
-
-            if (!books.Any() || books.Count() == _results.Count())
-            {
-                exit = true;
-                break;
-            }
-
-            AnsiConsole.Clear();
-            foreach (var result in books)
-            {
-                if (!_results.Any(r => r.Id == result.Id))
-                {
-                    _results.Add(result);
-                }
-            }
-
-            AnsiConsole.MarkupLine("[bold]Books:[/]");
-            foreach (var book in books)
-            {
-                AnsiConsole.MarkupLine(book.ToString());
-            }
-
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .AddChoices(["Next", "Stop"])
-            );
-
-            switch (choice)
-            {
-                case "Next":
-                    currentPage++;
-                    break;
-
-                case "Stop":
-                    exit = true;
-                    break;
-            }
-        }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
+        var searchStrategy = new SearcherByTitle(_bookRepository);
+        var searchService = new UserDrivenPagedSearcher<Book, string>(searchStrategy);
+        await searchService.ExecuteSearchAsync();
     }
 
     private async Task PaginatedSearchByAuthor()
     {
-        string bookAuthor = AnsiConsole.Ask<string>("Book author: ");
-        List<Book> _results = [];
-        var pageSize = 1;
-        var currentPage = 1;
-        var exit = false;
-
-        while (!exit)
-        {
-            var books = await _bookRepository.GetBooksByAuthor(bookAuthor, pageSize, currentPage * pageSize);
-
-            if (!books.Any() || books.Count() == _results.Count())
-            {
-                exit = true;
-                break;
-            }
-
-            AnsiConsole.Clear();
-            foreach (var result in books)
-            {
-                if (!_results.Any(r => r.Id == result.Id))
-                {
-                    _results.Add(result);
-                }
-            }
-
-            AnsiConsole.MarkupLine("[bold]Books:[/]");
-            foreach (var book in books)
-            {
-                AnsiConsole.MarkupLine(book.ToString());
-            }
-
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .AddChoices(["Next", "Stop"])
-            );
-
-            switch (choice)
-            {
-                case "Next":
-                    currentPage++;
-                    break;
-
-                case "Stop":
-                    exit = true;
-                    break;
-            }
-        }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
-        Console.ReadLine();
+        var searchStrategy = new SearcherByAuthor(_bookRepository);
+        var searchService = new UserDrivenPagedSearcher<Book, string>(searchStrategy);
+        await searchService.ExecuteSearchAsync();
     }
 
     private async Task SearchByIsbn()

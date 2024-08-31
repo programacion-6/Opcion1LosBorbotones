@@ -2,6 +2,7 @@ using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Domain.Validator;
 using Opcion1LosBorbotones.Domain.Validator.Exceptions.ConcreteException;
+using Opcion1LosBorbotones.Infrastructure.Searchers;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
 
@@ -188,56 +189,9 @@ public class PatronOptions
 
     private async Task PaginatedSearchByName()
     {
-        string patronName = AnsiConsole.Ask<string>("Patron name: ");
-        List<Patron> _results = [];
-        var pageSize = 1;
-        var currentPage = 1;
-        var exit = false;
-
-        while (!exit)
-        {
-            var patrons = await _patronRepository.GetPatronsByNameAsync(patronName, pageSize, currentPage * pageSize);
-
-            if (!patrons.Any() || patrons.Count() == _results.Count())
-            {
-                exit = true;
-                break;
-            }
-
-            AnsiConsole.Clear();
-            foreach (var result in patrons)
-            {
-                if (!_results.Any(r => r.Id == result.Id))
-                {
-                    _results.Add(result);
-                }
-            }
-
-            AnsiConsole.MarkupLine("[bold]Patrons:[/]");
-            foreach (var patron in patrons)
-            {
-                AnsiConsole.MarkupLine(patron.ToString());
-            }
-
-            var choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .AddChoices(["Next", "Stop"])
-            );
-
-            switch (choice)
-            {
-                case "Next":
-                    currentPage++;
-                    break;
-
-                case "Stop":
-                    exit = true;
-                    break;
-            }
-        }
-
-        AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
-        Console.ReadLine();
+        var searchStrategy = new SearcherByName(_patronRepository);
+        var searchService = new UserDrivenPagedSearcher<Patron, string>(searchStrategy);
+        await searchService.ExecuteSearchAsync();
     }
 
     private async Task PaginatedSearchByContactDetails()
