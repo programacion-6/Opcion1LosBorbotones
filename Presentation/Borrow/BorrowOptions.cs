@@ -1,3 +1,4 @@
+using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
@@ -8,11 +9,13 @@ public class BorrowOptions
 {
     private readonly IBorrowService _borrowService;
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
+    private IEntityFormatterFactory<Borrow> _formatterFactoryBorrow;
 
-    public BorrowOptions(IBorrowService borrowService)
+    public BorrowOptions(IBorrowService borrowService, IEntityFormatterFactory<Borrow> entityFormatterFactoryBorrow)
     {
         _borrowService = borrowService;
         _borrowConsoleRenderer = new BorrowConsoleRenderer();
+        _formatterFactoryBorrow = entityFormatterFactoryBorrow;
     }
 
     public async Task BorrowInitialOptions()
@@ -69,13 +72,14 @@ public class BorrowOptions
                 return;
             }
 
-            var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
-
-            _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
-
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
-                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {borrow}");
+                var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
+
+                var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
+
+                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {formatter}");
+                _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
             }
             else
             {

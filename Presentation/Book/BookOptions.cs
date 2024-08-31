@@ -12,12 +12,16 @@ public class BookOptions
     private readonly IBookRepository _bookRepository;
     private readonly IEntityRequester<Book> _bookRequester;
     private readonly BookValidator _bookValidator;
+    private IEntityFormatterFactory<Book> _formatterFactoryBook;
 
-    public BookOptions(IBookRepository bookRepository, IEntityRequester<Book> bookRequester)
+    public BookOptions(IBookRepository bookRepository, 
+                        IEntityRequester<Book> bookRequester,
+                        IEntityFormatterFactory<Book> formatterFactoryBook)
     {
         _bookRepository = bookRepository;
         _bookRequester = bookRequester;
         _bookValidator = new BookValidator();
+        _formatterFactoryBook = formatterFactoryBook;
     }
 
     public async Task BookInitialOptions()
@@ -74,7 +78,9 @@ public class BookOptions
             var newBook = _bookRequester.AskForEntity();
             _bookValidator.ValidateBook(newBook);
             await _bookRepository.Save(newBook);
-            AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {newBook}");
+            var formatter = await _formatterFactoryBook.CreateDetailedFormatter(newBook);
+
+            AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {formatter}");
         }
         catch (BookException bookException)
         {
@@ -168,7 +174,9 @@ public class BookOptions
                     editedBook.Id = bookToEdit.Id;
                     _bookValidator.ValidateBook(editedBook);
                     await _bookRepository.Update(editedBook);
-                    AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {editedBook}");
+                    var formatter = await _formatterFactoryBook.CreateDetailedFormatter(editedBook);
+
+                    AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {formatter}");
                 }
                 catch (BookException bookException)
                 {
@@ -241,7 +249,9 @@ public class BookOptions
             AnsiConsole.MarkupLine("[bold]Books:[/]");
             foreach (var book in books)
             {
-                AnsiConsole.MarkupLine(book.ToString());
+                var formatter = await _formatterFactoryBook.CreateDetailedFormatter(book);
+
+                AnsiConsole.MarkupLine($"{formatter}");
             }
 
             var navigationOption = AnsiConsole.Prompt(
@@ -285,7 +295,8 @@ public class BookOptions
             AnsiConsole.MarkupLine("[bold]Books:[/]");
             foreach (var book in books)
             {
-                AnsiConsole.MarkupLine(book.ToString());
+                var formatter = await _formatterFactoryBook.CreateDetailedFormatter(book);
+                AnsiConsole.MarkupLine($"{formatter}");
             }
 
             var navigationOption = AnsiConsole.Prompt(
@@ -322,7 +333,9 @@ public class BookOptions
         var book = await _bookRepository.GetBookByISBN(isbn);
 
         AnsiConsole.MarkupLine("[bold]Book:[/]");
-        AnsiConsole.MarkupLine(book?.ToString() ?? "Book not found.");
+        var formatter = await _formatterFactoryBook.CreateDetailedFormatter(book);
+
+        AnsiConsole.MarkupLine($"{formatter}" ?? "Book not found.");
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Book Menu.[/]");
         Console.ReadLine();

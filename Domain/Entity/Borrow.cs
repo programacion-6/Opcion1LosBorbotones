@@ -18,9 +18,4 @@ public class Borrow : IEntity
         DueDate = dueDate;
         BorrowDate = borrowDate;
     }
-    
-    public override string ToString()
-    {
-        return $"Patron: {PatronId}, Book: {BookId}, BorrowStatus: {Status}, DueDate: {DueDate:yyyy-MM-dd}, BorrowDate: {BorrowDate:yyyy-MM-dd}";
-    }
 }

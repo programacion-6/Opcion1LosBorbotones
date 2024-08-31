@@ -19,7 +19,7 @@ public class BorrowConsoleRenderer : IBorrowConsoleRenderer
 
     public void DisplayBorrowDetails(Borrow borrow)
     {
-        AnsiConsole.MarkupLine("[bold green]Review the BORROW details before confirming:[/]");
+        AnsiConsole.MarkupLine("[bold green]Book return dates:[/]");
         AnsiConsole.MarkupLine($"[bold] Borrow date [/]: {borrow.BorrowDate}");
         AnsiConsole.MarkupLine($"[bold] Due date [/]: {borrow.DueDate}");
     }

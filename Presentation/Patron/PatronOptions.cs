@@ -13,11 +13,16 @@ public class PatronOptions
     private readonly IEntityRequester<Patron> _patronRequester;
     private readonly PatronValidator _patronValidator;
 
-    public PatronOptions(IPatronRepository patronRepository, IEntityRequester<Patron> patronRequester)
+    private IEntityFormatterFactory<Patron> _formatterFactoryBorrow;
+
+    public PatronOptions(IPatronRepository patronRepository, 
+                        IEntityRequester<Patron> patronRequester, 
+                        IEntityFormatterFactory<Patron> formatterFactoryBorrow)
     {
         _patronRepository = patronRepository;
         _patronRequester = patronRequester;
         _patronValidator = new PatronValidator();
+        _formatterFactoryBorrow = formatterFactoryBorrow;
     }
 
     public async Task PatronInitialOptions()
@@ -75,7 +80,11 @@ public class PatronOptions
             var newPatron = _patronRequester.AskForEntity();
             _patronValidator.ValidatePatron(newPatron);
             await _patronRepository.Save(newPatron);
-            AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {newPatron}");
+            var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(newPatron);
+
+            AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {formatter}");
+            //AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {newPatron}");
+
         }
         catch (PatronException patronException)
         {
@@ -150,7 +159,11 @@ public class PatronOptions
                     editedPatron.Id = patronToEdit.Id;
                     _patronValidator.ValidatePatron(editedPatron);
                     await _patronRepository.Update(editedPatron);
-                    AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
+                    var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(editedPatron);
+
+                    AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {formatter}");
+                    //AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
+
                 }
                 catch (PatronException patronException)
                 {
@@ -212,7 +225,9 @@ public class PatronOptions
         var patronByMembershipNumber = await _patronRepository.GetPatronByMembershipAsync(patronMembershipNumber);
 
         AnsiConsole.MarkupLine("[bold]Patron:[/]");
-        AnsiConsole.MarkupLine($"{patronByMembershipNumber}");
+        var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(patronByMembershipNumber);
+
+        AnsiConsole.MarkupLine($"{formatter}");
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
         Console.ReadLine();
@@ -231,7 +246,9 @@ public class PatronOptions
             AnsiConsole.MarkupLine("[bold]Patrons:[/]");
             foreach (var patron in patrons)
             {
-                AnsiConsole.MarkupLine(patron.ToString());
+                var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(patron);
+
+                AnsiConsole.MarkupLine($"{formatter}");
             }
 
             var navigationOption = AnsiConsole.Prompt(

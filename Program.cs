@@ -28,10 +28,14 @@ public class Program
 
         var borrowService = new BorrowService(borrowRepository, bookRepository, patronRepository);
 
-        var bookOptions = new BookOptions(bookRepository, bookRequester);
-        var patronOptions = new PatronOptions(patronRepository, patronRequester);
-        var borrowOptions = new BorrowOptions(borrowService);
-        var reportOptions = new ReportsOptions(borrowRepository);
+        IEntityFormatterFactory<Borrow> _formatterFactoryBorrow = new BorrowFormatterFactory(bookRepository, patronRepository);
+        IEntityFormatterFactory<Patron> _formatterFactoryPatron = new PatronFormatterFactory();
+        IEntityFormatterFactory<Book> _formatterFactoryBook = new BookFormatterFactory();
+        
+        var bookOptions = new BookOptions(bookRepository, bookRequester, _formatterFactoryBook);
+        var patronOptions = new PatronOptions(patronRepository, patronRequester, _formatterFactoryPatron);
+        var borrowOptions = new BorrowOptions(borrowService, _formatterFactoryBorrow);
+        var reportOptions = new ReportsOptions(borrowRepository, _formatterFactoryBorrow);
 
         var app = new MainMenu(bookOptions, patronOptions, borrowOptions, reportOptions);
         await app.InitializeApp();

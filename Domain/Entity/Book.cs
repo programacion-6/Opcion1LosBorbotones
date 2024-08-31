@@ -25,9 +25,4 @@ public class Book : IEntity
         PublicationYear = publicationYear;
     }
 
-    public override string ToString()
-    {
-        return $"Title: {Title}, Author: {Author}, ISBN: {Isbn}, Genre: {Genre}, Publication Year: {PublicationYear:yyyy-MM-dd}";
-    }
-
 }

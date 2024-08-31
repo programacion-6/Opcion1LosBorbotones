@@ -10,11 +10,15 @@ public class ReportsOptions
 {
     private readonly BorrowStatusReport _borrowStatusReport;
     private readonly PatronBorrowReport _patronBorrowReport;
+    private IEntityFormatterFactory<Borrow> _formatterFactoryBorrow;
 
-    public ReportsOptions(IBorrowRepository borrowRepository)
+    public ReportsOptions(IBorrowRepository borrowRepository,
+                          IEntityFormatterFactory<Borrow> formatterFactoryBorrow)
     {
-        _borrowStatusReport = new BorrowStatusReport(borrowRepository);
-        _patronBorrowReport = new PatronBorrowReport(borrowRepository);
+        
+        _formatterFactoryBorrow = formatterFactoryBorrow;
+        _borrowStatusReport = new BorrowStatusReport(borrowRepository, formatterFactoryBorrow);
+        _patronBorrowReport = new PatronBorrowReport(borrowRepository, formatterFactoryBorrow);
     }
 
     public async Task ReportInitialOptions()

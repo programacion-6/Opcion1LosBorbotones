@@ -14,9 +14,4 @@ public class Patron : IEntity
         MembershipNumber = membershipNumber;
         this.ContactDetails = contactDetails;
     }
-
-    public override string ToString()
-    {
-        return $"Name: {Name}, MembershipNumber: {MembershipNumber}, ContactDetails: {ContactDetails}";
-    }
 }
