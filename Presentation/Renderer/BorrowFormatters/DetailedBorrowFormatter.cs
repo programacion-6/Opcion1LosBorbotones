@@ -4,7 +4,7 @@ using Opcion1LosBorbotones.Domain.Repository;
 
 namespace Opcion1LosBorbotones.Presentation.Renderer.BorrowFormatter;
 
-public class DetailedBorrowFormatter : IEntityDetailedFormatter<Borrow>
+public class DetailedBorrowFormatter : EntityDetailedFormatter<Borrow>
 {
     private readonly IBookRepository _bookRepository;
     private readonly IPatronRepository _patronRepository;

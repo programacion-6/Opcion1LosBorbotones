@@ -2,9 +2,9 @@ using Opcion1LosBorbotones.Domain.Entity;
 
 namespace Opcion1LosBorbotones.Presentation.Renderer;
 
-public abstract class IEntityDetailedFormatter<T> : IEntityFormatter<T> where T : IEntity
+public abstract class EntityDetailedFormatter<T> : EntityFormatter<T> where T : IEntity
 {
-    protected IEntityDetailedFormatter(T entity) : base(entity)
+    protected EntityDetailedFormatter(T entity) : base(entity)
     {
     }
 

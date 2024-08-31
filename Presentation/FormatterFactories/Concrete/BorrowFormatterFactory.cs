@@ -16,7 +16,7 @@ public class BorrowFormatterFactory : IEntityFormatterFactory<Borrow>
         _patronRepository = patronRepository;
     }
 
-    public async Task<IEntityFormatter<Borrow>?> CreateDetailedFormatter(Borrow? entity)
+    public async Task<EntityFormatter<Borrow>?> CreateDetailedFormatter(Borrow? entity)
     {
         if (entity is not null)
         {

@@ -2,7 +2,7 @@ using Opcion1LosBorbotones.Domain.Entity;
 
 namespace Opcion1LosBorbotones.Presentation.Renderer.PatronFormatter;
 
-public class DetailedPatronFormatter : IEntityFormatter<Patron>
+public class DetailedPatronFormatter : EntityFormatter<Patron>
 {
     public DetailedPatronFormatter(Patron entity) : base(entity)
     {

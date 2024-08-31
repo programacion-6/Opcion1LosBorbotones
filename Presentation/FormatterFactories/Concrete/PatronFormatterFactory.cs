@@ -6,16 +6,16 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public class PatronFormatterFactory : IEntityFormatterFactory<Patron>
 {
-    public Task<IEntityFormatter<Patron>?> CreateDetailedFormatter(Patron? entity)
+    public Task<EntityFormatter<Patron>?> CreateDetailedFormatter(Patron? entity)
     {
         if (entity is not null)
         {
-            var formatter = Task.FromResult<IEntityFormatter<Patron>?>(
+            var formatter = Task.FromResult<EntityFormatter<Patron>?>(
                 new DetailedPatronFormatter(entity));
 
             return formatter;
         }
 
-        return Task.FromResult<IEntityFormatter<Patron>?>(null);
+        return Task.FromResult<EntityFormatter<Patron>?>(null);
     }
 }

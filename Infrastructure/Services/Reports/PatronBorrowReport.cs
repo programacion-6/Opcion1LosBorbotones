@@ -24,11 +24,8 @@ public class PatronBorrowReport : IReport<long>
 
         foreach (var borrow in borrows)
         {
-            
             var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
             report.AppendLine(formatter.ToString());
-
-            //AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {formatter}");
         }
 
         return report.ToString();

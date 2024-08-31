@@ -2,7 +2,7 @@ using Opcion1LosBorbotones.Domain;
 
 namespace Opcion1LosBorbotones.Presentation.Renderer.BookFormatter;
 
-public class DetailedBookFormatter : IEntityFormatter<Book>
+public class DetailedBookFormatter : EntityFormatter<Book>
 {
     public DetailedBookFormatter(Book entity) : base(entity)
     {

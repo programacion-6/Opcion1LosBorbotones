@@ -2,11 +2,11 @@ using Opcion1LosBorbotones.Domain.Entity;
 
 namespace Opcion1LosBorbotones.Presentation.Renderer;
 
-public abstract class IEntityFormatter<T> where T : IEntity
+public abstract class EntityFormatter<T> where T : IEntity
 {
     protected T _entity;
 
-    protected IEntityFormatter(T entity)
+    protected EntityFormatter(T entity)
     {
         _entity = entity;
     }

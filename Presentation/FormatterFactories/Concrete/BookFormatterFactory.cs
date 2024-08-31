@@ -6,16 +6,16 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public class BookFormatterFactory : IEntityFormatterFactory<Book>
 {
-    public Task<IEntityFormatter<Book>?> CreateDetailedFormatter(Book? entity)
+    public Task<EntityFormatter<Book>?> CreateDetailedFormatter(Book? entity)
     {
         if (entity is not null)
         {
-            var formatter = Task.FromResult<IEntityFormatter<Book>?>(
+            var formatter = Task.FromResult<EntityFormatter<Book>?>(
                 new DetailedBookFormatter(entity));
 
             return formatter;
         }
 
-        return Task.FromResult<IEntityFormatter<Book>?>(null);
+        return Task.FromResult<EntityFormatter<Book>?>(null);
     }
 }
