@@ -82,9 +82,7 @@ public class PatronOptions
             await _patronRepository.Save(newPatron);
             var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(newPatron);
 
-            AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {formatter}");
-            //AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/] {newPatron}");
-
+            AnsiConsole.MarkupLine($"[bold italic green]New patron registered:[/]\n {formatter}");
         }
         catch (PatronException patronException)
         {
@@ -161,8 +159,7 @@ public class PatronOptions
                     await _patronRepository.Update(editedPatron);
                     var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(editedPatron);
 
-                    AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {formatter}");
-                    //AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/] {editedPatron}");
+                    AnsiConsole.MarkupLine($"[bold italic green]Patron edited:[/]\n {formatter}");
 
                 }
                 catch (PatronException patronException)

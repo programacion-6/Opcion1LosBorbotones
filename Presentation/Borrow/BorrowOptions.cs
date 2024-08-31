@@ -78,7 +78,7 @@ public class BorrowOptions
 
                 var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
 
-                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {formatter}");
+                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/]\n {formatter}");
                 _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
             }
             else

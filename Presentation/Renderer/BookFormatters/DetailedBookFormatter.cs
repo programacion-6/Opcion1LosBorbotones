@@ -10,6 +10,10 @@ public class DetailedBookFormatter : EntityFormatter<Book>
 
     public override string ToString()
     {
-        return $"Title: {_entity.Title}, Author: {_entity.Author}, ISBN: {_entity.Isbn}, Genre: {_entity.Genre}, Publication Year: {_entity.PublicationYear:yyyy-MM-dd}";
+        return $"[bold plum3]----- |{_entity.Title}| -----[/]\n" +
+               $"[bold plum3]Author:[/] {_entity.Author}\n" +
+               $"[bold plum3]ISBN:[/] {_entity.Isbn}\n" +
+               $"[bold plum3]Genre:[/] {_entity.Genre}\n" +
+               $"[bold plum3]Year:[/] {_entity.PublicationYear}\n";
     }
 }

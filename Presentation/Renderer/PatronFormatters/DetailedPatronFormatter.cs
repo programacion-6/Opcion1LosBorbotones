@@ -10,6 +10,8 @@ public class DetailedPatronFormatter : EntityFormatter<Patron>
 
     public override string ToString()
     {
-        return $"Name: {_entity.Name}, MembershipNumber: {_entity.MembershipNumber}, ContactDetails: {_entity.ContactDetails}";
+        return $"[bold plum3]----- |{_entity.Name}| -----[/]\n" +
+               $"[bold plum3]MembershipNumber:[/] {_entity.MembershipNumber}\n" +
+               $"[bold plum3]ContactDetails:[/] {_entity.ContactDetails}\n";
     }
 }

@@ -80,7 +80,7 @@ public class BookOptions
             await _bookRepository.Save(newBook);
             var formatter = await _formatterFactoryBook.CreateDetailedFormatter(newBook);
 
-            AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/] {formatter}");
+            AnsiConsole.MarkupLine($"[bold italic green]New book registered:[/]\n {formatter}");
         }
         catch (BookException bookException)
         {
@@ -176,7 +176,7 @@ public class BookOptions
                     await _bookRepository.Update(editedBook);
                     var formatter = await _formatterFactoryBook.CreateDetailedFormatter(editedBook);
 
-                    AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/] {formatter}");
+                    AnsiConsole.MarkupLine($"[bold italic green]Book edited:[/]\n {formatter}");
                 }
                 catch (BookException bookException)
                 {
