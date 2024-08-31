@@ -101,33 +101,34 @@ public class BorrowRepository : IBorrowRepository
         });
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int offset, int limit)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int pageNumber, int pageSize)
     {
-        const string query = @"
+        const string sql = @"
             SELECT 
                 id AS Id, 
                 patron AS PatronId, 
                 book AS BookId, 
                 borrowStatus AS Status, 
                 dueDate AS DueDate, 
-                borrowDate AS BorrowDate 
+                borrowDate AS BorrowDate  
             FROM Borrow 
             WHERE patron = @PatronId 
-            LIMIT @Limit OFFSET @Offset";
+            ORDER BY borrowStatus
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY";
 
-        using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(query, new
+        int offset = (pageNumber - 1) * pageSize;
+
+        using (var connection = new NpgsqlConnection(_connectionString))
         {
-            PatronId = patronId,
-            Limit = limit,
-            Offset = offset
-        });
+            return await connection.QueryAsync<Borrow>(sql, new { PatronId = patronId, Offset = offset, PageSize = pageSize });
+        }
     }
 
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int offset, int limit)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int pageNumber, int pageSize)
     {
-        const string query = @"
+        const string sql = @"
             SELECT id AS Id, 
                 patron AS PatronId, 
                 book AS BookId, 
@@ -136,14 +137,16 @@ public class BorrowRepository : IBorrowRepository
                 borrowDate AS BorrowDate 
             FROM Borrow 
             WHERE borrowStatus = @Status 
-            LIMIT @Limit OFFSET @Offset";
+            ORDER BY borrowStatus
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY";
 
-        using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(
-            query,
-            new { Status = (int)status, Limit = limit, Offset = offset }
-        );
+        int offset = (pageNumber - 1) * pageSize;
 
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Borrow>(sql, new { Status = (int)status, Offset = offset, PageSize = pageSize });
+        }
     }
 
     public async Task<Borrow?> GetById(Guid id)
