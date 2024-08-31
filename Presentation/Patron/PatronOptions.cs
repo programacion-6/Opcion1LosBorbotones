@@ -15,8 +15,8 @@ public class PatronOptions
 
     private IEntityFormatterFactory<Patron> _formatterFactoryBorrow;
 
-    public PatronOptions(IPatronRepository patronRepository, 
-                        IEntityRequester<Patron> patronRequester, 
+    public PatronOptions(IPatronRepository patronRepository,
+                        IEntityRequester<Patron> patronRequester,
                         IEntityFormatterFactory<Patron> formatterFactoryBorrow)
     {
         _patronRepository = patronRepository;
@@ -102,20 +102,49 @@ public class PatronOptions
     {
         AnsiConsole.Clear();
         Header.AppHeader();
-        AnsiConsole.MarkupLine("[bold yellow]Deleted a patron[/]");
+        AnsiConsole.MarkupLine("[bold yellow]Delete a patron[/]");
 
-        long patronMembershipNumber = AnsiConsole.Ask<long>("Enter the patron member number: ");
-        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
-
-        if (wasConfirmed)
+        try
         {
-            long patron = patronMembershipNumber;
-            await _patronRepository.Delete(patron);
-            AnsiConsole.MarkupLine("[bold italic red]Patron deleted.[/]");
+            var patrons = (await _patronRepository.GetAll()).ToArray();
+
+            if (patrons == null || patrons.Length == 0)
+            {
+                AnsiConsole.MarkupLine("[red]No patrons available for deletion.[/]");
+                return;
+            }
+
+            var patronToDelete = AnsiConsole.Prompt(
+                new SelectionPrompt<Patron>()
+                    .Title("Select the patron you want to delete:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(patrons)
+                    .UseConverter(patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}")
+            );
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this patron? [yellow]{patronToDelete.Name}[/]");
+
+            if (wasConfirmed)
+            {
+                try
+                {
+                    await _patronRepository.Delete(patronToDelete.MembershipNumber);
+                    AnsiConsole.MarkupLine("[bold italic red]Patron deleted.[/]");
+                }
+                catch (Exception e)
+                {
+                    AnsiConsole.MarkupLine("[bold italic red]An unexpected error occurred. Please try again later.[/]");
+                }
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            }
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.MarkupLine("[bold italic red]An unexpected error occurred. Please try again later.[/]");
         }
 
         AnsiConsole.Markup("[blue]Press Enter to go back to the Patron Menu.[/]");
