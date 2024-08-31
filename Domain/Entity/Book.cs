@@ -11,10 +11,6 @@ public class Book : IEntity
     public string Genre { get; }
     public DateTime PublicationYear { get; }
     
-    public Book()
-    {
-    }
-    
     public Book(Guid id, string title, string author, long isbn, string genre, DateTime publicationYear)
     {
         Id = id;
