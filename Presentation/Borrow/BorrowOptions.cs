@@ -1,4 +1,6 @@
+using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
 using Opcion1LosBorbotones.Presentation.Utils;
 using Spectre.Console;
@@ -10,12 +12,19 @@ public class BorrowOptions
     private readonly IBorrowService _borrowService;
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
     private IEntityFormatterFactory<Borrow> _formatterFactoryBorrow;
+    private readonly IPatronRepository _patronRepository;
+    private readonly IBookRepository _bookRepository;
 
-    public BorrowOptions(IBorrowService borrowService, IEntityFormatterFactory<Borrow> entityFormatterFactoryBorrow)
+    public BorrowOptions(IBorrowService borrowService,
+                         IEntityFormatterFactory<Borrow> entityFormatterFactoryBorrow,
+                         IPatronRepository patronRepository,
+                         IBookRepository bookRepository)
     {
         _borrowService = borrowService;
         _borrowConsoleRenderer = new BorrowConsoleRenderer();
         _formatterFactoryBorrow = entityFormatterFactoryBorrow;
+        _patronRepository = patronRepository;
+        _bookRepository = bookRepository;
     }
 
     public async Task BorrowInitialOptions()
@@ -58,40 +67,75 @@ public class BorrowOptions
             Header.AppHeader();
             AnsiConsole.MarkupLine("[bold yellow]Register a new borrow[/]");
 
-            var isbn = _borrowConsoleRenderer.GetISBN();
-            var membershipNumber = _borrowConsoleRenderer.GetMembershipNumber();
+            var books = (await _bookRepository.GetAll()).ToArray();
 
-            var bookId = await _borrowService.GetBookIdByISBN(isbn);
-            var patronId = await _borrowService.GetPatronIdByMembershipNumber(membershipNumber);
-
-            if (bookId == Guid.Empty || patronId == Guid.Empty)
+            if (books == null || books.Length == 0)
             {
-                AnsiConsole.MarkupLine("[bold red]Invalid ISBN or Membership Number[/]");
-                AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
-                Console.ReadLine();
+                AnsiConsole.MarkupLine("[red]No books available for borrowing.[/]");
                 return;
             }
 
+            var selectedBook = AnsiConsole.Prompt(
+                new SelectionPrompt<Book>()
+                    .Title("Select the book you want to borrow:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(books)
+                    .UseConverter(book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}")
+            );
+
+
+            var bookId = selectedBook.Id;
+
+
+            var patrons = (await _patronRepository.GetAll()).ToArray();
+
+            if (patrons == null || patrons.Length == 0)
+            {
+                AnsiConsole.MarkupLine("[red]No patrons available for borrowing.[/]");
+                return;
+            }
+
+            var selectedPatron = AnsiConsole.Prompt(
+                new SelectionPrompt<Patron>()
+                    .Title("Select the patron who is borrowing the book:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(patrons)
+                    .UseConverter(patron => $"{patron.Name} | {patron.ContactDetails} | Membership Number: {patron.MembershipNumber}")
+            );
+
+            var patronId = selectedPatron.Id;
+
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
-                var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
+                try
+                {
+                    var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
 
-                var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
 
-                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/]\n {formatter}");
-                _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
+                    var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
+
+
+                    AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/]\n{formatter}");
+                    _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
+                }
             }
             else
             {
                 AnsiConsole.MarkupLine("[bold green]No borrow registered[/]");
             }
 
-            AnsiConsole.Markup("[blue] Press Enter to go back to the Patron Menu.[/]");
+            AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
             Console.ReadLine();
         }
         catch (Exception ex)
         {
-            AnsiConsole.Markup($"[red] The data entered is not correct, please enter correct data.[/]\n");
+            AnsiConsole.MarkupLine("[bold italic red]An unexpected error occurred. Please try again later.[/]");
             AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
             Console.ReadLine();
         }

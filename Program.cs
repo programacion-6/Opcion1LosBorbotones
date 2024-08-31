@@ -34,7 +34,7 @@ public class Program
         
         var bookOptions = new BookOptions(bookRepository, bookRequester, _formatterFactoryBook);
         var patronOptions = new PatronOptions(patronRepository, patronRequester, _formatterFactoryPatron);
-        var borrowOptions = new BorrowOptions(borrowService, _formatterFactoryBorrow);
+        var borrowOptions = new BorrowOptions(borrowService, _formatterFactoryBorrow, patronRepository, bookRepository);
         var reportOptions = new ReportsOptions(borrowRepository, _formatterFactoryBorrow);
 
         var app = new MainMenu(bookOptions, patronOptions, borrowOptions, reportOptions);
