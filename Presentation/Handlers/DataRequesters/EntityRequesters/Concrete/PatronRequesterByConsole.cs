@@ -1,8 +1,7 @@
-using Opcion1LosBorbotones;
 using Opcion1LosBorbotones.Domain.Entity;
 using Spectre.Console;
 
-namespace LibrarySystem;
+namespace Opcion1LosBorbotones.Presentation.Handlers;
 
 public class PatronRequesterByConsole : IEntityRequester<Patron>
 {

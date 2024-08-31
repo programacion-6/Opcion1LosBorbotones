@@ -1,38 +1,37 @@
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
-using Opcion1LosBorbotones.Presentation.Utils;
+using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
-namespace Opcion1LosBorbotones.Presentation;
+namespace Opcion1LosBorbotones.Presentation.Executors;
 
-public class BorrowOptions
+public class LoanHandlerExecutor : IExecutor
 {
     private readonly IBorrowService _borrowService;
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
 
-    public BorrowOptions(IBorrowService borrowService)
+    public LoanHandlerExecutor(IBorrowService borrowService)
     {
         _borrowService = borrowService;
         _borrowConsoleRenderer = new BorrowConsoleRenderer();
     }
 
-    public async Task BorrowInitialOptions()
+    public async Task Execute()
     {
         bool goBack = false;
         while (!goBack)
         {
-            AnsiConsole.Clear();
-            Header.AppHeader();
-            AnsiConsole.MarkupLine("[bold yellow]Borrow Menu[/]");
+            AppPartialsRenderer.RenderHeader();
+            ConsoleMessageRenderer.RenderIndicatorMessage("Borrow Menu");
 
             var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[bold green]Chose an option:[/]")
                     .PageSize(10)
-                    .AddChoices(new[]
-                    {
+                    .AddChoices(
+                    [
                         "1. Request a borrow",
                         "2. Go back"
-                    })
+                    ])
             );
 
             switch (option)
@@ -51,33 +50,28 @@ public class BorrowOptions
     {
         try
         {
-            AnsiConsole.Clear();
-            Header.AppHeader();
-            AnsiConsole.MarkupLine("[bold yellow]Register a new borrow[/]");
+            AppPartialsRenderer.RenderHeader();
+            ConsoleMessageRenderer.RenderIndicatorMessage("New loan");
             var patronUUID = _borrowConsoleRenderer.GetPatronId();
             var bookUUID = _borrowConsoleRenderer.GetBookId();
-
             var borrow = await _borrowService.RegisterNewBorrow(patronUUID, bookUUID);
-
             _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
 
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
-                AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/] {borrow}");
+                ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered {borrow}");
             }
             else
             {
-                AnsiConsole.MarkupLine("[bold green]No borrow registered[/]");
+                ConsoleMessageRenderer.RenderInfoMessage("No borrow registered");
             }
 
-            AnsiConsole.Markup("[blue] Press Enter to go back to the Patron Menu.[/]");
-            Console.ReadLine();
+            AppPartialsRenderer.RenderConfirmationToContinue();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            AnsiConsole.Markup($"[red] The data entered is not correct, please enter correct data.[/]\n");
-            AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
-            Console.ReadLine();
+            ConsoleMessageRenderer.RenderErrorMessage("The data entered is not correct, please enter correct data");
+            AppPartialsRenderer.RenderConfirmationToContinue();
         }
     }
 }
