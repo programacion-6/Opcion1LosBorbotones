@@ -14,13 +14,13 @@ public class BookRepository : IBookRepository
         _connectionString = connectionString;
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(long isbn)
     {
-        const string sql = "DELETE FROM Book WHERE id = @Id";
+        const string sql = "DELETE FROM Book WHERE isbn = @Isbn";
 
         using (var connection = new NpgsqlConnection(_connectionString))
         {
-            int affected = await connection.ExecuteAsync(sql, new { Id = id });
+            int affected = await connection.ExecuteAsync(sql, new { Isbn = isbn });
             return affected > 0;
         }
     }

@@ -3,6 +3,7 @@ using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Searchers.PatronSearchers;
 using Opcion1LosBorbotones.Presentation.Handlers;
+using Opcion1LosBorbotones.Presentation.Renderer.PatronFormatter;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
@@ -11,6 +12,8 @@ namespace Opcion1LosBorbotones.Presentation.Executors;
 public class PatronFinderExecutor : IExecutor
 {
     private readonly IPatronRepository _patronRepository;
+    private readonly Func<Patron, string> _detailedPatronFormatter = 
+                                        p => new DetailedPatronFormatter(p).ToString();
 
     public PatronFinderExecutor(IPatronRepository patronRepository)
     {
@@ -54,7 +57,11 @@ public class PatronFinderExecutor : IExecutor
         var prompt = "Enter the name";
         var criteriaRequester = new PromptRequester<string>(prompt);
         var searchStrategy = new SearcherByName(_patronRepository);
-        var searchService = new UserDrivenPagedSearcher<Patron, string>(searchStrategy, criteriaRequester);
+        var searchService = new UserDrivenPagedSearcher<Patron, string>(
+                                searchStrategy, 
+                                criteriaRequester,
+                                _detailedPatronFormatter
+                                );
         await searchService.ExecuteSearchAsync();
     }
 
@@ -63,8 +70,9 @@ public class PatronFinderExecutor : IExecutor
         long contact = AnsiConsole.Ask<long>("Enter the contact details: ");
         var patronFound = await _patronRepository.GetPatronByContactDetailsAsync(contact);
         ConsoleMessageRenderer.RenderIndicatorMessage("Patron found");
-        ResultRenderer.RenderResult(patronFound);
+        ResultRenderer.RenderResult(patronFound, _detailedPatronFormatter);
         AppPartialsRenderer.RenderConfirmationToContinue();
+        
     }
 
     private async Task SearchPatronsByMembershipNumber()
@@ -72,7 +80,7 @@ public class PatronFinderExecutor : IExecutor
         long membershipNumber = AnsiConsole.Ask<long>("Enter the membership number: ");
         var patronFound = await _patronRepository.GetPatronByMembershipAsync(membershipNumber);
         ConsoleMessageRenderer.RenderIndicatorMessage("Patron found");
-        ResultRenderer.RenderResult(patronFound);
+        ResultRenderer.RenderResult(patronFound, _detailedPatronFormatter);
         AppPartialsRenderer.RenderConfirmationToContinue();
     }
 }

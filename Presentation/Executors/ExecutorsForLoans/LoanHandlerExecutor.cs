@@ -1,4 +1,8 @@
+using Opcion1LosBorbotones.Domain;
+using Opcion1LosBorbotones.Domain.Entity;
+using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
+using Opcion1LosBorbotones.Presentation.Renderer.BorrowFormatter;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
@@ -8,11 +12,17 @@ public class LoanHandlerExecutor : IExecutor
 {
     private readonly IBorrowService _borrowService;
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
+    private readonly IPatronRepository _patronRepository;
+    private readonly IBookRepository _bookRepository;
 
-    public LoanHandlerExecutor(IBorrowService borrowService)
+    public LoanHandlerExecutor(IBorrowService borrowService,
+                         IPatronRepository patronRepository,
+                         IBookRepository bookRepository)
     {
         _borrowService = borrowService;
         _borrowConsoleRenderer = new BorrowConsoleRenderer();
+        _patronRepository = patronRepository;
+        _bookRepository = bookRepository;
     }
 
     public async Task Execute()
@@ -52,14 +62,45 @@ public class LoanHandlerExecutor : IExecutor
         {
             AppPartialsRenderer.RenderHeader();
             ConsoleMessageRenderer.RenderIndicatorMessage("New loan");
-            var patronUUID = _borrowConsoleRenderer.GetPatronId();
-            var bookUUID = _borrowConsoleRenderer.GetBookId();
-            var borrow = await _borrowService.RegisterNewBorrow(patronUUID, bookUUID);
-            _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
+
+            var selectedBook = await SelectionHelper<Book>.SelectItemAsync(
+                                    _bookRepository,
+                                    "Select the book you want to borrow:",
+                                    "No books available for borrowing.",
+                                    book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
+                                );
+
+            var selectedPatron = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron who is borrowing the book:",
+                                    "No patrons available for borrowing.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
+
+            if (selectedBook == null || selectedPatron == null)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage("Book or Patron selection was cancelled or invalid.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
+            }
 
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
-                ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered {borrow}");
+                try
+                {
+                    var borrow = await _borrowService.RegisterNewBorrow(selectedPatron.Id, selectedBook.Id);
+                    ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered:\n");
+                    ResultRenderer.RenderResult(borrow, 
+                                    b => new DetailedBorrowFormatter(b, 
+                                                                    _bookRepository, 
+                                                                    _patronRepository).ToString()
+                                                                    );
+                    _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
+                }
             }
             else
             {

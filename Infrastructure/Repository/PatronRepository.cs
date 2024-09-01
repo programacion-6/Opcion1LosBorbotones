@@ -14,12 +14,12 @@ public class PatronRepository : IPatronRepository
         _connectionString = connectionString;
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(long membershipnumber)
     {
-        const string query = "DELETE FROM Patron WHERE id = @Id";
+        const string query = "DELETE FROM Patron WHERE membershipnumber = @MembershipNumber";
 
         await using var connection = new NpgsqlConnection(_connectionString);
-        var result = await connection.ExecuteAsync(query, new { Id = id });
+        var result = await connection.ExecuteAsync(query, new { MembershipNumber = membershipnumber });
 
         return result > 0;
     }

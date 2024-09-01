@@ -2,6 +2,7 @@ using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Searchers.LoanSearchers;
 using Opcion1LosBorbotones.Presentation.Handlers;
+using Opcion1LosBorbotones.Presentation.Renderer.BorrowFormatter;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
@@ -10,10 +11,16 @@ namespace Opcion1LosBorbotones.Presentation.Executors;
 public class ReportHandlerExecutor : IExecutor
 {
     private readonly IBorrowRepository _borrowRepository;
+    private readonly IBookRepository _bookRepository;
+    private readonly IPatronRepository _patronRepository;
+    private readonly Func<Borrow, string> _detailedBorrowFormatter;
 
-    public ReportHandlerExecutor(IBorrowRepository borrowRepository)
+    public ReportHandlerExecutor(IBorrowRepository borrowRepository, IBookRepository bookRepository, IPatronRepository patronRepository)
     {
         _borrowRepository = borrowRepository;
+        _bookRepository = bookRepository;
+        _patronRepository = patronRepository;
+        _detailedBorrowFormatter = b => new DetailedBorrowFormatter(b, _bookRepository, _patronRepository).ToString();
     }
 
     public async Task Execute()
@@ -59,7 +66,11 @@ public class ReportHandlerExecutor : IExecutor
     {
         var defaultSearchCriteria = new DefaultSearchCriteria<BorrowStatus>(BorrowStatus.Borrowed);
         var searchStrategy = new LoanSearcherByState(_borrowRepository);
-        var searchService = new UserDrivenPagedSearcher<Borrow, BorrowStatus>(searchStrategy, defaultSearchCriteria);
+        var searchService = new UserDrivenPagedSearcher<Borrow, BorrowStatus>(
+                                searchStrategy, 
+                                defaultSearchCriteria,
+                                _detailedBorrowFormatter
+                                );
         await searchService.ExecuteSearchAsync();
     }
 
@@ -67,16 +78,38 @@ public class ReportHandlerExecutor : IExecutor
     {
         var defaultSearchCriteria = new DefaultSearchCriteria<BorrowStatus>(BorrowStatus.Overdue);
         var searchStrategy = new LoanSearcherByState(_borrowRepository);
-        var searchService = new UserDrivenPagedSearcher<Borrow, BorrowStatus>(searchStrategy, defaultSearchCriteria);
+        var searchService = new UserDrivenPagedSearcher<Borrow, BorrowStatus>(
+                                searchStrategy, 
+                                defaultSearchCriteria,
+                                _detailedBorrowFormatter
+                                );
         await searchService.ExecuteSearchAsync();
     }
 
     private async Task ReportPatronBorrowed()
     {
-        var prompt = "Enter the patron id";
-        var criteriaRequester = new PromptRequester<Guid>(prompt);
-        var searchStrategy = new SearcherForLoansbyPatron(_borrowRepository);
-        var searchService = new UserDrivenPagedSearcher<Borrow, Guid>(searchStrategy, criteriaRequester);
-        await searchService.ExecuteSearchAsync();
+        var patronSelected = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron who wants to see the report:",
+                                    "No patrons available for report.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
+
+        if (patronSelected == null)
+        {
+            ConsoleMessageRenderer.RenderErrorMessage("No patron selected. Please try again.");
+            AppPartialsRenderer.RenderConfirmationToContinue();
+        }
+        else
+        {
+            var defaultSearchCriteria = new DefaultSearchCriteria<long>(patronSelected.MembershipNumber);
+            var searchStrategy = new SearcherForLoansbyPatron(_borrowRepository);
+            var searchService = new UserDrivenPagedSearcher<Borrow, long>(
+                                    searchStrategy,
+                                    defaultSearchCriteria,
+                                    _detailedBorrowFormatter
+                                    );
+            await searchService.ExecuteSearchAsync();
+        }
     }
 }

@@ -15,7 +15,10 @@ public class PatronHandlerExecutor : IExecutor
     private readonly PatronValidator _patronValidator;
     private readonly PatronFinderExecutor _patronFinder;
 
-    public PatronHandlerExecutor(IPatronRepository patronRepository, IEntityRequester<Patron> patronRequester, PatronFinderExecutor patronFinder)
+
+    public PatronHandlerExecutor(IPatronRepository patronRepository,
+                                 IEntityRequester<Patron> patronRequester,
+                                 PatronFinderExecutor patronFinder)
     {
         _patronRepository = patronRepository;
         _patronRequester = patronRequester;
@@ -96,68 +99,106 @@ public class PatronHandlerExecutor : IExecutor
         AppPartialsRenderer.RenderHeader();
         AnsiConsole.MarkupLine("[bold yellow]Deleted a patron[/]");
 
-        var patronId = AnsiConsole.Ask<Guid>("Enter the patron id: ");
-        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to delete this patron?");
-
-        if (wasConfirmed)
+        try
         {
-            try
+            var patronToDelete = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron you want to delete:",
+                                    "No patrons available for deletion.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
+
+            if (patronToDelete == null)
             {
-                await _patronRepository.Delete(patronId);
-                ConsoleMessageRenderer.RenderSuccessMessage("Patron deleted");
+                ConsoleMessageRenderer.RenderErrorMessage("No patron selected. Deletion canceled.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
             }
-            catch (BookException bookException)
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this patron? [yellow]{patronToDelete.Name}[/]");
+
+            if (wasConfirmed)
             {
-                ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
-                ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
+                try
+                {
+                    await _patronRepository.Delete(patronToDelete.MembershipNumber);
+                    ConsoleMessageRenderer.RenderSuccessMessage("Patron deleted");
+                }
+                catch (BookException bookException)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
+                    ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
+                }
+                catch (Exception exception)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
+                }
             }
-            catch (Exception exception)
+            else
             {
-                ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
+                AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
+
+            AppPartialsRenderer.RenderConfirmationToContinue();
         }
-        else
+        catch (Exception e)
         {
             AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.MarkupLine("[bold italic red]An unexpected error occurred. Please try again later.[/]");
         }
-
-        AppPartialsRenderer.RenderConfirmationToContinue();
     }
 
     private async Task EditPatron()
     {
         AppPartialsRenderer.RenderHeader();
         ConsoleMessageRenderer.RenderIndicatorMessage("Edit patron");
-        var patronId = AnsiConsole.Ask<Guid>("Enter the patron id: ");
-        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to edit this patron?");
-
-        if (wasConfirmed)
+        try
         {
-            try
+            var patronToEdit = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron you want to edit:",
+                                    "No patrons available for editing.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
+
+            if (patronToEdit == null)
             {
-                var editedPatron = _patronRequester.AskForEntity();
-                editedPatron.Id = patronId;
-                _patronValidator.ValidatePatron(editedPatron);
-                await _patronRepository.Update(editedPatron);
-                ConsoleMessageRenderer.RenderSuccessMessage("Patron edited");
+                ConsoleMessageRenderer.RenderErrorMessage("No patron selected. Edit canceled.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
             }
-            catch (BookException bookException)
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this patron? [yellow]{patronToEdit.Name}[/]");
+
+            if (wasConfirmed)
             {
-                ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
-                ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
+                try
+                {
+                    var editedPatron = _patronRequester.AskForEntity();
+                    editedPatron.Id = patronToEdit.Id;
+                    _patronValidator.ValidatePatron(editedPatron);
+                    await _patronRepository.Update(editedPatron);
+                    ConsoleMessageRenderer.RenderSuccessMessage("Patron edited");
+                }
+                catch (PatronException patronException)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage(patronException.Message);
+                    ConsoleMessageRenderer.RenderErrorMessage(patronException.ResolutionSuggestion);
+                }
+                catch (Exception exception)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
+                }
             }
-            catch (Exception exception)
+            else
             {
-                ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
+                AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
         }
-
         AppPartialsRenderer.RenderConfirmationToContinue();
     }
-
-
 }

@@ -3,6 +3,7 @@ using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Searchers.BookSearchers;
 using Opcion1LosBorbotones.Presentation.Handlers;
+using Opcion1LosBorbotones.Presentation.Renderer.BookFormatter;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
@@ -11,6 +12,8 @@ namespace Opcion1LosBorbotones.Presentation.Executors;
 public class BookFinderExecutor : IExecutor
 {
     private readonly IBookRepository _bookRepository;
+    private readonly Func<Book, string> _detailedBookFormatter = 
+                                        b => new DetailedBookFormatter(b).ToString();
 
     public BookFinderExecutor(IBookRepository bookRepository)
     {
@@ -58,7 +61,11 @@ public class BookFinderExecutor : IExecutor
         var prompt = "Enter the genre";
         var criteriaRequester = new PromptRequester<string>(prompt);
         var searchStrategy = new SearcherByGenre(_bookRepository);
-        var searchService = new UserDrivenPagedSearcher<Book, string>(searchStrategy, criteriaRequester);
+        var searchService = new UserDrivenPagedSearcher<Book, string>(
+                                searchStrategy, 
+                                criteriaRequester,
+                                _detailedBookFormatter
+                                );
         await searchService.ExecuteSearchAsync();
     }
 
@@ -67,7 +74,11 @@ public class BookFinderExecutor : IExecutor
         var prompt = "Enter the title";
         var criteriaRequester = new PromptRequester<string>(prompt);
         var searchStrategy = new SearcherByTitle(_bookRepository);
-        var searchService = new UserDrivenPagedSearcher<Book, string>(searchStrategy, criteriaRequester);
+        var searchService = new UserDrivenPagedSearcher<Book, string>(
+                                searchStrategy, 
+                                criteriaRequester,
+                                _detailedBookFormatter
+                                );
         await searchService.ExecuteSearchAsync();
     }
 
@@ -76,7 +87,11 @@ public class BookFinderExecutor : IExecutor
         var prompt = "Enter the author";
         var criteriaRequester = new PromptRequester<string>(prompt);
         var searchStrategy = new SearcherByAuthor(_bookRepository);
-        var searchService = new UserDrivenPagedSearcher<Book, string>(searchStrategy, criteriaRequester);
+        var searchService = new UserDrivenPagedSearcher<Book, string>(
+                                searchStrategy, 
+                                criteriaRequester,
+                                _detailedBookFormatter
+                                );
         await searchService.ExecuteSearchAsync();
     }
 
@@ -84,7 +99,7 @@ public class BookFinderExecutor : IExecutor
     {
         var isbn = AnsiConsole.Ask<long>("Book ISBN: ");
         var book = await _bookRepository.GetBookByISBN(isbn);
-        ResultRenderer.RenderResult(book);
+        ResultRenderer.RenderResult(book, _detailedBookFormatter);
         AppPartialsRenderer.RenderConfirmationToContinue();
     }
 }

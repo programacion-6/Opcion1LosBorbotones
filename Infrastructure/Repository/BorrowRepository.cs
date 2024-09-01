@@ -14,7 +14,7 @@ public class BorrowRepository : IBorrowRepository
         _connectionString = connectionString;
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(long id)
     {
         const string query = "DELETE FROM Borrow WHERE id = @Id";
 
@@ -101,30 +101,32 @@ public class BorrowRepository : IBorrowRepository
         });
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(Guid patronId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(long patronMembershipNumber, int pageNumber, int pageSize)
     {
-        const string sql = @"
-            SELECT 
-                id AS Id, 
-                patron AS PatronId, 
-                book AS BookId, 
-                borrowStatus AS Status, 
-                dueDate AS DueDate, 
-                borrowDate AS BorrowDate  
-            FROM Borrow 
-            WHERE patron = @PatronId 
-            ORDER BY borrowStatus
-            OFFSET @Offset ROWS
-            FETCH NEXT @PageSize ROWS ONLY";
+        const string query = @"
+        SELECT 
+            b.id AS Id, 
+            b.patron AS PatronId, 
+            b.book AS BookId, 
+            b.borrowStatus AS Status, 
+            b.dueDate AS DueDate, 
+            b.borrowDate AS BorrowDate 
+        FROM Borrow b
+        JOIN Patron p ON b.patron = p.id
+        WHERE p.MembershipNumber = @MembershipNumber
+        ORDER BY b.borrowStatus
+        LIMIT @Limit OFFSET @Offset";
 
         int offset = (pageNumber - 1) * pageSize;
 
-        using (var connection = new NpgsqlConnection(_connectionString))
+        using var connection = new NpgsqlConnection(_connectionString);
+        return await connection.QueryAsync<Borrow>(query, new
         {
-            return await connection.QueryAsync<Borrow>(sql, new { PatronId = patronId, Offset = offset, PageSize = pageSize });
-        }
+            MembershipNumber = patronMembershipNumber,
+            Limit = pageSize,
+            Offset = offset
+        });
     }
-
 
     public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int pageNumber, int pageSize)
     {

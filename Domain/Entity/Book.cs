@@ -11,7 +11,6 @@ public class Book : IEntity
     public string Genre { get; }
     public DateTime PublicationYear { get; }
     
-    
     public Book(Guid id, string title, string author, long isbn, string genre, DateTime publicationYear)
     {
         Id = id;
@@ -20,11 +19,6 @@ public class Book : IEntity
         Isbn = isbn;
         Genre = genre;
         PublicationYear = publicationYear;
-    }
-
-    public override string ToString()
-    {
-        return $"Title: {Title}, Author: {Author}, ISBN: {Isbn}, Genre: {Genre}, Publication Year: {PublicationYear:yyyy-MM-dd}";
     }
 
 }
