@@ -1,21 +1,27 @@
 using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Presentation.Renderer;
 using Opcion1LosBorbotones.Presentation.Renderer.PatronFormatter;
+using Opcion1LosBorbotones.Presentation.Renders;
+using Spectre.Console;
 
 namespace Opcion1LosBorbotones.Presentation;
 
 public class PatronFormatterFactory : IEntityFormatterFactory<Patron>
 {
-    public Task<EntityFormatter<Patron>?> CreateDetailedFormatter(Patron? entity)
+    public void CreateDetailedFormatter(Patron? entity)
     {
         if (entity is not null)
         {
-            var formatter = Task.FromResult<EntityFormatter<Patron>?>(
-                new DetailedPatronFormatter(entity));
-
-            return formatter;
+            var formatter = new DetailedPatronFormatter(entity);
+            var formatterString = formatter.ToString();
+            var panel = new Panel(new Markup($"[bold green]{formatterString}[/]"))
+            {
+                Border = BoxBorder.Rounded,
+            };
+            AnsiConsole.Write(panel);
         }
-
-        return Task.FromResult<EntityFormatter<Patron>?>(null);
+        else
+        {
+            ConsoleMessageRenderer.RenderInfoMessage("No result found");
+        }
     }
 }

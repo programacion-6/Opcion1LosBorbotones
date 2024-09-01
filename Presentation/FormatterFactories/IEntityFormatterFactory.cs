@@ -5,5 +5,5 @@ namespace Opcion1LosBorbotones.Presentation;
 
 public interface IEntityFormatterFactory<T> where T : IEntity
 {
-    public Task<EntityFormatter<T>?> CreateDetailedFormatter(T? entity);
+    public void CreateDetailedFormatter(T? entity);
 }

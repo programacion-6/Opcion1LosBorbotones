@@ -2,12 +2,12 @@ using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
-using Opcion1LosBorbotones.Presentation.Utils;
+using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
-namespace Opcion1LosBorbotones.Presentation;
+namespace Opcion1LosBorbotones.Presentation.Executors;
 
-public class BorrowOptions
+public class LoanHandlerExecutor : IExecutor
 {
     private readonly IBorrowService _borrowService;
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
@@ -15,7 +15,7 @@ public class BorrowOptions
     private readonly IPatronRepository _patronRepository;
     private readonly IBookRepository _bookRepository;
 
-    public BorrowOptions(IBorrowService borrowService,
+    public LoanHandlerExecutor(IBorrowService borrowService,
                          IEntityFormatterFactory<Borrow> entityFormatterFactoryBorrow,
                          IPatronRepository patronRepository,
                          IBookRepository bookRepository)
@@ -27,24 +27,23 @@ public class BorrowOptions
         _bookRepository = bookRepository;
     }
 
-    public async Task BorrowInitialOptions()
+    public async Task Execute()
     {
         bool goBack = false;
         while (!goBack)
         {
-            AnsiConsole.Clear();
-            Header.AppHeader();
-            AnsiConsole.MarkupLine("[bold yellow]Borrow Menu[/]");
+            AppPartialsRenderer.RenderHeader();
+            ConsoleMessageRenderer.RenderIndicatorMessage("Borrow Menu");
 
             var option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[bold green]Chose an option:[/]")
                     .PageSize(10)
-                    .AddChoices(new[]
-                    {
+                    .AddChoices(
+                    [
                         "1. Request a borrow",
                         "2. Go back"
-                    })
+                    ])
             );
 
             switch (option)
@@ -63,10 +62,8 @@ public class BorrowOptions
     {
         try
         {
-            AnsiConsole.Clear();
-            Header.AppHeader();
-            AnsiConsole.MarkupLine("[bold yellow]Register a new borrow[/]");
-
+            AppPartialsRenderer.RenderHeader();
+            ConsoleMessageRenderer.RenderIndicatorMessage("New loan");
             var books = (await _bookRepository.GetAll()).ToArray();
 
             if (books == null || books.Length == 0)
@@ -83,7 +80,6 @@ public class BorrowOptions
                     .AddChoices(books)
                     .UseConverter(book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}")
             );
-
 
             var bookId = selectedBook.Id;
 
@@ -106,6 +102,10 @@ public class BorrowOptions
             );
 
             var patronId = selectedPatron.Id;
+            // var patronUUID = _borrowConsoleRenderer.GetPatronId();
+            // var bookUUID = _borrowConsoleRenderer.GetBookId();
+            //var borrow = await _borrowService.RegisterNewBorrow(patronUUID, bookUUID);
+            //_borrowConsoleRenderer.DisplayBorrowDetails(borrow);
 
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
@@ -114,30 +114,31 @@ public class BorrowOptions
                     var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
 
 
-                    var formatter = await _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
+                    //_formatterFactoryBorrow.CreateDetailedFormatter(borrow);
 
 
-                    AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/]\n{formatter}");
+                    //AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/]\n{formatter}");
+                    ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered:\n");
+                    _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
                     _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
                 }
                 catch (InvalidOperationException ex)
                 {
                     AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
                 }
+                //ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered {borrow}");
             }
             else
             {
-                AnsiConsole.MarkupLine("[bold green]No borrow registered[/]");
+                ConsoleMessageRenderer.RenderInfoMessage("No borrow registered");
             }
 
-            AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
-            Console.ReadLine();
+            AppPartialsRenderer.RenderConfirmationToContinue();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            AnsiConsole.MarkupLine("[bold italic red]An unexpected error occurred. Please try again later.[/]");
-            AnsiConsole.Markup("[blue] Press Enter to go back to the Borrow Menu.[/]");
-            Console.ReadLine();
+            ConsoleMessageRenderer.RenderErrorMessage("The data entered is not correct, please enter correct data");
+            AppPartialsRenderer.RenderConfirmationToContinue();
         }
     }
 }

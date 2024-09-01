@@ -45,42 +45,54 @@ public class BookRepository : IBookRepository
         }
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByAuthor(string author, int offset, int limit)
+    public async Task<IEnumerable<Book>> GetBooksByAuthor(string author, int pageNumber, int pageSize)
     {
         const string sql = @"
             SELECT * FROM Book
             WHERE author = @Author
-            LIMIT @Limit OFFSET @Offset";
+            ORDER BY Author
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY";
+
+        int offset = (pageNumber - 1) * pageSize;
 
         using (var connection = new NpgsqlConnection(_connectionString))
         {
-            return await connection.QueryAsync<Book>(sql, new { Author = author, Limit = limit, Offset = offset });
+            return await connection.QueryAsync<Book>(sql, new { Author = author, Offset = offset, PageSize = pageSize });
         }
     }
 
-    public async Task<IEnumerable<Book>> GetBooksByGenre(string genre, int offset, int limit)
-    {
-         const string sql = @"
-            SELECT * FROM Book
-            WHERE genre = @Genre
-            LIMIT @Limit OFFSET @Offset";
-
-        using (var connection = new NpgsqlConnection(_connectionString))
-        {
-            return await connection.QueryAsync<Book>(sql, new { Genre = genre, Limit = limit, Offset = offset });
-        }
-    }
-
-    public async Task<IEnumerable<Book>> GetBooksByTitle(string title, int offset, int limit)
+    public async Task<IEnumerable<Book>> GetBooksByGenre(string genre, int pageNumber, int pageSize)
     {
         const string sql = @"
             SELECT * FROM Book
-            WHERE title = @Title
-            LIMIT @Limit OFFSET @Offset";
+            WHERE genre = @Genre
+            ORDER BY Genre
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY";
+
+        int offset = (pageNumber - 1) * pageSize;
 
         using (var connection = new NpgsqlConnection(_connectionString))
         {
-            return await connection.QueryAsync<Book>(sql, new { Title = title, Limit = limit, Offset = offset });
+            return await connection.QueryAsync<Book>(sql, new { Genre = genre, Offset = offset, PageSize = pageSize });
+        }
+    }
+
+    public async Task<IEnumerable<Book>> GetBooksByTitle(string title, int pageNumber, int pageSize)
+    {
+        const string sql = @"
+        SELECT * FROM Book
+        WHERE title = @Title
+        ORDER BY Title
+        OFFSET @Offset ROWS
+        FETCH NEXT @PageSize ROWS ONLY";
+
+        int offset = (pageNumber - 1) * pageSize;
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Book>(sql, new { Title = title, Offset = offset, PageSize = pageSize });
         }
     }
 
@@ -96,7 +108,7 @@ public class BookRepository : IBookRepository
 
     public async Task<bool> Save(Book entity)
     {
-       const string sql = @"
+        const string sql = @"
                 INSERT INTO Book (id, title, author, isbn, genre, publicationYear)
                 VALUES (@Id, @Title, @Author, @Isbn, @Genre, @PublicationYear)";
 
