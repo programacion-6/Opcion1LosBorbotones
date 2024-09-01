@@ -95,8 +95,6 @@ public class BookHandlerExecutor : IExecutor
         AppPartialsRenderer.RenderHeader();
         ConsoleMessageRenderer.RenderIndicatorMessage("Delete a book");
 
-        // var bookId = AnsiConsole.Ask<long>("Enter the book ID: ");
-        // var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to delete this book?");
         var books = (await _bookRepository.GetAll()).ToArray();
 
         if (books == null || books.Length == 0)
@@ -115,17 +113,6 @@ public class BookHandlerExecutor : IExecutor
         );
 
         var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this book? [yellow]{bookToDelete.Title}[/]?");
-        // if (wasConfirmed)
-        // {
-        //     await _bookRepository.Delete(bookToDelete.Isbn);
-        //     AnsiConsole.MarkupLine("[green]The book has been successfully deleted.[/]");
-        //     AnsiConsole.Markup("[blue] Press Enter to go back to the Book Menu.[/]");
-        //     Console.ReadLine();
-        // }
-        // else
-        // {
-        //     AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
-        // }
 
         if (wasConfirmed)
         {
@@ -157,32 +144,55 @@ public class BookHandlerExecutor : IExecutor
         AppPartialsRenderer.RenderHeader();
         ConsoleMessageRenderer.RenderIndicatorMessage("Edit book");
 
-        var bookId = AnsiConsole.Ask<Guid>("Enter the book ID: ");
-        var wasConfirmed = AnsiConsole.Confirm("Are you sure you want to edit this book?");
-
-        if (wasConfirmed)
+        try
         {
-            try
+            var books = (await _bookRepository.GetAll()).ToArray();
+
+            if (books == null || books.Length == 0)
             {
-                var editedBook = _bookRequester.AskForEntity();
-                editedBook.Id = bookId;
-                _bookValidator.ValidateBook(editedBook);
-                await _bookRepository.Update(editedBook);
-                ConsoleMessageRenderer.RenderSuccessMessage("Book edited");
+                AnsiConsole.MarkupLine("[red]There are no books available for editing.[/]");
+                return;
             }
-            catch (BookException bookException)
+
+            var bookToEdit = AnsiConsole.Prompt(
+                new SelectionPrompt<Book>()
+                    .Title("Select the book you want to edit:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                    .AddChoices(books)
+                    .UseConverter(book => $"{book.Title} | {book.Author} | {book.Isbn}")
+            );
+
+            var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this book? [yellow]{bookToEdit.Title}[/]?");
+
+            if (wasConfirmed)
             {
-                ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
-                ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
+                try
+                {
+                    var editedBook = _bookRequester.AskForEntity();
+                    editedBook.Id = bookToEdit.Id;
+                    _bookValidator.ValidateBook(editedBook);
+                    await _bookRepository.Update(editedBook);
+                    ConsoleMessageRenderer.RenderSuccessMessage("Book edited");
+                }
+                catch (BookException bookException)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
+                    ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
+                }
+                catch (Exception exception)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
+                }
             }
-            catch (Exception exception)
+            else
             {
-                ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
+                AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
         }
-        else
+        catch (Exception e)
         {
-            AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
         }
 
         AppPartialsRenderer.RenderConfirmationToContinue();

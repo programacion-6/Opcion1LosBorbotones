@@ -1,6 +1,3 @@
-using Opcion1LosBorbotones.Domain.Entity;
-using Opcion1LosBorbotones.Presentation.Renderer;
-using Opcion1LosBorbotones.Presentation.Renderer.PatronFormatter;
 using Spectre.Console;
 
 namespace Opcion1LosBorbotones.Presentation.Renders;
@@ -8,15 +5,23 @@ namespace Opcion1LosBorbotones.Presentation.Renders;
 public static class ResultRenderer
 {
 
-    public static void RenderResult<R>(R? result)
+    public static void RenderResult<T>(T? result, Func<T, string> formatterFunc)
     {
         if (result is not null)
         {
-            var panel = new Panel(new Markup($"[bold green]{result}[/]"))
+            try
             {
-                Border = BoxBorder.Rounded,
-            };
-            AnsiConsole.Write(panel);
+                var formattedResult = formatterFunc(result);
+                var panel = new Panel(new Markup($"[bold green]{formattedResult}[/]"))
+                {
+                    Border = BoxBorder.Rounded,
+                };
+                AnsiConsole.Write(panel);
+            }
+            catch (Exception ex)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage($"Error: {ex.Message}");
+            }
         }
         else
         {
@@ -24,14 +29,23 @@ public static class ResultRenderer
         }
     }
 
-    public static void RenderResults<R>(List<R> results)
+    public static void RenderResults<T>(List<T> results, Func<T, string> formatterFunc)
     {
         if (results.Any())
         {
             int index = 0;
             foreach (var result in results)
             {
-                AnsiConsole.MarkupLine($"[bold]{++index}[/]. {result}");
+                var formattedResult = formatterFunc(result);
+
+                try
+                {
+                    AnsiConsole.MarkupLine($"[bold]{++index}[/]. {formattedResult}");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage($"Error in formatting result: {ex.Message}");
+                }
             }
         }
         else

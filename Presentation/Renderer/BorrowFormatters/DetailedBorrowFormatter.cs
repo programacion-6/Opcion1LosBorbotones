@@ -29,8 +29,12 @@ public class DetailedBorrowFormatter : EntityDetailedFormatter<Borrow>
 
     public override string ToString()
     {
-        var patronName = _patron?.Name ?? "[bold yellow][Unknown Patron][/]";
-        var bookTitle = _book?.Title ?? "[bold yellow][Unknown Book][/]";
+        if (_book == null || _patron == null)
+        {
+            BorrowRelatedData().Wait();
+        }
+        var patronName = _patron?.Name ?? "Unknown Patron";
+        var bookTitle = _book?.Title ?? "Unknown Book";
 
         return $"[bold plum3]Patron:[/] {patronName}\n" +
                $"[bold plum3]Book:[/] {bookTitle}\n" +

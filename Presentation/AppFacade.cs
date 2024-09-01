@@ -53,14 +53,11 @@ public class ApplicationFacade
         var borrowService = new BorrowService(_borrowRepository, _bookRepository, _patronRepository);
         var bookFinder = new BookFinderExecutor(_bookRepository);
         var patronFinder = new PatronFinderExecutor(_patronRepository);
-
-        IEntityFormatterFactory<Borrow> _formatterFactoryBorrow = new BorrowFormatterFactory(_bookRepository, _patronRepository);
-        //IEntityFormatterFactory<Patron> _formatterFactoryPatron = new PatronFormatterFactory();
         
         var bookOptions = new BookHandlerExecutor(_bookRepository, bookRequester, bookFinder);
         var patronOptions = new PatronHandlerExecutor(_patronRepository, patronRequester, patronFinder);
-        var borrowOptions = new LoanHandlerExecutor(borrowService, _formatterFactoryBorrow, _patronRepository, _bookRepository);
-        var reportOptions = new ReportHandlerExecutor(_borrowRepository);
+        var borrowOptions = new LoanHandlerExecutor(borrowService, _patronRepository, _bookRepository);
+        var reportOptions = new ReportHandlerExecutor(_borrowRepository, _bookRepository, _patronRepository);
 
         return new MainHandlerExecutor(bookOptions, patronOptions, borrowOptions, reportOptions);
     }

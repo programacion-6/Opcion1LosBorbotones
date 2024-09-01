@@ -2,6 +2,7 @@ using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
+using Opcion1LosBorbotones.Presentation.Renderer.BorrowFormatter;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
 
@@ -11,18 +12,15 @@ public class LoanHandlerExecutor : IExecutor
 {
     private readonly IBorrowService _borrowService;
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
-    private IEntityFormatterFactory<Borrow> _formatterFactoryBorrow;
     private readonly IPatronRepository _patronRepository;
     private readonly IBookRepository _bookRepository;
 
     public LoanHandlerExecutor(IBorrowService borrowService,
-                         IEntityFormatterFactory<Borrow> entityFormatterFactoryBorrow,
                          IPatronRepository patronRepository,
                          IBookRepository bookRepository)
     {
         _borrowService = borrowService;
         _borrowConsoleRenderer = new BorrowConsoleRenderer();
-        _formatterFactoryBorrow = entityFormatterFactoryBorrow;
         _patronRepository = patronRepository;
         _bookRepository = bookRepository;
     }
@@ -102,31 +100,24 @@ public class LoanHandlerExecutor : IExecutor
             );
 
             var patronId = selectedPatron.Id;
-            // var patronUUID = _borrowConsoleRenderer.GetPatronId();
-            // var bookUUID = _borrowConsoleRenderer.GetBookId();
-            //var borrow = await _borrowService.RegisterNewBorrow(patronUUID, bookUUID);
-            //_borrowConsoleRenderer.DisplayBorrowDetails(borrow);
 
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
                 try
                 {
                     var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
-
-
-                    //_formatterFactoryBorrow.CreateDetailedFormatter(borrow);
-
-
-                    //AnsiConsole.MarkupLine($"[bold italic green]New borrow registered:[/]\n{formatter}");
                     ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered:\n");
-                    _formatterFactoryBorrow.CreateDetailedFormatter(borrow);
+                    ResultRenderer.RenderResult(borrow, 
+                                    b => new DetailedBorrowFormatter(b, 
+                                                                    _bookRepository, 
+                                                                    _patronRepository).ToString()
+                                                                    );
                     _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
                 }
                 catch (InvalidOperationException ex)
                 {
                     AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
                 }
-                //ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered {borrow}");
             }
             else
             {

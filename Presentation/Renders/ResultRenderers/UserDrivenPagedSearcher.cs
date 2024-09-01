@@ -10,11 +10,13 @@ public class UserDrivenPagedSearcher<T, I>
     private int _numberOfResultsFound;
     private readonly ISearchStrategy<T, I> _searchStrategy;
     private readonly ISearchCriteriaRequester<I> _criteriaRequester;
+    private readonly Func<T, string> _formatterFunc;
 
-    public UserDrivenPagedSearcher(ISearchStrategy<T, I> searchStrategy, ISearchCriteriaRequester<I> criteriaRequester)
+    public UserDrivenPagedSearcher(ISearchStrategy<T, I> searchStrategy, ISearchCriteriaRequester<I> criteriaRequester, Func<T, string> formatterFunc)
     {
         _searchStrategy = searchStrategy;
         _criteriaRequester = criteriaRequester;
+        _formatterFunc = formatterFunc;
     }
 
     public async Task ExecuteSearchAsync()
@@ -75,7 +77,7 @@ public class UserDrivenPagedSearcher<T, I>
     {
         AnsiConsole.Clear();
         ConsoleMessageRenderer.RenderIndicatorMessage("Results:");
-        ResultRenderer.RenderResults(searchResults);
+        ResultRenderer.RenderResults(searchResults, _formatterFunc);
     }
 
     private bool HandleUserChoice(ref int currentPage)
