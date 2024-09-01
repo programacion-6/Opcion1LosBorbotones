@@ -95,22 +95,12 @@ public class BookHandlerExecutor : IExecutor
         AppPartialsRenderer.RenderHeader();
         ConsoleMessageRenderer.RenderIndicatorMessage("Delete a book");
 
-        var books = (await _bookRepository.GetAll()).ToArray();
-
-        if (books == null || books.Length == 0)
-        {
-            AnsiConsole.MarkupLine("[red]There are no books available for deletion.[/]");
-            return;
-        }
-
-        var bookToDelete = AnsiConsole.Prompt(
-            new SelectionPrompt<Book>()
-                .Title("Select the book you want to delete:")
-                .PageSize(10)
-                .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
-                .AddChoices(books)
-                .UseConverter(book => $"{book.Title} | {book.Author}")
-        );
+        var bookToDelete = await SelectionHelper<Book>.SelectItemAsync(
+                                    _bookRepository,
+                                    "Select the book you want to delete:",
+                                    "There are no books available for deletion.",
+                                    book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
+                                );
 
         var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this book? [yellow]{bookToDelete.Title}[/]?");
 
@@ -146,22 +136,12 @@ public class BookHandlerExecutor : IExecutor
 
         try
         {
-            var books = (await _bookRepository.GetAll()).ToArray();
-
-            if (books == null || books.Length == 0)
-            {
-                AnsiConsole.MarkupLine("[red]There are no books available for editing.[/]");
-                return;
-            }
-
-            var bookToEdit = AnsiConsole.Prompt(
-                new SelectionPrompt<Book>()
-                    .Title("Select the book you want to edit:")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
-                    .AddChoices(books)
-                    .UseConverter(book => $"{book.Title} | {book.Author} | {book.Isbn}")
-            );
+            var bookToEdit = await SelectionHelper<Book>.SelectItemAsync(
+                                    _bookRepository,
+                                    "Select the book you want to edit:",
+                                    "There are no books available for editing.",
+                                    book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
+                                );
 
             var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this book? [yellow]{bookToEdit.Title}[/]?");
 

@@ -101,22 +101,12 @@ public class PatronHandlerExecutor : IExecutor
 
         try
         {
-            var patrons = (await _patronRepository.GetAll()).ToArray();
-
-            if (patrons == null || patrons.Length == 0)
-            {
-                AnsiConsole.MarkupLine("[red]No patrons available for deletion.[/]");
-                return;
-            }
-
-            var patronToDelete = AnsiConsole.Prompt(
-                new SelectionPrompt<Patron>()
-                    .Title("Select the patron you want to delete:")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
-                    .AddChoices(patrons)
-                    .UseConverter(patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}")
-            );
+            var patronToDelete = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron you want to delete:",
+                                    "No patrons available for deletion.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
 
             var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this patron? [yellow]{patronToDelete.Name}[/]");
 
@@ -157,22 +147,12 @@ public class PatronHandlerExecutor : IExecutor
         ConsoleMessageRenderer.RenderIndicatorMessage("Edit patron");
         try
         {
-            var patrons = (await _patronRepository.GetAll()).ToArray();
-
-            if (patrons == null || patrons.Length == 0)
-            {
-                AnsiConsole.MarkupLine("[red]No patrons available for editing.[/]");
-                return;
-            }
-
-            var patronToEdit = AnsiConsole.Prompt(
-                new SelectionPrompt<Patron>()
-                    .Title("Select the patron you want to edit:")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
-                    .AddChoices(patrons)
-                    .UseConverter(patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}")
-            );
+            var patronToEdit = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron you want to edit:",
+                                    "No patrons available for editing.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
 
             var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this patron? [yellow]{patronToEdit.Name}[/]");
 

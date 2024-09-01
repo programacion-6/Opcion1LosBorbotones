@@ -88,12 +88,18 @@ public class ReportHandlerExecutor : IExecutor
 
     private async Task ReportPatronBorrowed()
     {
-        var prompt = "Enter the Patron MembershipNumber:";
-        var criteriaRequester = new PromptRequester<long>(prompt);
+        var patronSelected = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron who wants to see the report:",
+                                    "No patrons available for report.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
+
+        var defaultSearchCriteria = new DefaultSearchCriteria<long>(patronSelected.MembershipNumber);
         var searchStrategy = new SearcherForLoansbyPatron(_borrowRepository);
         var searchService = new UserDrivenPagedSearcher<Borrow, long>(
                                 searchStrategy, 
-                                criteriaRequester,
+                                defaultSearchCriteria,
                                 _detailedBorrowFormatter
                                 );
         await searchService.ExecuteSearchAsync();

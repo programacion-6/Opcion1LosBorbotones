@@ -62,50 +62,26 @@ public class LoanHandlerExecutor : IExecutor
         {
             AppPartialsRenderer.RenderHeader();
             ConsoleMessageRenderer.RenderIndicatorMessage("New loan");
-            var books = (await _bookRepository.GetAll()).ToArray();
 
-            if (books == null || books.Length == 0)
-            {
-                AnsiConsole.MarkupLine("[red]No books available for borrowing.[/]");
-                return;
-            }
+            var selectedBook = await SelectionHelper<Book>.SelectItemAsync(
+                                    _bookRepository,
+                                    "Select the book you want to borrow:",
+                                    "No books available for borrowing.",
+                                    book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
+                                );
 
-            var selectedBook = AnsiConsole.Prompt(
-                new SelectionPrompt<Book>()
-                    .Title("Select the book you want to borrow:")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
-                    .AddChoices(books)
-                    .UseConverter(book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}")
-            );
-
-            var bookId = selectedBook.Id;
-
-
-            var patrons = (await _patronRepository.GetAll()).ToArray();
-
-            if (patrons == null || patrons.Length == 0)
-            {
-                AnsiConsole.MarkupLine("[red]No patrons available for borrowing.[/]");
-                return;
-            }
-
-            var selectedPatron = AnsiConsole.Prompt(
-                new SelectionPrompt<Patron>()
-                    .Title("Select the patron who is borrowing the book:")
-                    .PageSize(10)
-                    .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
-                    .AddChoices(patrons)
-                    .UseConverter(patron => $"{patron.Name} | {patron.ContactDetails} | Membership Number: {patron.MembershipNumber}")
-            );
-
-            var patronId = selectedPatron.Id;
+            var selectedPatron = await SelectionHelper<Patron>.SelectItemAsync(
+                                    _patronRepository,
+                                    "Select the patron who is borrowing the book:",
+                                    "No patrons available for borrowing.",
+                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                                );
 
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
                 try
                 {
-                    var borrow = await _borrowService.RegisterNewBorrow(patronId, bookId);
+                    var borrow = await _borrowService.RegisterNewBorrow(selectedPatron.Id, selectedBook.Id);
                     ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered:\n");
                     ResultRenderer.RenderResult(borrow, 
                                     b => new DetailedBorrowFormatter(b, 
