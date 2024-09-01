@@ -47,6 +47,8 @@ __Docs__
 - [Improving cohesion and delegation of responsibilities for Searches](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/56?milestone=403375) | __Status__ "DONE"
 - [Editing Implementation for Books and Patrons](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/43?milestone=403375) | __Status__ "DONE"
 - [Refactoring of executors](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/66?milestone=403375) | __Status__ "IN PROGRESS"
+- Change the data type of Contact Details to String | __Status__ "REJECTED"
+     + It was rejected because the other team thought to save phone number
 
 ### Axel Ayala
 - [Eliminate interface redundancy for book management](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/46?milestone=403375) | __Status__ "DONE"

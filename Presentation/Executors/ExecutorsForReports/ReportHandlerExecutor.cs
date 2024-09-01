@@ -95,13 +95,21 @@ public class ReportHandlerExecutor : IExecutor
                                     patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
                                 );
 
-        var defaultSearchCriteria = new DefaultSearchCriteria<long>(patronSelected.MembershipNumber);
-        var searchStrategy = new SearcherForLoansbyPatron(_borrowRepository);
-        var searchService = new UserDrivenPagedSearcher<Borrow, long>(
-                                searchStrategy, 
-                                defaultSearchCriteria,
-                                _detailedBorrowFormatter
-                                );
-        await searchService.ExecuteSearchAsync();
+        if (patronSelected == null)
+        {
+            ConsoleMessageRenderer.RenderErrorMessage("No patron selected. Please try again.");
+            AppPartialsRenderer.RenderConfirmationToContinue();
+        }
+        else
+        {
+            var defaultSearchCriteria = new DefaultSearchCriteria<long>(patronSelected.MembershipNumber);
+            var searchStrategy = new SearcherForLoansbyPatron(_borrowRepository);
+            var searchService = new UserDrivenPagedSearcher<Borrow, long>(
+                                    searchStrategy,
+                                    defaultSearchCriteria,
+                                    _detailedBorrowFormatter
+                                    );
+            await searchService.ExecuteSearchAsync();
+        }
     }
 }

@@ -14,7 +14,7 @@ public class PatronHandlerExecutor : IExecutor
     private readonly IEntityRequester<Patron> _patronRequester;
     private readonly PatronValidator _patronValidator;
     private readonly PatronFinderExecutor _patronFinder;
-    
+
 
     public PatronHandlerExecutor(IPatronRepository patronRepository,
                                  IEntityRequester<Patron> patronRequester,
@@ -108,6 +108,13 @@ public class PatronHandlerExecutor : IExecutor
                                     patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
                                 );
 
+            if (patronToDelete == null)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage("No patron selected. Deletion canceled.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
+            }
+
             var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this patron? [yellow]{patronToDelete.Name}[/]");
 
             if (wasConfirmed)
@@ -154,6 +161,13 @@ public class PatronHandlerExecutor : IExecutor
                                     patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
                                 );
 
+            if (patronToEdit == null)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage("No patron selected. Edit canceled.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
+            }
+
             var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this patron? [yellow]{patronToEdit.Name}[/]");
 
             if (wasConfirmed)
@@ -180,7 +194,6 @@ public class PatronHandlerExecutor : IExecutor
             {
                 AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
-            
         }
         catch (Exception e)
         {

@@ -77,6 +77,13 @@ public class LoanHandlerExecutor : IExecutor
                                     patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
                                 );
 
+            if (selectedBook == null || selectedPatron == null)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage("Book or Patron selection was cancelled or invalid.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
+            }
+
             if (_borrowConsoleRenderer.ConfirmBorrow())
             {
                 try

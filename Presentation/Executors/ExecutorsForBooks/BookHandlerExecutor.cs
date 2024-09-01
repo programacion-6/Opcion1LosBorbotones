@@ -101,6 +101,13 @@ public class BookHandlerExecutor : IExecutor
                                     "There are no books available for deletion.",
                                     book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
                                 );
+        
+        if (bookToDelete == null)
+        {
+            ConsoleMessageRenderer.RenderErrorMessage("No book selected for deletion.");
+            AppPartialsRenderer.RenderConfirmationToContinue();
+            return;
+        }
 
         var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to delete this book? [yellow]{bookToDelete.Title}[/]?");
 
@@ -142,7 +149,13 @@ public class BookHandlerExecutor : IExecutor
                                     "There are no books available for editing.",
                                     book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
                                 );
-
+            
+            if (bookToEdit == null)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage("No book selected for editing.");
+                AppPartialsRenderer.RenderConfirmationToContinue();
+                return;
+            }
             var wasConfirmed = AnsiConsole.Confirm($"Are you sure you want to edit this book? [yellow]{bookToEdit.Title}[/]?");
 
             if (wasConfirmed)
