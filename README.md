@@ -46,7 +46,7 @@ __Docs__
 
 - [Improving cohesion and delegation of responsibilities for Searches](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/56?milestone=403375) | __Status__ "DONE"
 - [Editing Implementation for Books and Patrons](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/43?milestone=403375) | __Status__ "DONE"
-- [Refactoring of executors](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/66?milestone=403375) | __Status__ "IN PROGRESS"
+- [Refactoring of executors](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/66?milestone=403375) | __Status__ "DONE"
 - Change the data type of Contact Details to String | __Status__ "REJECTED"
      + It was rejected because the other team thought to save phone number
 
@@ -56,7 +56,7 @@ __Docs__
 
 ### Salet Gutierrez
 - [Borrow made by a user are not saved in the database](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/37?milestone=403375) | __Status__ "DONE"
-- [Delete sensitive data from the program](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/63?milestone=403375) | __Status__ "IN PROGRESS"
+- [Delete sensitive data from the program](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/63?milestone=403375) | __Status__ "DONE"
 
 ## Santiago Concha
 - [Update UML](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/65) | __Status__ "IN PROGRESS"
