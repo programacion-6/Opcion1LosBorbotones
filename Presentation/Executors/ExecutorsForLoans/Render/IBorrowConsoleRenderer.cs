@@ -6,4 +6,5 @@ public interface IBorrowConsoleRenderer
 {
     void DisplayBorrowDetails(Borrow borrow);
     bool ConfirmBorrow();
+    bool ConfirmReturn();
 }
