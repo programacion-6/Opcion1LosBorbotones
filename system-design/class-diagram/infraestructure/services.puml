@@ -1,4 +1,5 @@
 @startuml
+skinparam linetype ortho
 package services {
     package borrows {
         class BorrowService {
@@ -26,39 +27,52 @@ package services {
             - bookRepository: IBookRepository
             + SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
         }
-        SearcherByAuthor ..o IBookRepository
 
         class SearcherByGenre {
             - bookRepository: IBookRepository
             +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
         }
-        SearcherByGenre ..o IBookRepository
 
         class SearcherByTitle {
             - bookRepository: IBookRepository
             +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
         }
-        SearcherByTitle ..o IBookRepository
 
         class LoanSearcherByState {
-            - bookRepository: IBookRepository
+            - repository: IBorrowRepository
             +  SearchByPage(BorrowStatus criteria, int pageNumber, int pageSize): Task<List<Borrow>>
         }
-        LoanSearcherByState ..o IBorrowRepository
 
-        class SearcherForLoansbyPatron  {
-            - bookRepository: IBookRepository
+        class SearcherForLoansbyPatron {
+            - repository: IBorrowRepository
             +  SearchByPage(long criteria, int pageNumber, int pageSize): Task<List<Borrow>>
         }
-        SearcherForLoansbyPatron  ..o IBorrowRepository
 
-        class SearcherByName   {
+        class SearcherByName {
             - patronRepository: IPatronRepository
-            +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Patron>>
+            + SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Patron>>
         }
-        SearcherByName ..o IBorrowRepository
-    }
 
+    }
 }
+
+BorrowService o-- IBookRepository
+SearcherByAuthor o-- IBookRepository
+SearcherByGenre o-- IBookRepository
+SearcherByTitle o-- IBookRepository
+
+LoanSearcherByState o-- IBorrowRepository
+BorrowService o-- IBorrowRepository
+SearcherForLoansbyPatron  o-- IBorrowRepository
+
+SearcherByName o-- IPatronRepository
+BorrowService o-- IPatronRepository
+
+SearcherByName ..|> ISearchStrategy
+LoanSearcherByState ..|> ISearchStrategy
+SearcherByTitle ..|> ISearchStrategy
+SearcherByGenre ..|> ISearchStrategy
+SearcherByAuthor ..|> ISearchStrategy
+SearcherForLoansbyPatron ..|> ISearchStrategy
 @enduml
 

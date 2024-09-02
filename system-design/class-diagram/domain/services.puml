@@ -1,14 +1,15 @@
 @startuml
 package services {
-    interface IReport<T> {
-        + GenerateReport(T entity, int offset, int limit): Task<string>
-    }
-    IReport <|.. BorrowStatusReport
-    IReport <|.. PatronBorrowReport
-
     interface ISearchStrategy<T, I> {
         + SearchByPage(I criteria, int pageNumber, int pageSize): Task<List<T>>
     }
 }
+
+ISearchStrategy <|.. SearcherByAuthor
+ISearchStrategy <|.. SearcherByGenre
+ISearchStrategy <|.. SearcherByTitle
+ISearchStrategy <|.. SearcherByName
+ISearchStrategy <|.. SearcherForLoansbyPatron
+ISearchStrategy <|.. LoanSearcherByState
 @enduml
 

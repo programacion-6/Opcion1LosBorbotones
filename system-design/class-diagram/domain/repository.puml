@@ -1,4 +1,6 @@
 @startuml
+skinparam linetype ortho
+
 package repository {
     interface IBookRepository {
         + GetBookByISBN(long isbn): Task<Book?>
@@ -6,14 +8,12 @@ package repository {
         + GetBooksByAuthor(string author, int offset, int limit): Task<IEnumerable<Book>>
         + GetBooksByGenre(BookGenre genre, int offset, int limit): Task<IEnumerable<Book>>
     }
-    IBookRepository o-- BookOptions
 
     interface IPatronRepository {
         + GetPatronsByNameAsync(string name, int offset, int limit): Task<IEnumerable<Patron>>
         + GetPatronByMembershipAsync(long membership): Task<Patron?>
         + GetPatronByContactDetailsAsync(long contactDetails): Task<Patron?>
     }
-    IPatronRepository o-- PatronOptions
 
     interface IBorrowRepository {
         + GetBorrowsByPatron(long membershipNumber, int offset, int limit): Task<IEnumerable<Borrow>>
@@ -23,9 +23,6 @@ package repository {
         + GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit): Task<IEnumerable<Borrow>>
         + UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus): Task<bool>
     }
-    IBorrowRepository o-- BorrowStatusReport
-    IBorrowRepository o-- PatronBorrowReport
-    IBorrowRepository o-- BorrowService
 
     interface IRepository<T: IEntity> {
          Save(T entity): Task<bool>
@@ -38,5 +35,19 @@ package repository {
     IRepository <|.. IPatronRepository
     IRepository <|.. IBorrowRepository
 }
+
+IBookRepository --o DetailedBorrowFormatter
+IBookRepository --o BorrowService
+IBookRepository --o SearcherByAuthor
+IBookRepository --o SearcherByGenre
+IBookRepository --o SearcherByTitle
+
+IBorrowRepository --o LoanSearcherByState
+IBorrowRepository --o BorrowService
+IBorrowRepository --o SearcherForLoansbyPatron
+
+IPatronRepository --o SearcherByName
+IPatronRepository --o BorrowService
+IPatronRepository --o DetailedBorrowFormatter
 @enduml
 

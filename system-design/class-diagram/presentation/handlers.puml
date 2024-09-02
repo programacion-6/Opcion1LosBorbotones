@@ -40,4 +40,6 @@ package handler {
     ISearchCriteriaRequester <|.. DefaultSearchCriteria
     ISearchCriteriaRequester <|.. PromptRequester
 }
+BookRequesterByConsole o-- Book
+PatronRequesterByConsole o-- Patron
 @enduml

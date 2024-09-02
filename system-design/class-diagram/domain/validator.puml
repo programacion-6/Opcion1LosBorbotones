@@ -14,7 +14,6 @@ package validator {
         }
         CustomException <|-- PatronException
         CustomException <|-- BookException
-        CustomException --( Exception
         CustomException *-- SeverityLevel
     }
 
@@ -35,6 +34,11 @@ package validator {
         - ValidateMembershipNumber(long membershipNumber): void
         - ValidateContactDetails(long contactDetails): void
     }
+
 }
+
+BookValidator --o BookHandlerExecutor
+PatronValidator --o PatronHandlerExecutor
+CustomException --( Exception
 @enduml
 

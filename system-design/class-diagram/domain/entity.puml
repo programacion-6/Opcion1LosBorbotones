@@ -41,5 +41,9 @@ package entity {
     }
     BorrowStatus *-- Borrow
 }
+
+Book --o DetailedBookFormatter
+Patron --o DetailedBookFormatter
+
 @enduml
 

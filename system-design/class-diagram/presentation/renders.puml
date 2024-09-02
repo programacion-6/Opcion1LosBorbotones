@@ -15,7 +15,7 @@ package renders {
         - book: Book?
         - patron: Patron?
         + Task BorrowRelatedData(): override
-        + string ToString(): override
+        + ToString(): string
     }
 
     class DetailedPatronFormatter {
@@ -74,6 +74,11 @@ package renders {
     EntityFormatter <|-- DetailedBorrowFormatter
     EntityFormatter <|-- EntityDetailedFormatter
     EntityFormatter <|-- DetailedPatronFormatter
-
 }
+
+DetailedBorrowFormatter o-- IBookRepository
+DetailedBorrowFormatter o-- IPatronRepository
+DetailedBorrowFormatter o-- Book
+DetailedBorrowFormatter o-- Patron
+
 @enduml

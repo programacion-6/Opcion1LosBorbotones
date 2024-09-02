@@ -1,119 +1,20 @@
 @startuml
+skinparam linetype ortho
+
 package presentation {
 ' presentation/:
 !include executors.puml
 !include handlers.puml
 !include renders.puml
 
-    class Header {
-        + {static} AppHeader(): void
-    }
-
     class ApplicationFacade {
         -  databaseConfig: DatabaseConfig
         +  CreateAppAsync(): Task<MainHandlerExecutor>
         -  InitDatabaseConnection(): Task
-        - CreateMainExecutor(IBookRepository bookRepository, IPatronRepository _patronRepository, IBorrowRepository _borrowRepository): MainHandlerExecutor
+        - CreateMainExecutor(IBookRepository bookRepository, IPatronRepository patronRepository, IBorrowRepository _borrowRepository): MainHandlerExecutor
     }
 }
 
+ApplicationFacade ..> MainHandlerExecutor: <<creates>>
 @enduml
-
-    package reports {
-        class BorrowStatusReport {
-            - repository: IBorrowRepository
-            + GenerateReport(BorrowStatus borrowStatus, int offset, int limit): Task<string>
-        }
-        BorrowStatusReport *-- ReportsOptions
-
-        class PatronBorrowReport {
-            - repository: IBorrowRepository
-            + GenerateReport(Guid patronId, int offset, int limit): Task<string>
-        }
-        PatronBorrowReport *-- ReportsOptions
-    }
-
-    class ReportsOptions {
-        - borrowStatusReport: BorrowStatusReport
-        - patronBorrowReport: PatronBorrowReport
-        + ReportInitialOptions(): Task
-        - ReportBooksCurrentlyBorrowed(): Task
-        - ReportBooksOverdue(): Task
-        - ReportPatronBorrowed(): Task
-    }
-
-    class PatronOptions {
-        - patronRepository: IPatronRepository
-        - patronRequester: IEntityRequester
-        - patronValidator: PatronValidator
-        + PatronInitialOptions(): Task
-        - RegisterNewPatron(): Task
-        - DeletePatron(): Task
-        - EditPatron(): Task
-        - SearchPatron(): Task
-        - SearchPatronsByMembershipNumber(): Task
-        - PaginatedSearchByName(): Task
-    }
-    PatronOptions o-- IEntityRequester
-    PatronOptions o-- PatronValidator
-
-    class BorrowOptions {
-        + {static} BorrowInitialOptions(): void
-        - {static} RegisterNewBorrow(BorrowRepositoryImplementation repository): void
-    }
-
-    class BookOptions {
-        - bookRepository: IBookRepository
-        - bookRequester: IEntityRequester
-        - bookValidator: BookValidator
-        + BookInitialOptions(): Task
-        - RegisterNewBook(): Task
-        - DeleteBook(): Task
-        - EditBook(): Task
-        - SearchBook(): Task
-        - PaginatedSearchByTitle(): Task
-        - PaginatedSearchByAuthor(): Task
-        - SearchByIsbn(): Task
-    }
-    BookOptions o-- IEntityRequester
-    BookOptions o-- BookValidator
-
-    package handlers {
-        class PatronRequesterByConsole {
-            - unrequestedPatron: Patron?
-            + AskForEntity(): Patron
-            - ReceivePatronByConsole(): Patron
-            - ConfirmPatronReceived(Patron patronReceived): Patron?
-            - RenderPatronReceived(Patron patronReceived): void
-        }
-
-        class BookRequesterByConsole {
-            - unrequestedBook: Book?
-            + AskForEntity(): Book
-            - ReceiveBookByConsole(): Book
-            - ConfirmBookReceived(Book bookReceived): Book?
-            - RenderBookReceived(Book bookReceived): void
-        }
-
-        interface IEntityRequester<T: IEntity> {
-            + AskForEntity(): T
-        }
-        IEntityRequester <|.. BookRequesterByConsole
-        IEntityRequester <|.. PatronRequesterByConsole
-    }
-
-    class BorrowConsoleRenderer {
-        + GetPatronId(): Guid
-        + GetBookId(): Guid
-        + DisplayBorrowDetails(Borrow borrow): void
-        + ConfirmBorrow(): bool
-    }
-
-    interface IBorrowConsoleRenderer {
-        + GetPatronId(): Guid
-        + GetBookId(): Guid
-        + DisplayBorrowDetails(Borrow borrow): void
-        + ConfirmBorrow(): bool
-    }
-    IBorrowConsoleRenderer <|.. BorrowConsoleRenderer
 

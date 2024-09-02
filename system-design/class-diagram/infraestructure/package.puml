@@ -1,9 +1,7 @@
 @startuml
 skinparam linetype ortho
-title Domain
+title Infraestructure
 
-!include entity.puml
 !include repository.puml
 !include services.puml
-!include validator.puml
 @enduml

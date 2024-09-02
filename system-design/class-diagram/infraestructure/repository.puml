@@ -1,6 +1,5 @@
 @startuml
 package repository {
-
     class BookRepository {
         - connectionString: string
         + Delete(long isbn): Task<bool>
@@ -26,7 +25,7 @@ package repository {
         + GetById(Guid id): Task<Borrow?>
         + Save(Borrow entity): Task<bool>
         + Update(Borrow entity): Task<bool>
-        + UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus): Task<bool> 
+        + UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus): Task<bool>
     }
 
     class PatronRepository {
@@ -40,9 +39,8 @@ package repository {
         + Save(Patron entity): Task<bool>
         + Update(Patron entity): Task<bool>
     }
-
-    IBookRepository <|.. BookRepository
-    IBorrowRepository <|.. BorrowRepository
-    IPatronRepository <|.. PatronRepository
 }
+IBookRepository <|.. BookRepository
+IBorrowRepository <|.. BorrowRepository
+IPatronRepository <|.. PatronRepository
 @enduml
