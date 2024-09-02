@@ -1,3 +1,5 @@
+using Opcion1LosBorbotones.Domain.Validator.Exceptions;
+using Opcion1LosBorbotones.Logger.LogManagement;
 using Spectre.Console;
 
 namespace Opcion1LosBorbotones.Presentation.Renders;
@@ -20,6 +22,7 @@ public static class ResultRenderer
             }
             catch (Exception ex)
             {
+                ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, ex.Message, ex);
                 ConsoleMessageRenderer.RenderErrorMessage($"Error: {ex.Message}");
             }
         }
@@ -44,6 +47,7 @@ public static class ResultRenderer
                 }
                 catch (InvalidOperationException ex)
                 {
+                    ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, ex.Message, ex);
                     ConsoleMessageRenderer.RenderErrorMessage($"Error in formatting result: {ex.Message}");
                 }
             }

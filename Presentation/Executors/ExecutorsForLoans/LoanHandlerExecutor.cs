@@ -1,7 +1,9 @@
 using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Domain.Validator.Exceptions;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
+using Opcion1LosBorbotones.Logger.LogManagement;
 using Opcion1LosBorbotones.Presentation.Renderer.BorrowFormatter;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
@@ -104,6 +106,7 @@ public class LoanHandlerExecutor : IExecutor
             }
             catch (InvalidOperationException ex)
             {
+                ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, ex.Message, ex);
                 AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
             }
         }
@@ -150,6 +153,7 @@ public class LoanHandlerExecutor : IExecutor
             }
             catch (Exception ex)
             {
+                ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, ex.Message, ex);
                 ConsoleMessageRenderer.RenderErrorMessage($"Error: {ex.Message}");
             }
         }

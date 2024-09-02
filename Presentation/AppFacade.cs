@@ -2,8 +2,10 @@ using Opcion1LosBorbotones.Domain;
 using Opcion1LosBorbotones.Domain.Data;
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
+using Opcion1LosBorbotones.Domain.Validator.Exceptions;
 using Opcion1LosBorbotones.Infrastructure.Repository;
 using Opcion1LosBorbotones.Infrastructure.Services.Borrows;
+using Opcion1LosBorbotones.Logger.LogManagement;
 using Opcion1LosBorbotones.Presentation.Executors;
 using Opcion1LosBorbotones.Presentation.Handlers;
 using Opcion1LosBorbotones.Presentation.Renders;
@@ -39,6 +41,7 @@ public class ApplicationFacade
         }
         catch (Exception ex)
         {
+            ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.Critical, ex.Message, ex);
             ConsoleMessageRenderer.RenderErrorMessage("Could not connect to the database. Please verify that it is running.");
             ConsoleMessageRenderer.RenderErrorMessage(ex.Message);
             Environment.Exit(1);
