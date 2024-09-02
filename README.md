@@ -57,6 +57,7 @@ __Docs__
 ### Salet Gutierrez
 - [Borrow made by a user are not saved in the database](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/37?milestone=403375) | __Status__ "DONE"
 - [Delete sensitive data from the program](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/63?milestone=403375) | __Status__ "DONE"
+- [Return book to library](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/79?milestone=403375) | __Status__ "READY FOR TEST"
 
 ## Santiago Concha
 - [Update UML](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/65) | __Status__ "IN PROGRESS"

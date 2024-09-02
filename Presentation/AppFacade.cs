@@ -56,7 +56,7 @@ public class ApplicationFacade
         
         var bookOptions = new BookHandlerExecutor(_bookRepository, bookRequester, bookFinder);
         var patronOptions = new PatronHandlerExecutor(_patronRepository, patronRequester, patronFinder);
-        var borrowOptions = new LoanHandlerExecutor(borrowService, _patronRepository, _bookRepository);
+        var borrowOptions = new LoanHandlerExecutor(borrowService, _patronRepository, _bookRepository, _borrowRepository);
         var reportOptions = new ReportHandlerExecutor(_borrowRepository, _bookRepository, _patronRepository);
 
         return new MainHandlerExecutor(bookOptions, patronOptions, borrowOptions, reportOptions);

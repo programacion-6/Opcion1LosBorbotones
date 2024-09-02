@@ -27,4 +27,27 @@ public static class SelectionHelper<T> where T : IEntity
                 .UseConverter(converter)
         );
     }
+
+    public static async Task<Borrow?> SelectBorrowItemAsync(IBorrowRepository repository,
+                                                            string title,
+                                                            string emptyMessage,
+                                                            Func<Borrow, string> converter)
+    {
+        var items = (await repository.GetBorrowsByStatus(BorrowStatus.Borrowed, 1, int.MaxValue)).ToArray();
+
+        if (items == null || items.Length == 0)
+        {
+            AnsiConsole.MarkupLine($"[red]{emptyMessage}[/]");
+            return default;
+        }
+
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<Borrow>()
+                .Title(title)
+                .PageSize(3)
+                .MoreChoicesText("[grey](Scroll up and down to see more options)[/]")
+                .AddChoices(items)
+                .UseConverter(converter)
+        );
+    }
 }

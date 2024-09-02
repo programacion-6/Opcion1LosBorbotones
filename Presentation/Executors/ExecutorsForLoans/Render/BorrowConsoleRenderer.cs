@@ -16,4 +16,9 @@ public class BorrowConsoleRenderer : IBorrowConsoleRenderer
     {
         return AnsiConsole.Confirm("[bold] Do you want to register this borrow? [/]");
     }
+
+    public bool ConfirmReturn()
+    {
+        return AnsiConsole.Confirm("[bold] Do you want to return this book? [/]");
+    }
 }

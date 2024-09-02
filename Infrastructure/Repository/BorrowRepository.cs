@@ -203,4 +203,22 @@ public class BorrowRepository : IBorrowRepository
 
         return result > 0;
     }
+
+    public async Task<bool> UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus)
+    {
+        const string query = @"
+        UPDATE Borrow
+        SET borrowStatus = @BorrowStatus
+        WHERE id = @Id";
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        var result = await connection.ExecuteAsync(query, new
+        {
+            Id = borrowId,
+            BorrowStatus = (int)newStatus
+        });
+
+        return result > 0;
+    }
+
 }
