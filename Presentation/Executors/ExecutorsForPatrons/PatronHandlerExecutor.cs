@@ -1,7 +1,9 @@
 using Opcion1LosBorbotones.Domain.Entity;
 using Opcion1LosBorbotones.Domain.Repository;
 using Opcion1LosBorbotones.Domain.Validator;
+using Opcion1LosBorbotones.Domain.Validator.Exceptions;
 using Opcion1LosBorbotones.Domain.Validator.Exceptions.ConcreteException;
+using Opcion1LosBorbotones.Logger.LogManagement;
 using Opcion1LosBorbotones.Presentation.Handlers;
 using Opcion1LosBorbotones.Presentation.Renders;
 using Spectre.Console;
@@ -83,11 +85,13 @@ public class PatronHandlerExecutor : IExecutor
         }
         catch (BookException bookException)
         {
+            ErrorLogger.LogErrorBasedOnSeverity(bookException.Severity, bookException.Message, bookException);
             ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
             ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
         }
         catch (Exception exception)
         {
+            ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, exception.Message, exception);
             ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
         }
 
@@ -126,11 +130,13 @@ public class PatronHandlerExecutor : IExecutor
                 }
                 catch (BookException bookException)
                 {
+                    ErrorLogger.LogErrorBasedOnSeverity(bookException.Severity, bookException.Message, bookException);
                     ConsoleMessageRenderer.RenderErrorMessage(bookException.Message);
                     ConsoleMessageRenderer.RenderErrorMessage(bookException.ResolutionSuggestion);
                 }
                 catch (Exception exception)
                 {
+                    ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, exception.Message, exception);
                     ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
                 }
             }
@@ -141,8 +147,9 @@ public class PatronHandlerExecutor : IExecutor
 
             AppPartialsRenderer.RenderConfirmationToContinue();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, ex.Message, ex);
             AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             AnsiConsole.MarkupLine("[bold italic red]An unexpected error occurred. Please try again later.[/]");
         }
@@ -182,11 +189,13 @@ public class PatronHandlerExecutor : IExecutor
                 }
                 catch (PatronException patronException)
                 {
+                    ErrorLogger.LogErrorBasedOnSeverity(patronException.Severity, patronException.Message, patronException);
                     ConsoleMessageRenderer.RenderErrorMessage(patronException.Message);
                     ConsoleMessageRenderer.RenderErrorMessage(patronException.ResolutionSuggestion);
                 }
                 catch (Exception exception)
                 {
+                    ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, exception.Message, exception);
                     ConsoleMessageRenderer.RenderErrorMessage(exception.Message);
                 }
             }
@@ -195,9 +204,10 @@ public class PatronHandlerExecutor : IExecutor
                 AnsiConsole.MarkupLine("[bold italic]Canceled.[/]");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[bold italic red]Error: {e.Message}[/]");
+            ErrorLogger.LogErrorBasedOnSeverity(SeverityLevel.High, ex.Message, ex);
+            AnsiConsole.MarkupLine($"[bold italic red]Error: {ex.Message}[/]");
         }
         AppPartialsRenderer.RenderConfirmationToContinue();
     }
