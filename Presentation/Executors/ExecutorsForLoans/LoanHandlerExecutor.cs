@@ -14,15 +14,18 @@ public class LoanHandlerExecutor : IExecutor
     private readonly IBorrowConsoleRenderer _borrowConsoleRenderer;
     private readonly IPatronRepository _patronRepository;
     private readonly IBookRepository _bookRepository;
+    private readonly IBorrowRepository _borrowRepository;
 
     public LoanHandlerExecutor(IBorrowService borrowService,
                          IPatronRepository patronRepository,
-                         IBookRepository bookRepository)
+                         IBookRepository bookRepository,
+                         IBorrowRepository borrowRepository)
     {
         _borrowService = borrowService;
         _borrowConsoleRenderer = new BorrowConsoleRenderer();
         _patronRepository = patronRepository;
         _bookRepository = bookRepository;
+        _borrowRepository = borrowRepository;
     }
 
     public async Task Execute()
@@ -40,7 +43,8 @@ public class LoanHandlerExecutor : IExecutor
                     .AddChoices(
                     [
                         "1. Request a borrow",
-                        "2. Go back"
+                        "2. Request a Return",
+                        "3. Go back"
                     ])
             );
 
@@ -48,6 +52,9 @@ public class LoanHandlerExecutor : IExecutor
             {
                 case "1. Request a borrow":
                     await RegisterNewBorrow();
+                    break;
+                case "2. Request a Return":
+                    await ReturnBook();
                     break;
                 case "2. Go back":
                     goBack = true;
@@ -58,61 +65,99 @@ public class LoanHandlerExecutor : IExecutor
 
     private async Task RegisterNewBorrow()
     {
-        try
+        AppPartialsRenderer.RenderHeader();
+        ConsoleMessageRenderer.RenderIndicatorMessage("New loan");
+
+        var selectedBook = await SelectionHelper<Book>.SelectItemAsync(
+                                _bookRepository,
+                                "Select the book you want to borrow:",
+                                "No books available for borrowing.",
+                                book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
+                            );
+
+        var selectedPatron = await SelectionHelper<Patron>.SelectItemAsync(
+                                _patronRepository,
+                                "Select the patron who is borrowing the book:",
+                                "No patrons available for borrowing.",
+                                patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
+                            );
+
+        if (selectedBook == null || selectedPatron == null)
         {
-            AppPartialsRenderer.RenderHeader();
-            ConsoleMessageRenderer.RenderIndicatorMessage("New loan");
-
-            var selectedBook = await SelectionHelper<Book>.SelectItemAsync(
-                                    _bookRepository,
-                                    "Select the book you want to borrow:",
-                                    "No books available for borrowing.",
-                                    book => $"{book.Title} | {book.Author} | ISBN: {book.Isbn}"
-                                );
-
-            var selectedPatron = await SelectionHelper<Patron>.SelectItemAsync(
-                                    _patronRepository,
-                                    "Select the patron who is borrowing the book:",
-                                    "No patrons available for borrowing.",
-                                    patron => $"{patron.Name} | {patron.ContactDetails} | {patron.MembershipNumber}"
-                                );
-
-            if (selectedBook == null || selectedPatron == null)
-            {
-                ConsoleMessageRenderer.RenderErrorMessage("Book or Patron selection was cancelled or invalid.");
-                AppPartialsRenderer.RenderConfirmationToContinue();
-                return;
-            }
-
-            if (_borrowConsoleRenderer.ConfirmBorrow())
-            {
-                try
-                {
-                    var borrow = await _borrowService.RegisterNewBorrow(selectedPatron.Id, selectedBook.Id);
-                    ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered:\n");
-                    ResultRenderer.RenderResult(borrow, 
-                                    b => new DetailedBorrowFormatter(b, 
-                                                                    _bookRepository, 
-                                                                    _patronRepository).ToString()
-                                                                    );
-                    _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
-                }
-            }
-            else
-            {
-                ConsoleMessageRenderer.RenderInfoMessage("No borrow registered");
-            }
-
+            ConsoleMessageRenderer.RenderErrorMessage("Book or Patron selection was cancelled or invalid.");
             AppPartialsRenderer.RenderConfirmationToContinue();
+            return;
         }
-        catch (Exception)
+
+        if (_borrowConsoleRenderer.ConfirmBorrow())
         {
-            ConsoleMessageRenderer.RenderErrorMessage("The data entered is not correct, please enter correct data");
-            AppPartialsRenderer.RenderConfirmationToContinue();
+            try
+            {
+                var borrow = await _borrowService.RegisterNewBorrow(selectedPatron.Id, selectedBook.Id);
+                ConsoleMessageRenderer.RenderSuccessMessage($"New borrow registered:\n");
+                ResultRenderer.RenderResult(borrow,
+                                b => new DetailedBorrowFormatter(b,
+                                                                _bookRepository,
+                                                                _patronRepository).ToString()
+                                                                );
+                _borrowConsoleRenderer.DisplayBorrowDetails(borrow);
+            }
+            catch (InvalidOperationException ex)
+            {
+                AnsiConsole.MarkupLine($"[bold italic red]{ex.Message}[/]");
+            }
         }
+        else
+        {
+            ConsoleMessageRenderer.RenderInfoMessage("No borrow registered");
+        }
+
+        AppPartialsRenderer.RenderConfirmationToContinue();
+    }
+
+    private async Task ReturnBook()
+    {
+        AppPartialsRenderer.RenderHeader();
+        ConsoleMessageRenderer.RenderIndicatorMessage("Return Book");
+
+        var selectedBorrow = await SelectionHelper<Borrow>.SelectBorrowItemAsync(
+                                _borrowRepository,
+                                "Select the borrow you want to return:",
+                                "No borrowed books available for return.",
+                                b => new DetailedBorrowFormatter(b, _bookRepository, _patronRepository).ToString()
+                            );
+
+        if (selectedBorrow == null)
+        {
+            ConsoleMessageRenderer.RenderErrorMessage("Borrow selection was cancelled or invalid.");
+            AppPartialsRenderer.RenderConfirmationToContinue();
+            return;
+        }
+
+        if (_borrowConsoleRenderer.ConfirmReturn())
+        {
+            try
+            {
+                bool success = await _borrowRepository.UpdateBorrowStatus(selectedBorrow.Id, BorrowStatus.Returned);
+                if (success)
+                {
+                    ConsoleMessageRenderer.RenderSuccessMessage("Book returned successfully.");
+                }
+                else
+                {
+                    ConsoleMessageRenderer.RenderErrorMessage("Failed to return the book.");
+                }
+            }
+            catch (Exception ex)
+            {
+                ConsoleMessageRenderer.RenderErrorMessage($"Error: {ex.Message}");
+            }
+        }
+        else
+        {
+            ConsoleMessageRenderer.RenderInfoMessage("No borrow returned");
+        }
+
+        AppPartialsRenderer.RenderConfirmationToContinue();
     }
 }
