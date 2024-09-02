@@ -3,19 +3,24 @@
 skinparam linetype polyline
 title Library System - Class diagram
 
-!include domain/validator.puml
-
-' presentation
-!include presentation.puml
-
-' infraestructure/:
-!include infraestructure/services.puml
-!include infraestructure/repository.puml
-
 ' domain
 !include domain/entity.puml
 !include domain/repository.puml
 !include domain/services.puml
+!include domain/validator.puml
 
+' infraestructure
+!include infraestructure/services.puml
+!include infraestructure/repository.puml
+
+
+' presentation
+!include presentation/presentation.puml
+
+package logger {
+    class ErrorLogger {
+       + {static} LogErrorBasedOnSeverity(SeverityLevel severity, string message, Exception ex): void
+    }
+}
 @enduml
 
