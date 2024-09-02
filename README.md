@@ -72,3 +72,31 @@ __Class Diagrams__
 ## Santiago Concha
 - [Update UML](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/65) | __Status__ "DONE"
 
+---
+## Architecture and Design Patterns
+
+### Architecture
+
+The `Los Borbotones` team documented the use of a domain-driven architecture, known as **Domain-Driven Design (DDD)**. This architecture was largely respected by the `FakeOrgasm` team, maintaining the three main layers:
+
+- **PRESENTATION**: Manages the user interface and interaction.
+- **INFRASTRUCTURE**: Handles communication with the database and other external services.
+- **DOMAIN**: Contains the core business logic and domain rules.
+
+### Original Design Patterns
+
+In the original documentation provided by the `Borbotones team`, several design patterns were mentioned as being used in their project. However, after thorough analysis, certain inconsistencies and code duplications were identified. Below is a detailed account of the original state of the design patterns and the modifications implemented:
+
+- **Strategy Pattern**: Initially applied to manage the behavior of `repositories` and `datasources`. However, code duplication between these components was identified, leading to the decision to eliminate the `datasources`, making this pattern unnecessary in the current context.
+- **Factory Pattern**: Used for the creation of `datasources`. Since `datasources` were eliminated due to code duplication, this pattern also became inapplicable.
+- **Bridge Pattern**: Applied to connect `datasources` with `repositories`. With the removal of `datasources` due to duplication and poor interface design, this pattern also became unnecessary.
+- **Command Pattern**: Mentioned for use in search logic and report generation. However, this pattern was not actually implemented in the original project, so it was not considered during the improvements.
+- **Datasource and Repository Pattern**: The `Datasource` pattern was eliminated, but the `Repository` pattern was retained, ensuring the abstraction of business logic from the data source.
+- **Singleton Pattern**: Applied to ensure a single instance of the `repositories`. This pattern was removed as it was deemed unnecessary in this context. Additionally, it was considered that it could become a bottleneck if larger data volumes were handled in the future. It was replaced by `Dependency Injection` for better control and flexibility.
+
+### Design Patterns Applied After the Improvements
+
+During the implementation of improvements, the `FakeOrgasm` team applied the following design patterns:
+
+- **Interface Segregation Principle (ISP)**: The need for this principle was identified due to poorly defined interfaces that forced classes to implement unnecessary methods or perform multiple responsibilities. Changes were made to adhere to the principle of interface segregation, improving cohesion and reducing coupling.
+- **Dependency Injection**: Dependency injection was implemented to replace the use of `Singleton` and `static` values in the database connection. This allowed for better management of dependencies within the `repositories` and prevented the exposure of sensitive values through static variables.
