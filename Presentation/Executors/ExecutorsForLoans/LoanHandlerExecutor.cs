@@ -56,7 +56,7 @@ public class LoanHandlerExecutor : IExecutor
                 case "2. Request a Return":
                     await ReturnBook();
                     break;
-                case "2. Go back":
+                case "3. Go back":
                     goBack = true;
                     break;
             }
