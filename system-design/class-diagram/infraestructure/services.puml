@@ -1,0 +1,78 @@
+@startuml
+skinparam linetype ortho
+package services {
+    package borrows {
+        class BorrowService {
+            -  borrowRepository: IBorrowRepository
+            -  bookRepository: IBookRepository
+            -  patronRepository: IPatronRepository
+            +  GetBookIdByISBN(long isbn): Task<Guid>
+            +  GetPatronIdByMembershipNumber(long membershipNumber): Task<Guid>
+            +  RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+            -  EnsureBookIsAvailable(Guid bookUUID): Task
+            -  CreateBorrow(Guid patronUUID, Guid bookUUID): Borrow
+            -  SaveBorrow(Borrow borrow): Task
+        }
+
+        interface IBorrowService {
+            RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+            GetBookIdByISBN(long isbn): Task<Guid>
+            GetPatronIdByMembershipNumber(long membershipNumber): Task<Guid>
+        }
+        IBorrowService <|.. BorrowService
+    }
+
+    package searchers {
+        class SearcherByAuthor {
+            - bookRepository: IBookRepository
+            + SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
+        }
+
+        class SearcherByGenre {
+            - bookRepository: IBookRepository
+            +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
+        }
+
+        class SearcherByTitle {
+            - bookRepository: IBookRepository
+            +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
+        }
+
+        class LoanSearcherByState {
+            - repository: IBorrowRepository
+            +  SearchByPage(BorrowStatus criteria, int pageNumber, int pageSize): Task<List<Borrow>>
+        }
+
+        class SearcherForLoansbyPatron {
+            - repository: IBorrowRepository
+            +  SearchByPage(long criteria, int pageNumber, int pageSize): Task<List<Borrow>>
+        }
+
+        class SearcherByName {
+            - patronRepository: IPatronRepository
+            + SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Patron>>
+        }
+
+    }
+}
+
+BorrowService o-- IBookRepository
+SearcherByAuthor o-- IBookRepository
+SearcherByGenre o-- IBookRepository
+SearcherByTitle o-- IBookRepository
+
+LoanSearcherByState o-- IBorrowRepository
+BorrowService o-- IBorrowRepository
+SearcherForLoansbyPatron  o-- IBorrowRepository
+
+SearcherByName o-- IPatronRepository
+BorrowService o-- IPatronRepository
+
+SearcherByName ..|> ISearchStrategy
+LoanSearcherByState ..|> ISearchStrategy
+SearcherByTitle ..|> ISearchStrategy
+SearcherByGenre ..|> ISearchStrategy
+SearcherByAuthor ..|> ISearchStrategy
+SearcherForLoansbyPatron ..|> ISearchStrategy
+@enduml
+

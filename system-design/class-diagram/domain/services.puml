@@ -1,0 +1,15 @@
+@startuml
+package services {
+    interface ISearchStrategy<T, I> {
+        + SearchByPage(I criteria, int pageNumber, int pageSize): Task<List<T>>
+    }
+}
+
+ISearchStrategy <|.. SearcherByAuthor
+ISearchStrategy <|.. SearcherByGenre
+ISearchStrategy <|.. SearcherByTitle
+ISearchStrategy <|.. SearcherByName
+ISearchStrategy <|.. SearcherForLoansbyPatron
+ISearchStrategy <|.. LoanSearcherByState
+@enduml
+

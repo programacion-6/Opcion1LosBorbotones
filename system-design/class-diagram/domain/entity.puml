@@ -1,0 +1,49 @@
+@startuml
+package entity {
+
+    class Book {
+        + Id: Guid
+        + Title: string
+        + Author: string
+        + Isbn: long
+        + Genre: string
+        + PublicationYear: DateTime
+    }
+
+    class Patron {
+        + Id: Guid
+        + Name: string
+        + MembershipNumber: long
+        + ContactDetails: long
+    }
+
+    class Borrow {
+        + Id: Guid
+        + PatronId: Guid
+        + BookId: Guid
+        + Status: BorrowStatus
+        + DueDate: DateTime
+        + BorrowDate: DateTime
+    }
+
+    interface IEntity {
+        + Id: Guid
+    }
+    IEntity <|.. Borrow
+    IEntity <|.. Book
+    IEntity <|.. Patron
+
+    enum BorrowStatus {
+        Borrowed
+        Overdue
+        Returned
+        Reserved
+    }
+    BorrowStatus *-- Borrow
+}
+
+Book --o DetailedBookFormatter
+Patron --o DetailedBookFormatter
+
+@enduml
+

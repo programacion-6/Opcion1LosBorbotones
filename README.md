@@ -40,6 +40,15 @@ __Docs__
 
 - [Observations and Enhancement document - FakeOrgasm](https://docs.google.com/document/d/1vNPznRAD0DpJuhCdCQYmk_fweOOlfJl5AA6nGSVpRyg/edit)
 - [Branch and Commit Naming Convention](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/wiki/branch-and-commit-naming-convention)
+
+__Class Diagrams__
+## Domain
+![domain](./system-design/class-diagram/exports/domain.svg)
+## Infraestructure
+![domain](./system-design/class-diagram/exports/infraestructure.svg)
+## Presentation
+![domain](./system-design/class-diagram/exports/presentation.svg)
+
 ---
 ## Enhancements or errors that will be worked on
 ### Luiggy Mamani
@@ -61,4 +70,5 @@ __Docs__
 - [Implement Logging with Serilog](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/us/74?milestone=403375) | __Status__ "DONE"
 
 ## Santiago Concha
-- [Update UML](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/65) | __Status__ "IN PROGRESS"
+- [Update UML](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/65) | __Status__ "DONE"
+

@@ -1,0 +1,20 @@
+@startuml
+skinparam linetype ortho
+
+package presentation {
+' presentation/:
+!include executors.puml
+!include handlers.puml
+!include renders.puml
+
+    class ApplicationFacade {
+        -  databaseConfig: DatabaseConfig
+        +  CreateAppAsync(): Task<MainHandlerExecutor>
+        -  InitDatabaseConnection(): Task
+        - CreateMainExecutor(IBookRepository bookRepository, IPatronRepository patronRepository, IBorrowRepository _borrowRepository): MainHandlerExecutor
+    }
+}
+
+ApplicationFacade ..> MainHandlerExecutor: <<creates>>
+@enduml
+

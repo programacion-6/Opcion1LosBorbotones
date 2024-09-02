@@ -1,0 +1,46 @@
+@startuml
+package repository {
+    class BookRepository {
+        - connectionString: string
+        + Delete(long isbn): Task<bool>
+        + GetAll(): Task<IEnumerable<Book>>
+        + GetBookByISBN(long isbn): Task<Book?>
+        + GetBooksByAuthor(string author, int pageNumber, int pageSize): Task<IEnumerable<Book>>
+        + GetBooksByGenre(string genre, int pageNumber, int pageSize): Task<IEnumerable<Book>>
+        + GetBooksByTitle(string title, int pageNumber, int pageSize): Task<IEnumerable<Book>>
+        + GetById(Guid id): Task<Book?>
+        + Save(Book entity): Task<bool>
+        + Update(Book entity): Task<bool>
+    }
+
+    class BorrowRepository {
+        - connectionString: string
+        + Delete(long id): Task<bool>
+        + GetAll(): Task<IEnumerable<Borrow>>
+        + GetBorrowsByBook(Guid bookId, int pageNumber, int pageSize): Task<IEnumerable<Borrow>>
+        + GetBorrowsByBorrowDate(DateTime borrowDate, int pageNumber, int pageSize): Task<IEnumerable<Borrow>>
+        + GetBorrowsByDueDate(DateTime dueDate, int pageNumber, int pageSize): Task<IEnumerable<Borrow>>
+        + GetBorrowsByPatron(long patronMembershipNumber, int pageNumber, int pageSize): Task<IEnumerable<Borrow>>
+        + GetBorrowsByStatus(BorrowStatus status, int pageNumber, int pageSize): Task<IEnumerable<Borrow>>
+        + GetById(Guid id): Task<Borrow?>
+        + Save(Borrow entity): Task<bool>
+        + Update(Borrow entity): Task<bool>
+        + UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus): Task<bool>
+    }
+
+    class PatronRepository {
+        - connectionString: string
+        + Delete(long membershipnumber): Task<bool>
+        + GetAll(): Task<IEnumerable<Patron>>
+        + GetById(Guid id): Task<Patron?>
+        + GetPatronByMembershipAsync(long membershipNumber): Task<Patron?>
+        + GetPatronByContactDetailsAsync(long contactDetails): Task<Patron?>
+        + GetPatronsByNameAsync(string name, int pageNumber, int pageSize): Task<IEnumerable<Patron>>
+        + Save(Patron entity): Task<bool>
+        + Update(Patron entity): Task<bool>
+    }
+}
+IBookRepository <|.. BookRepository
+IBorrowRepository <|.. BorrowRepository
+IPatronRepository <|.. PatronRepository
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+skinparam linetype ortho
+title Domain
+
+!include entity.puml
+!include repository.puml
+!include services.puml
+!include validator.puml
+@enduml
