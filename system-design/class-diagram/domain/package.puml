@@ -1,0 +1,8 @@
+@startuml
+package domain {
+    !include entity.puml
+    !include repository.puml
+    !include services.puml
+    !include validator.puml
+}
+@enduml

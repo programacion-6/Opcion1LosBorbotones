@@ -1,0 +1,43 @@
+@startuml
+package handler {
+    class BookRequesterByConsole {
+        - unrequestedBook: Book?
+        + AskForEntity(): Book
+        - ReceiveBookByConsole(): Book
+        - ConfirmBookReceived(Book bookReceived): Book?
+        - RenderBookReceived(Book bookReceived): void
+    }
+
+    class PatronRequesterByConsole {
+        - unrequestedPatron : Patron?
+        + AskForEntity(): Patron
+        - ReceivePatronByConsole(): Patron
+        - ConfirmPatronReceived(Patron bookReceived): Patron?
+        - RenderBookReceived(Patron patronReceived): void
+    }
+
+
+    interface IEntityRequester<T: IEntity> {
+        + AskForEntity(): T
+    }
+    IEntityRequester <|.. BookRequesterByConsole
+    IEntityRequester <|.. PatronRequesterByConsole
+
+
+    class DefaultSearchCriteria<I> {
+        - defaultCriteria: I
+        + RequestCriteria(): I
+    }
+
+    class PromptRequester<I> {
+        - prompt: string
+        + RequestCriteria(): I
+    }
+
+    interface ISearchCriteriaRequester<I> {
+        + RequestCriteria(): I
+    }
+    ISearchCriteriaRequester <|.. DefaultSearchCriteria
+    ISearchCriteriaRequester <|.. PromptRequester
+}
+@enduml

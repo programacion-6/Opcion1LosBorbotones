@@ -1,30 +1,64 @@
 @startuml
 package services {
-    package reports {
-        class BorrowStatusReport {
-            - repository: IBorrowRepository
-            + GenerateReport(BorrowStatus borrowStatus, int offset, int limit): Task<string>
-        }
-        BorrowStatusReport *-- ReportsOptions
-
-        class PatronBorrowReport {
-            - repository: IBorrowRepository
-            + GenerateReport(Guid patronId, int offset, int limit): Task<string>
-        }
-        PatronBorrowReport *-- ReportsOptions
-    }
-
     package borrows {
         class BorrowService {
-            - borrowRepository: IBorrowRepository
-            + RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+            -  borrowRepository: IBorrowRepository
+            -  bookRepository: IBookRepository
+            -  patronRepository: IPatronRepository
+            +  GetBookIdByISBN(long isbn): Task<Guid>
+            +  GetPatronIdByMembershipNumber(long membershipNumber): Task<Guid>
+            +  RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+            -  EnsureBookIsAvailable(Guid bookUUID): Task
+            -  CreateBorrow(Guid patronUUID, Guid bookUUID): Borrow
+            -  SaveBorrow(Borrow borrow): Task
         }
 
         interface IBorrowService {
             RegisterNewBorrow(Guid patronUUID, Guid bookUUID): Task<Borrow>
+            GetBookIdByISBN(long isbn): Task<Guid>
+            GetPatronIdByMembershipNumber(long membershipNumber): Task<Guid>
         }
         IBorrowService <|.. BorrowService
     }
+
+    package searchers {
+        class SearcherByAuthor {
+            - bookRepository: IBookRepository
+            + SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
+        }
+        SearcherByAuthor ..o IBookRepository
+
+        class SearcherByGenre {
+            - bookRepository: IBookRepository
+            +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
+        }
+        SearcherByGenre ..o IBookRepository
+
+        class SearcherByTitle {
+            - bookRepository: IBookRepository
+            +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Book>>
+        }
+        SearcherByTitle ..o IBookRepository
+
+        class LoanSearcherByState {
+            - bookRepository: IBookRepository
+            +  SearchByPage(BorrowStatus criteria, int pageNumber, int pageSize): Task<List<Borrow>>
+        }
+        LoanSearcherByState ..o IBorrowRepository
+
+        class SearcherForLoansbyPatron  {
+            - bookRepository: IBookRepository
+            +  SearchByPage(long criteria, int pageNumber, int pageSize): Task<List<Borrow>>
+        }
+        SearcherForLoansbyPatron  ..o IBorrowRepository
+
+        class SearcherByName   {
+            - patronRepository: IPatronRepository
+            +  SearchByPage(string criteria, int pageNumber, int pageSize): Task<List<Patron>>
+        }
+        SearcherByName ..o IBorrowRepository
+    }
+
 }
 @enduml
 

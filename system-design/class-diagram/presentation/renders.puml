@@ -1,0 +1,79 @@
+@startuml
+package renders {
+    class AppPartialsRenderer {
+        + {static} RenderHeader(): void
+        + {static} RenderConfirmationToContinue(): void
+    }
+
+    class DetailedBookFormatter {
+        + override string ToString()
+    }
+
+    class DetailedBorrowFormatter {
+        -  bookRepository: IBookRepository
+        -  patronRepository: IPatronRepository
+        - book: Book?
+        - patron: Patron?
+        + Task BorrowRelatedData(): override
+        + string ToString(): override
+    }
+
+    class DetailedPatronFormatter {
+        + ToString(): string
+    }
+
+    abstract class EntityDetailedFormatter<T : IEntity> {
+        + BorrowRelatedData(): Task
+    }
+
+    class ConsoleMessageFormatter {
+        + {static} AsAnError(string input): string
+        + {static} AsAnInfo(string input): string
+        + {static} AsSuccess(string input): string
+        + {static} AsIndicator(string input): string
+        + {static} AsAHighlight(string input): string
+    }
+
+    class ConsoleMessageRenderer {
+        + {static} RenderErrorMessage(string message): void
+        + {static} RenderHighlightMessage(string message): void
+        + {static} RenderIndicatorMessage(string message): void
+        + {static} RenderInfoMessage(string message): void
+        + {static} RenderSuccessMessage(string message): void
+    }
+
+    class ResultRenderer {
+        + {static} RenderResult<T>(T? result, Func<T, string> formatterFunc): void
+        + {static} RenderResults<T>(List<T> results, Func<T, string> formatterFunc): void
+    }
+
+    class UserDrivenPagedSearcher<T, I> {
+        - numberOfResultsFound: int
+        -  searchStrategy: ISearchStrategy<T, I>
+        -  criteriaRequester: ISearchCriteriaRequester<I>
+        -  formatterFunc: Func<T, string>
+        +  ExecuteSearchAsync(): Task
+        -  PerformSearchAsync(I criteria, int pageSize, int currentPage): Task<List<T>>
+        - HandleSearchResults(List<T> searchResults): bool
+        - NoResultsFound(List<T> searchResults): bool
+        - DisplayNoResultsMessage(): void
+        - DisplayResults(List<T> searchResults): void
+        - HandleUserChoice(ref int currentPage): bool
+    }
+
+    class SelectionHelper<T : IEntity> {
+        + {static} SelectItemAsync(IRepository<T> repository, string title, string emptyMessage, Func<T, string> converter): Task<T?>
+        + {static} SelectBorrowItemAsync(IBorrowRepository repository, string title, string emptyMessage, Func<T, string> converter): Task<Borrow?>
+    }
+
+    abstract class EntityFormatter<T : IEntity> {
+        ~ entity: T
+        + Entity: T
+    }
+    EntityFormatter <|-- DetailedBookFormatter
+    EntityFormatter <|-- DetailedBorrowFormatter
+    EntityFormatter <|-- EntityDetailedFormatter
+    EntityFormatter <|-- DetailedPatronFormatter
+
+}
+@enduml

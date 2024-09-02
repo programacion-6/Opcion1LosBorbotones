@@ -8,7 +8,6 @@ package entity {
         + Isbn: long
         + Genre: string
         + PublicationYear: DateTime
-        + ToString(): string
     }
 
     class Patron {
@@ -16,7 +15,6 @@ package entity {
         + Name: string
         + MembershipNumber: long
         + ContactDetails: long
-        + ToString(): string
     }
 
     class Borrow {
@@ -26,7 +24,6 @@ package entity {
         + Status: BorrowStatus
         + DueDate: DateTime
         + BorrowDate: DateTime
-        + ToString(): string
     }
 
     interface IEntity {

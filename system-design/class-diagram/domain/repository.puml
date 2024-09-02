@@ -1,27 +1,27 @@
 @startuml
 package repository {
     interface IBookRepository {
-        + GetBookByIsbn(long isbn): Task<Book?>
+        + GetBookByISBN(long isbn): Task<Book?>
         + GetBooksByTitle(string title, int offset, int limit): Task<IEnumerable<Book>>
         + GetBooksByAuthor(string author, int offset, int limit): Task<IEnumerable<Book>>
         + GetBooksByGenre(BookGenre genre, int offset, int limit): Task<IEnumerable<Book>>
-        + GetBooksByPublicationYear(DateTime publicationYear, int offset, int limit): Task<IEnumerable<Book>>
     }
-    IBorrowRepository *-- BookOptions
+    IBookRepository o-- BookOptions
 
     interface IPatronRepository {
         + GetPatronsByNameAsync(string name, int offset, int limit): Task<IEnumerable<Patron>>
         + GetPatronByMembershipAsync(long membership): Task<Patron?>
-        + GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit): Task<IEnumerable<Patron>>
+        + GetPatronByContactDetailsAsync(long contactDetails): Task<Patron?>
     }
-    IPatronRepository *-- PatronOptions
+    IPatronRepository o-- PatronOptions
 
     interface IBorrowRepository {
-        + GetBorrowsByPatron(Guid patronId, int offset, int limit): Task<IEnumerable<Borrow>>
+        + GetBorrowsByPatron(long membershipNumber, int offset, int limit): Task<IEnumerable<Borrow>>
         + GetBorrowsByBook(Guid bookId, int offset, int limit): Task<IEnumerable<Borrow>>
         + GetBorrowsByStatus(BorrowStatus status, int offset, int limit): Task<IEnumerable<Borrow>>
         + GetBorrowsByDueDate(DateTime dueDate, int offset, int limit): Task<IEnumerable<Borrow>>
         + GetBorrowsByBorrowDate(DateTime borrowDate, int offset, int limit): Task<IEnumerable<Borrow>>
+        + UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus): Task<bool>
     }
     IBorrowRepository o-- BorrowStatusReport
     IBorrowRepository o-- PatronBorrowReport
@@ -30,7 +30,7 @@ package repository {
     interface IRepository<T: IEntity> {
          Save(T entity): Task<bool>
          Update(T entity): Task<bool>
-         Delete(Guid id): Task<bool>
+         Delete(long id): Task<bool>
          GetById(Guid id): Task<T?>
          GetAll(): Task<IEnumerable<T>>
     }

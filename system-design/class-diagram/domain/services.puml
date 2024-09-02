@@ -5,6 +5,10 @@ package services {
     }
     IReport <|.. BorrowStatusReport
     IReport <|.. PatronBorrowReport
+
+    interface ISearchStrategy<T, I> {
+        + SearchByPage(I criteria, int pageNumber, int pageSize): Task<List<T>>
+    }
 }
 @enduml
 

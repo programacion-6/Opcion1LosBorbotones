@@ -1,0 +1,101 @@
+@startuml
+package executors {
+  class BookFinderExecutor {
+        -  bookRepository: IBookRepository
+        -  detailedBookFormatter: Func<Book, string>
+        +  Execute(): Task
+        -  PaginatedSearchByGenre(): Task
+        -  PaginatedSearchByTitle(): Task
+        -  PaginatedSearchByAuthor(): Task
+        -  SearchByIsbn(): Task
+    }
+
+
+ class BookHandlerExecutor {
+        -  bookRepository: IBookRepository
+        -  bookRequester: IEntityRequester<Book>
+        -  bookValidator: BookValidator
+        -  bookFinder: BookFinderExecutor
+        +  Execute(): Task
+        -  RegisterNewBook(): Task
+        -  DeleteBook(): Task
+        -  EditBook(): Task
+    }
+
+
+ class LoanHandlerExecutor {
+        -  borrowService: IBorrowService
+        -  borrowConsoleRenderer: IBorrowConsoleRenderer
+        -  patronRepository: IPatronRepository
+        -  bookRepository: IBookRepository
+        -  borrowRepository: IBorrowRepository
+        +  Execute(): Task
+        -  RegisterNewBorrow(): Task
+        -  ReturnBook(): Task
+    }
+
+
+
+ class PatronFinderExecutor {
+        -  patronRepository: IPatronRepository
+        -  detailedPatronFormatter: Func<Patron, string>
+        +  Execute(): Task
+        -  PaginatedSearchByName(): Task
+        -  PaginatedSearchByContactDetails(): Task
+        -  SearchPatronsByMembershipNumber(): Task
+    }
+
+ class PatronHandlerExecutor {
+        -  patronRepository: IPatronRepository
+        -  patronRequester: IEntityRequester<Patron>
+        -  patronValidator: PatronValidator
+        -  patronFinder: PatronFinderExecutor
+        +  Execute(): Task
+        -  RegisterNewPatron(): Task
+        -  DeletePatron(): Task
+        -  EditPatron(): Task
+    }
+
+ class ReportHandlerExecutor {
+        -  borrowRepository: IBorrowRepository
+        -  bookRepository: IBookRepository
+        -  patronRepository: IPatronRepository
+        -  detailedBorrowFormatter: Func<Patron, string>
+        +  Execute(): Task
+        -  ReportBooksCurrentlyBorrowed(): Task
+        -  ReportBooksOverdue(): Task
+        -  ReportPatronBorrowed(): Task
+    }
+
+ class MainHandlerExecutor {
+        - bookOptions: BookHandlerExecutor
+        - patronOptions: PatronHandlerExecutor
+        - borrowOptions: LoanHandlerExecutor
+        - reportsOptions: ReportHandlerExecutor
+        +  Execute(): Task
+    }
+    interface IExecutor {
+        + Execute(): Task
+    }
+    IExecutor <|.. BookFinderExecutor
+    IExecutor <|.. BookHandlerExecutor
+    IExecutor <|.. LoanHandlerExecutor
+    IExecutor <|.. PatronFinderExecutor
+    IExecutor <|.. PatronHandlerExecutor
+    IExecutor <|.. ReportHandlerExecutor
+    IExecutor <|.. MainHandlerExecutor
+
+ class BorrowConsoleRenderer {
+        + DisplayBorrowDetails(Borrow borrow): void
+        + ConfirmBorrow(): bool
+        + ConfirmReturn(): bool
+    }
+
+    interface IBorrowConsoleRenderer {
+        + DisplayBorrowDetails(Borrow borrow): void
+        + ConfirmBorrow(): bool
+        + ConfirmReturn(): bool
+    }
+    IBorrowConsoleRenderer <|.. BorrowConsoleRenderer
+}
+@enduml
