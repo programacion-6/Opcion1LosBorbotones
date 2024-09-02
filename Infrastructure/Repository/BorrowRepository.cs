@@ -101,7 +101,7 @@ public class BorrowRepository : IBorrowRepository
         });
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(long patronMembershipNumber, int offset, int limit)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByPatron(long patronMembershipNumber, int pageNumber, int pageSize)
     {
         const string query = @"
         SELECT 
@@ -114,20 +114,23 @@ public class BorrowRepository : IBorrowRepository
         FROM Borrow b
         JOIN Patron p ON b.patron = p.id
         WHERE p.MembershipNumber = @MembershipNumber
+        ORDER BY b.borrowStatus
         LIMIT @Limit OFFSET @Offset";
+
+        int offset = (pageNumber - 1) * pageSize;
 
         using var connection = new NpgsqlConnection(_connectionString);
         return await connection.QueryAsync<Borrow>(query, new
         {
             MembershipNumber = patronMembershipNumber,
-            Limit = limit,
+            Limit = pageSize,
             Offset = offset
         });
     }
 
-    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int offset, int limit)
+    public async Task<IEnumerable<Borrow>> GetBorrowsByStatus(BorrowStatus status, int pageNumber, int pageSize)
     {
-        const string query = @"
+        const string sql = @"
             SELECT id AS Id, 
                 patron AS PatronId, 
                 book AS BookId, 
@@ -136,14 +139,16 @@ public class BorrowRepository : IBorrowRepository
                 borrowDate AS BorrowDate 
             FROM Borrow 
             WHERE borrowStatus = @Status 
-            LIMIT @Limit OFFSET @Offset";
+            ORDER BY borrowStatus
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY";
 
-        using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Borrow>(
-            query,
-            new { Status = (int)status, Limit = limit, Offset = offset }
-        );
+        int offset = (pageNumber - 1) * pageSize;
 
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            return await connection.QueryAsync<Borrow>(sql, new { Status = (int)status, Offset = offset, PageSize = pageSize });
+        }
     }
 
     public async Task<Borrow?> GetById(Guid id)
@@ -198,4 +203,22 @@ public class BorrowRepository : IBorrowRepository
 
         return result > 0;
     }
+
+    public async Task<bool> UpdateBorrowStatus(Guid borrowId, BorrowStatus newStatus)
+    {
+        const string query = @"
+        UPDATE Borrow
+        SET borrowStatus = @BorrowStatus
+        WHERE id = @Id";
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        var result = await connection.ExecuteAsync(query, new
+        {
+            Id = borrowId,
+            BorrowStatus = (int)newStatus
+        });
+
+        return result > 0;
+    }
+
 }

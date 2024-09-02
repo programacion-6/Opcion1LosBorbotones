@@ -48,36 +48,29 @@ public class PatronRepository : IPatronRepository
         return await connection.QueryFirstOrDefaultAsync<Patron>(query, new { MembershipNumber = membershipNumber });
     }
 
-    public async Task<IEnumerable<Patron?>> GetPatronsByContactDetailsAsync(long contactDetails, int offset, int limit)
+    public async Task<Patron?> GetPatronByContactDetailsAsync(long contactDetails)
     {
-        const string query = @"
-            SELECT * FROM Patron
-            WHERE contactDetails = @ContactDetails
-            LIMIT @Limit OFFSET @Offset;";
+        const string query = "SELECT * FROM Patron WHERE contactDetails = @ContactDetails";
 
         await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Patron>(query, new
-        {
-            ContactDetails = contactDetails,
-            Limit = limit,
-            Offset = offset
-        });
+        return await connection.QueryFirstOrDefaultAsync<Patron>(query, new { ContactDetails = contactDetails });
     }
 
-    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name, int offset, int limit)
+    public async Task<IEnumerable<Patron>> GetPatronsByNameAsync(string name, int pageNumber, int pageSize)
     {
-        const string query = @"
-            SELECT * FROM Patron
-            WHERE name = @Name
-            LIMIT @Limit OFFSET @Offset;";
+        const string sql = @"
+        SELECT * FROM Patron
+        WHERE name = @Name
+        ORDER BY Name
+        OFFSET @Offset ROWS
+        FETCH NEXT @PageSize ROWS ONLY";
 
-        await using var connection = new NpgsqlConnection(_connectionString);
-        return await connection.QueryAsync<Patron>(query, new
+        int offset = (pageNumber - 1) * pageSize;
+
+        using (var connection = new NpgsqlConnection(_connectionString))
         {
-            Name = name,
-            Limit = limit,
-            Offset = offset
-        });
+            return await connection.QueryAsync<Patron>(sql, new { Name = name, Offset = offset, PageSize = pageSize });
+        }
     }
 
     public async Task<bool> Save(Patron entity)
