@@ -14,7 +14,16 @@ package renders {
         -  patronRepository: IPatronRepository
         - book: Book?
         - patron: Patron?
-        + Task BorrowRelatedData(): override
+        + BorrowRelatedData(): Task
+        + ToString(): string
+    }
+
+    class DetailedDebtFormatter {
+        - bookRepository: IBookRepository
+        - patronRepository: IPatronRepository
+        - book: Book?
+        - patron: Patron?
+        + BorrowRelatedData(): Task
         + ToString(): string
     }
 
@@ -80,5 +89,10 @@ DetailedBorrowFormatter o-- IBookRepository
 DetailedBorrowFormatter o-- IPatronRepository
 DetailedBorrowFormatter o-- Book
 DetailedBorrowFormatter o-- Patron
+
+DetailedDebtFormatter o-- IBookRepository
+DetailedDebtFormatter o-- IPatronRepository
+DetailedDebtFormatter o-- Book
+DetailedDebtFormatter o-- Patron
 
 @enduml

@@ -59,10 +59,12 @@ package executors {
             -  bookRepository: IBookRepository
             -  patronRepository: IPatronRepository
             -  detailedBorrowFormatter: Func<Patron, string>
+            -  detailedDebtFormatter: Func<Patron, string>
             +  Execute(): Task
             -  ReportBooksCurrentlyBorrowed(): Task
             -  ReportBooksOverdue(): Task
             -  ReportPatronBorrowed(): Task
+            -  ReportPatronDebtHistory(): Task
         }
 
      class MainHandlerExecutor {

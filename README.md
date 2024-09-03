@@ -71,6 +71,7 @@ __Class Diagrams__
 
 ## Santiago Concha
 - [Update UML](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/65) | __Status__ "DONE"
+- [US Report patron's debt history](https://tree.taiga.io/project/santiago_c_saavedra-fakeorgasm/task/55) | __Status__ "DONE"
 
 ---
 ## Architecture and Design Patterns
