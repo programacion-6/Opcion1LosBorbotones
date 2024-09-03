@@ -54,6 +54,10 @@ package services {
         }
 
     }
+
+    class FineCalculator {
+        + {static} CalculateFines(double overdueDays): double
+    }
 }
 
 BorrowService o-- IBookRepository
