@@ -95,8 +95,25 @@ In the original documentation provided by the `Borbotones team`, several design 
 - **Singleton Pattern**: Applied to ensure a single instance of the `repositories`. This pattern was removed as it was deemed unnecessary in this context. Additionally, it was considered that it could become a bottleneck if larger data volumes were handled in the future. It was replaced by `Dependency Injection` for better control and flexibility.
 
 ### Design Patterns Applied After the Improvements
-
 During the implementation of improvements, the `FakeOrgasm` team applied the following design patterns:
 
+- **Strategy Pattern**: 
+     - **Reason for implementation**:
+          There was a lot of repetitive code, especially in handling data searches such as books, patterns and loans by pagination. With strategy, the behavior was abstracted in method signatures and a Context was used that uses the strategies injected by the client to render the results with pagination.
+          This approach helps reduce repetitive code and is flexible to implementations that follow the interface signature.
+     - **How ​​it was implemented**:
+          1. **Behavior abstraction:** The logic of requesting the search criteria and the logic of requesting this data with pagination are in the interfaces `ISearchCriteriaRequester<I>` and `ISearchStrategy<T, I>`. One is in the _application layer_ (interface with the application logic to obtain data by pagination) and the other in the _presentation layer_ (to obtain the search criteria where there may be an interaction with the client).
+          2. **Concrete implementations** for search criteria and ways to retrieve data by pagination.
+          3. **Context Creation:** `UserDrivenPagedSearcher<T, I>` acts as a context that orchestrates the use of strategies to execute the paginated search. This context handles user interaction, such as moving to the next page or stopping the search, ensuring that pagination logic is handled consistently throughout the application.
+          4. **Using the context with strategies from the client** from the controllers or executors of the handlers when searching for books, patterns or reports.
+- **Facade Pattern**:
+     - **Reason for implementation**:
+          To simplify the initialization and coordination of complex components like repositories, services, and executors. The Facade Pattern provides a clean interface, reducing the client code's complexity.
+     - **How it was implemented**:
+          1. **Facade Creation:** The ApplicationFacade class encapsulates the setup of the database connection, repositories, services, and executors.
+          2. **Streamlined Setup:** The CreateAppAsync method initializes all necessary components and returns a _MainHandlerExecutor_ for immediate use, hiding the underlying complexity.
+          3. **Client Usage:** The facade is used in the main program to start the application with minimal setup, keeping the client code simple.
+
+#### Special mention to Principles and techniques used:
 - **Interface Segregation Principle (ISP)**: The need for this principle was identified due to poorly defined interfaces that forced classes to implement unnecessary methods or perform multiple responsibilities. Changes were made to adhere to the principle of interface segregation, improving cohesion and reducing coupling.
 - **Dependency Injection**: Dependency injection was implemented to replace the use of `Singleton` and `static` values in the database connection. This allowed for better management of dependencies within the `repositories` and prevented the exposure of sensitive values through static variables.
